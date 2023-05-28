@@ -498,17 +498,6 @@ document.getElementById("IDAddShell").onclick = (event) =>{
     }
 }
 
-// Add emulator panel to layout
-document.getElementById("IDAddEmulator").onclick = (event) =>{
-    if(recursiveFindTitle(myLayout.saveLayout().root.content, "Emulator") == false){
-        console.log("PAGE: +Emulator");
-        myLayout.addComponent('Emulator', undefined, 'Emulator');
-    }else{
-        alert("Only one emulator can be open");
-    }
-}
-
-
 // Return true if a panel with this title exists, false otherwise
 function recursiveFindTitle(content, title){
     for(var i=0; i < content.length; i++){
@@ -833,8 +822,8 @@ function registerShell(_container, state){
 
 var EMU;
 function registerEmulator(_container, state){
-    EMU = new EMULATOR(_container, state, EDITORS);
-    EMU.onData = (data) => ATERM.write(data, '\x1b[34m');
+    //EMU = new EMULATOR(_container, state, EDITORS);
+    //EMU.onData = (data) => ATERM.write(data, '\x1b[34m');
 }
 
 
@@ -923,9 +912,9 @@ function registerEditor(_container, state){
     editor.onFastExecute = async (lines) => {
         REPL.executeLines(lines);
     }
-    editor.onEmulate = async (lines) => {
-        await EMU.startEmulator(lines);
-    }
+    //editor.onEmulate = async (lines) => {
+    //    await EMU.startEmulator(lines);
+    //}
     EDITORS[editor.ID] = editor;
 }
 
@@ -1038,12 +1027,12 @@ ARCADE.onOpen = async (arcadeGameFileURLS, gameName) => {
 
 
 // Register Golden layout panels
-myLayout.registerComponentConstructor("Bitmap Builder", registerBitmapBuilder);
+//myLayout.registerComponentConstructor("Bitmap Builder", registerBitmapBuilder);
 myLayout.registerComponentConstructor("Filesystem", registerFilesystem);
-myLayout.registerComponentConstructor("Grayscale Builder", registerGrayscaleBuilder);
+//myLayout.registerComponentConstructor("Grayscale Builder", registerGrayscaleBuilder);
 myLayout.registerComponentConstructor("Editor", registerEditor);
 myLayout.registerComponentConstructor("Shell", registerShell);
-myLayout.registerComponentConstructor("Emulator", registerEmulator);
+//myLayout.registerComponentConstructor("Emulator", registerEmulator);
 
 
 // Restore from previous layout if it exists, otherwise default
