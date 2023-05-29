@@ -1,5 +1,5 @@
 import { ComponentContainer, ComponentItemConfig, GoldenLayout, ItemType, LayoutManager, LayoutConfig } from "../golden-layout/bundle/esm/golden-layout.js";
-import { EMULATOR } from "./emulator_wrapper.js";
+//import { EMULATOR } from "./emulator_wrapper.js";
 
 // https://github.com/golden-layout/golden-layout#building-single-file-bundles (commands to build bundle from source need to be done on Windows)
 // https://codepen.io/pbklink/pen/dyWJNNm
@@ -764,11 +764,6 @@ function registerShell(_container, state){
            return;
         }
         REPL.writeToDevice(data);
-        if(EMU != undefined){
-            for(const byte of data){
-                EMU.cdc.sendSerialByte(byte.charCodeAt(0));
-            }
-        }
     }
 
     REPL.onData = (data) => ATERM.write(data);

@@ -323,7 +323,7 @@ class ReplJS{
 
         var getFilesystemCmd = 
         "import machine\n" +
-        "machine.freq(250000000)\n" +   // Speed up the process
+        "#machine.freq(250000000)\n" +   // Speed up the process
 
         "import os\n" +
         "import ujson\n" +
@@ -352,11 +352,11 @@ class ReplJS{
         var sizeCmd = 
         "a = os.statvfs('/')\n" +
         "print(a[0], a[2], a[3])\n" +
-        "machine.freq(48000000)\n";     // Put it back at low power freq (for battery)
+        "#machine.freq(48000000)\n";     // Put it back at low power freq (for battery)
 
 
         window.setPercent(25, "Fetching filesystem...");
-        var hiddenLines = await this.writeUtilityCmdRaw(messageCmd + getFilesystemCmd + sizeCmd, true, 1);
+        var hiddenLines = await this.writeUtilityCmdRaw(getFilesystemCmd + sizeCmd, true, 1);
 
         // Make sure this wasn't executed when no Thumby was attached
         if(hiddenLines != undefined){
