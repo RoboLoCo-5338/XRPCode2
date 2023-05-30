@@ -95,6 +95,7 @@ document.getElementById("IDUtilitesDropdown").addEventListener("mouseleave", () 
     UIkit.dropdown(document.getElementById("IDUtilitesDropdown")).hide();
 })
 
+/*
 // Only show the Grayscale Bitmap Builder if an Editor tab is open with thumbyGrayscale.py
 document.getElementById("IDUtilitesDropdown").addEventListener("beforeshow", () => {
     const grayscaleBitmapEditorLauncher = document.getElementById("IDAddGrayscaleBuilder");
@@ -105,6 +106,7 @@ document.getElementById("IDUtilitesDropdown").addEventListener("beforeshow", () 
         }
     }
 })
+*/
 
 var progressBarElem = document.getElementById("IDProgressBar");
 var lastMessage = undefined;
@@ -164,13 +166,6 @@ var defaultConfig = {
                     componentState: { label: 'Filesystem' },
                     title: 'Filesystem',
                     id: "aFilesystem"
-                },{
-                    type: 'component',
-                    componentName: 'Bitmap Builder',
-                    componentState: { label: 'Bitmap Builder' },
-                    close: false,
-                    title: 'Bitmap Builder',
-                    id: "aBitmapBuilder"
                 }]
             },{
                 type: 'column',
@@ -190,12 +185,6 @@ var defaultConfig = {
                     componentState: { label: 'Shell' },
                     title: 'Shell',
                     id: "aShell"
-                },{
-                    type: 'component',
-                    componentName: 'Emulator',
-                    componentState: { label: 'Emulator' },
-                    title: 'Emulator',
-                    id: "aEmulator"
                 }]
             }]
         }]
@@ -814,13 +803,13 @@ function registerShell(_container, state){
 }
 
 
-
+/*
 var EMU;
 function registerEmulator(_container, state){
     //EMU = new EMULATOR(_container, state, EDITORS);
     //EMU.onData = (data) => ATERM.write(data, '\x1b[34m');
 }
-
+*/
 
 
 // Editor module
@@ -913,7 +902,7 @@ function registerEditor(_container, state){
     EDITORS[editor.ID] = editor;
 }
 
-
+/*
 // Setup Bitmap builder module
 var BITMAPPER = undefined;
 function registerBitmapBuilder(_container, state){
@@ -929,6 +918,7 @@ function registerBitmapBuilder(_container, state){
         }
     }
 }
+*/
 
 // Setup Grayscale builder module
 var GRAYSCALEMAPPER = undefined;
