@@ -918,6 +918,7 @@ class ReplJS{
 
 
     async checkIfNeedUpdate(){
+        return //FCG this is a good rutine for us to do
         let info = await this.getVersionInfo();
 
         if(info[0] < window.latestThumbyLibraryVersion){
