@@ -1,4 +1,160 @@
+const PY = Blockly.Python;
+
+Blockly.Python['xrp_straight_effort'] = function (block) {
+  PY.definitions_['import_drivetrain'] = 'from XRPLib.drivetrain import Drivetrain';
+  PY.definitions_[`drietrain_setup`] = `drivetrain = Drivetrain.get_default_drivetrain()`;
+  var value_dist = Blockly.Python.valueToCode(block, 'dist', Blockly.Python.ORDER_ATOMIC);
+  var value_effort = Blockly.Python.valueToCode(block, 'effort', Blockly.Python.ORDER_ATOMIC);
+  var code = `drivetrain.straight(${value_dist}, ${value_effort})\n`;
+  return code;
+};
+
+Blockly.Python['xrp_turn_effort'] = function (block) {
+  PY.definitions_['import_drivetrain'] = 'from XRPLib.drivetrain import Drivetrain';
+  PY.definitions_[`drietrain_setup`] = `drivetrain = Drivetrain.get_default_drivetrain()`;
+  var value_angle = Blockly.Python.valueToCode(block, 'angle', Blockly.Python.ORDER_ATOMIC);
+  var value_effort = Blockly.Python.valueToCode(block, 'effort', Blockly.Python.ORDER_ATOMIC);
+  var code = `drivetrain.turn(${value_angle}, ${value_effort})\n`;
+  return code;
+};
+
+Blockly.Python['xrp_seteffort'] = function (block) {
+  PY.definitions_['import_drivetrain'] = 'from XRPLib.drivetrain import Drivetrain';
+  PY.definitions_[`drietrain_setup`] = `drivetrain = Drivetrain.get_default_drivetrain()`;
+  var value_l = Blockly.Python.valueToCode(block, 'LEFT', Blockly.Python.ORDER_ATOMIC);
+  var value_r = Blockly.Python.valueToCode(block, 'RIGHT', Blockly.Python.ORDER_ATOMIC);
+  var code = `drivetrain.set_effort(${value_l}, ${value_r})\n`;
+  return code;
+};
+
+Blockly.Python['xrp_stop_motors'] = function (block) {
+  PY.definitions_['import_drivetrain'] = 'from XRPLib.drivetrain import Drivetrain';
+  PY.definitions_[`drietrain_setup`] = `drivetrain = Drivetrain.get_default_drivetrain()`;
+  var code = `drivetrain.stop()\n`;
+  return code;
+};
+
+Blockly.Python['xrp_servo_deg'] = function (block) {
+  PY.definitions_['import_servo'] = 'from XRPLib.servo import Servo';
+  PY.definitions_[`servo_setup`] = `servo1 = Servo.get_default_servo()`;
+  var value_degrees = Blockly.Python.valueToCode(block, 'degrees', Blockly.Python.ORDER_ATOMIC);
+  // TODO: Assemble Python into code variable.
+  var code = `servo1.set_angle(${value_degrees})\n`;
+  return code;
+};
+
+Blockly.Python['xrp_resetencoders'] = function (block) {
+  PY.definitions_['import_drivetrain'] = 'from XRPLib.drivetrain import Drivetrain';
+  PY.definitions_[`drietrain_setup`] = `drivetrain = Drivetrain.get_default_drivetrain()`;
+  var value_degrees = Blockly.Python.valueToCode(block, 'degrees', Blockly.Python.ORDER_ATOMIC);
+  // TODO: Assemble Python into code variable.
+  var code = `drivetrain.reset_encoder_position()\n`;
+  return code;
+};
+
+Blockly.Python['xrp_getleftencoder'] = function (block) {
+  PY.definitions_['import_drivetrain'] = 'from XRPLib.drivetrain import Drivetrain';
+  PY.definitions_[`drietrain_setup`] = `drivetrain = Drivetrain.get_default_drivetrain()`;
+  var code = `drivetrain.get_left_encoder_position()`;
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_getrightencoder'] = function (block) {
+  PY.definitions_['import_drivetrain'] = 'from XRPLib.drivetrain import Drivetrain';
+  PY.definitions_[`drietrain_setup`] = `drivetrain = Drivetrain.get_default_drivetrain()`;
+  var code = `drivetrain.get_right_encoder_position()`;
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_getsonardist'] = function (block) {
+  PY.definitions_['import_rangefinder'] = 'from XRPLib.rangefinder import Rangefinder';
+  PY.definitions_[`rangefinder_setup`] = `rangefinder = Rangefinder.get_default_rangefinder()`;
+  var code = `rangefinder.distance()`;
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_l_refl'] = function (block) {
+  PY.definitions_['import_reflectance'] = 'from XRPLib.reflectance import Reflectance';
+  PY.definitions_[`reflectance_setup`] = `reflectance = Reflectance.get_default_reflectance()`;
+  // TODO: Assemble Python into code variable.
+  var code = `reflectance.get_left()`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_r_refl'] = function (block) {
+  PY.definitions_['import_reflectance'] = 'from XRPLib.reflectance import Reflectance';
+  PY.definitions_[`reflectance_setup`] = `reflectance = Reflectance.get_default_reflectance()`;
+  // TODO: Assemble Python into code variable.
+  var code = `reflectance.get_right()`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_yaw'] = function (block) {
+  PY.definitions_['import_imu'] = 'from XRPLib.imu import IMU';
+  PY.definitions_[`imu_setup`] = `imu = IMU.get_default_imu()\nimu.calibrate(1)`;
+  // TODO: Assemble Python into code variable.
+  var code = `imu.get_yaw()`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_roll'] = function (block) {
+  PY.definitions_['import_imu'] = 'from XRPLib.imu import IMU';
+  PY.definitions_[`imu_setup`] = `imu = IMU.get_default_imu()\nimu.calibrate(1)`;
+  // TODO: Assemble Python into code variable.
+  var code = `imu.get_roll()`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_pitch'] = function (block) {
+  PY.definitions_['import_imu'] = 'from XRPLib.imu import IMU';
+  PY.definitions_[`imu_setup`] = `imu = IMU.get_default_imu()\nimu.calibrate(1)`;
+  // TODO: Assemble Python into code variable.
+  var code = `imu.get_pitch()`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_led_on'] = function (block) {
+  PY.definitions_['import_led'] = 'from XRPLib.led import LED';
+  PY.definitions_[`led_setup`] = `led = LED.get_default_led()`;
+  // TODO: Assemble Python into code variable.
+  var code = `led.on()\n`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return code;
+};
+
+Blockly.Python['xrp_led_off'] = function (block) {
+  PY.definitions_['import_led'] = 'from XRPLib.led import LED';
+  PY.definitions_[`led_setup`] = `led = LED.get_default_led()`;
+  // TODO: Assemble Python into code variable.
+  var code = `led.off()\n`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return code;
+};
+
+Blockly.Python['xrp_button_pressed'] = function (block) {
+  PY.definitions_['import_pin'] = 'from machine import Pin';
+  PY.definitions_[`button_setup`] = `ubutton = Pin(22, Pin.IN, Pin.PULL_UP)`;
+  // TODO: Assemble Python into code variable.
+  var code = `not ubutton.value()`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_sleep'] = function (block) {
+  PY.definitions_['import_time'] = 'import time';
+  var number_time = block.getFieldValue('TIME');
+  // TODO: Assemble Python into code variable.
+  var code = `time.sleep(${number_time})\n`;
+  return code;
+};
+
 Blockly.Python['xrp_encoder'] = function (block) {
+  PY.definitions_['import_encoder'] = 'import encoder';
   var text_name = block.getFieldValue('NAME');
   var dropdown_pin_a = block.getFieldValue('PIN_A');
   var dropdown_pin_b = block.getFieldValue('PIN_B');
@@ -54,12 +210,6 @@ Blockly.Python['xrp_reset_drivebase'] = function (block) {
 
 // ---- NEWER LIB -------
 
-Blockly.Python['xrp_seteffort'] = function (block) {
-  var value_l = Blockly.Python.valueToCode(block, 'LEFT', Blockly.Python.ORDER_ATOMIC);
-  var value_r = Blockly.Python.valueToCode(block, 'RIGHT', Blockly.Python.ORDER_ATOMIC);
-  var code = `drivetrain.set_effort(${value_l}, ${value_r})\n`;
-  return code;
-};
 
 Blockly.Python['xrp_setencoderpos'] = function (block) {
   var value_l = Blockly.Python.valueToCode(block, 'LEFT', Blockly.Python.ORDER_ATOMIC);
@@ -68,31 +218,9 @@ Blockly.Python['xrp_setencoderpos'] = function (block) {
   return code;
 };
 
-Blockly.Python['xrp_getsonardist'] = function (block) {
-  var code = `sonar.distance`;
-  return [code, Blockly.Python.ORDER_NONE];
-};
-
-Blockly.Python['xrp_getrightencoder'] = function (block) {
-  var code = `drivetrain.get_right_encoder_position()`;
-  return [code, Blockly.Python.ORDER_NONE];
-};
-
-Blockly.Python['xrp_getleftencoder'] = function (block) {
-  var code = `drivetrain.get_left_encoder_position()`;
-  return [code, Blockly.Python.ORDER_NONE];
-};
-
 Blockly.Python['xrp_encoder_counts'] = function (block) {
   var ticks = block.getFieldValue('TICKS');
   var code = `drivetrain._set_encoder_ticks_per_rev(${ticks})\n`;
-  return code;
-};
-
-Blockly.Python['xrp_sleep'] = function (block) {
-  var number_time = block.getFieldValue('TIME');
-  // TODO: Assemble Python into code variable.
-  var code = `time.sleep(${number_time})\n`;
   return code;
 };
 
@@ -105,18 +233,14 @@ Blockly.Python['xrp_setefforts'] = function (block) {
 
 
 Blockly.Python['xrp_turn'] = function (block) {
+//  PY.definitions_['import_drivetrain'] = 'from XRPLib.drivetrain import Drivetrain';
+//  PY.definitions_[`drietrain_setup`] = `drivetrain = Drivetrain.get_default_drivetrain()`;
   var value_angle = Blockly.Python.valueToCode(block, 'angle', Blockly.Python.ORDER_ATOMIC);
   // TODO: Assemble Python into code variable.
   var code = `drivetrain.turn(${value_angle})\n`;
   return code;
 };
 
-Blockly.Python['xrp_turn_effort'] = function (block) {
-  var value_angle = Blockly.Python.valueToCode(block, 'angle', Blockly.Python.ORDER_ATOMIC);
-  var value_effort = Blockly.Python.valueToCode(block, 'effort', Blockly.Python.ORDER_ATOMIC);
-  var code = `drivetrain.turn(${value_angle}, ${value_effort})\n`;
-  return code;
-};
 
 Blockly.Python['xrp_straight'] = function (block) {
   var value_dist = Blockly.Python.valueToCode(block, 'dist', Blockly.Python.ORDER_ATOMIC);
@@ -125,24 +249,6 @@ Blockly.Python['xrp_straight'] = function (block) {
   return code;
 };
 
-Blockly.Python['xrp_straight_effort'] = function (block) {
-  var value_dist = Blockly.Python.valueToCode(block, 'dist', Blockly.Python.ORDER_ATOMIC);
-  var value_effort = Blockly.Python.valueToCode(block, 'effort', Blockly.Python.ORDER_ATOMIC);
-  // TODO: Assemble Python into code variable.
-  var code = `drivetrain.straight(${value_dist}, ${value_effort})\n`;
-  return code;
-};
-
-Blockly.Python['xrp_button_pressed'] = function (block) {
-  var dropdown_pin = block.getFieldValue('PIN');
-  var code = `buttons.is_${dropdown_pin}_pressed()`;
-  return [code, Blockly.Python.ORDER_NONE];
-};
-
-Blockly.Python['xrp_stop_motors'] = function (block) {
-  var code = `drivetrain.stop()\n`;
-  return code;
-};
 
 Blockly.Python['xrp_led_br'] = function (block) {
   var value_brightness = Blockly.Python.valueToCode(block, 'brightness', Blockly.Python.ORDER_ATOMIC);
@@ -157,23 +263,3 @@ Blockly.Python['xrp_led_co'] = function (block) {
   return code;
 };
 
-Blockly.Python['xrp_servo_deg'] = function (block) {
-  var value_degrees = Blockly.Python.valueToCode(block, 'degrees', Blockly.Python.ORDER_ATOMIC);
-  // TODO: Assemble Python into code variable.
-  var code = `servo.set_degrees(${value_degrees})\n`;
-  return code;
-};
-
-Blockly.Python['xrp_l_refl'] = function (block) {
-  // TODO: Assemble Python into code variable.
-  var code = `reflectance.get_left()`;
-  // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Python.ORDER_NONE];
-};
-
-Blockly.Python['xrp_r_refl'] = function (block) {
-  // TODO: Assemble Python into code variable.
-  var code = `reflectance.get_right()`;
-  // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Python.ORDER_NONE];
-};

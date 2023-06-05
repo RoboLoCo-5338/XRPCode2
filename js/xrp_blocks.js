@@ -1,3 +1,218 @@
+Blockly.Blocks['xrp_straight_effort'] = {
+  init: function () {
+    this.appendValueInput("dist")
+      .setCheck("Number")
+      .appendField("Drive Straight");
+    this.appendValueInput("effort")
+      .setCheck("Number")
+      .appendField("Effort");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(0);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_turn_effort'] = {
+  init: function () {
+    this.appendValueInput("angle")
+      .setCheck("Number")
+      .appendField("Turn");
+    this.appendValueInput("effort")
+      .setCheck("Number")
+      .appendField("Effort");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(0);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_seteffort'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Set Effort");
+    this.appendValueInput("LEFT")
+        .setCheck(null)
+        .appendField("L:");
+    this.appendValueInput("RIGHT")
+        .setCheck(null)
+        .appendField("R:");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(0);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_stop_motors'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Stop Motors");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(0);
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_servo_deg'] = {
+  init: function () {
+    this.appendValueInput("degrees")
+      .setCheck("Number")
+      .appendField('Set Servo1 \xB0:');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(0);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_resetencoders'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Reset Encoders");
+      this.setPreviousStatement(true, null);
+      this.setNextStatement(true, null);
+      this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_getleftencoder'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Left Encoder");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_getrightencoder'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Right Encoder");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_getsonardist'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Sonar Distance");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_l_refl'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Left Reflectance");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_r_refl'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Right Reflectance");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_yaw'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Yaw");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("The amount the robot has turned left or right from center");
+  }
+};
+
+Blockly.Blocks['xrp_roll'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Roll");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("The amount of tipping to the left or right");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_pitch'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Pitch");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("The amount the front of the robot is tilting up or down");
+  }
+};
+
+Blockly.Blocks['xrp_led_on'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("LED on");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(190);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_led_off'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("LED off");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(190);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_button_pressed'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("User Button");
+    this.setOutput(true, null);
+    this.setColour(190);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
 Blockly.Blocks['xrp_encoder'] = {
   init: function () {
     this.appendDummyInput()
@@ -100,24 +315,7 @@ Blockly.Blocks['xrp_reset_drivebase'] = {
   }
 };
 
-Blockly.Blocks['xrp_seteffort'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("Set Effort");
-    this.appendValueInput("LEFT")
-        .setCheck(null)
-        .appendField("L:");
-    this.appendValueInput("RIGHT")
-        .setCheck(null)
-        .appendField("R:");
-    this.setInputsInline(true);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(0);
- this.setTooltip("");
- this.setHelpUrl("");
-  }
-};
+
 
 Blockly.Blocks['xrp_setencoderpos'] = {
   init: function() {
@@ -138,38 +336,6 @@ Blockly.Blocks['xrp_setencoderpos'] = {
   }
 };
 
-Blockly.Blocks['xrp_getsonardist'] = {
-  init: function () {
-    this.appendDummyInput()
-      .appendField("Sonar Distance");
-    this.setOutput(true, null);
-    this.setColour(60);
-    this.setTooltip("");
-    this.setHelpUrl("");
-  }
-};
-
-Blockly.Blocks['xrp_getrightencoder'] = {
-  init: function () {
-    this.appendDummyInput()
-      .appendField("Right Encoder");
-    this.setOutput(true, null);
-    this.setColour(60);
-    this.setTooltip("");
-    this.setHelpUrl("");
-  }
-};
-
-Blockly.Blocks['xrp_getleftencoder'] = {
-  init: function () {
-    this.appendDummyInput()
-      .appendField("Left Encoder");
-    this.setOutput(true, null);
-    this.setColour(60);
-    this.setTooltip("");
-    this.setHelpUrl("");
-  }
-};
 
 Blockly.Blocks['xrp_encoder_counts'] = {
   init: function () {
@@ -225,22 +391,7 @@ Blockly.Blocks['xrp_turn'] = {
   }
 };
 
-Blockly.Blocks['xrp_turn_effort'] = {
-  init: function () {
-    this.appendValueInput("angle")
-      .setCheck("Number")
-      .appendField("Turn");
-    this.appendValueInput("effort")
-      .setCheck("Number")
-      .appendField("Effort");
-    this.setInputsInline(true);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(0);
-    this.setTooltip("");
-    this.setHelpUrl("");
-  }
-};
+
 
 Blockly.Blocks['xrp_straight'] = {
   init: function () {
@@ -256,22 +407,7 @@ Blockly.Blocks['xrp_straight'] = {
   }
 };
 
-Blockly.Blocks['xrp_straight_effort'] = {
-  init: function () {
-    this.appendValueInput("dist")
-      .setCheck("Number")
-      .appendField("Drive Straight");
-    this.appendValueInput("effort")
-      .setCheck("Number")
-      .appendField("Effort");
-    this.setInputsInline(true);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(0);
-    this.setTooltip("");
-    this.setHelpUrl("");
-  }
-};
+
 
 Blockly.Blocks['xrp_led_br'] = {
   init: function () {
@@ -301,64 +437,7 @@ Blockly.Blocks['xrp_led_co'] = {
   }
 };
 
-Blockly.Blocks['xrp_stop_motors'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("Stop Motors");
-    this.setInputsInline(true);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(0);
- this.setTooltip("");
- this.setHelpUrl("");
-  }
-};
 
-Blockly.Blocks['xrp_button_pressed'] = {
-  init: function () {
-    this.appendDummyInput()
-      .appendField("Button Pressed:")
-      .appendField(new Blockly.FieldDropdown([["GP20", "GP20"], ["GP21", "GP21"]]), "PIN")
-    this.setInputsInline(true);
-    this.setOutput(true, null);
-    this.setColour(190);
-    this.setTooltip("");
-    this.setHelpUrl("");
-  }
-};
 
-Blockly.Blocks['xrp_servo_deg'] = {
-  init: function () {
-    this.appendValueInput("degrees")
-      .setCheck("Number")
-      .appendField('Set Servo \xB0:');
-    this.setInputsInline(true);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(0);
-    this.setTooltip("");
-    this.setHelpUrl("");
-  }
-};
 
-Blockly.Blocks['xrp_l_refl'] = {
-  init: function () {
-    this.appendDummyInput()
-      .appendField("Get Left Reflectance");
-    this.setOutput(true, null);
-    this.setColour(60);
-    this.setTooltip("");
-    this.setHelpUrl("");
-  }
-};
 
-Blockly.Blocks['xrp_r_refl'] = {
-  init: function () {
-    this.appendDummyInput()
-      .appendField("Get Right Reflectance");
-    this.setOutput(true, null);
-    this.setColour(60);
-    this.setTooltip("");
-    this.setHelpUrl("");
-  }
-};

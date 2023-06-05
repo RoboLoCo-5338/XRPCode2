@@ -678,7 +678,7 @@ class EditorWrapper{
                     {"block":{"type":"text_print",
                     "fields":{"TEXT":"Place code here"}}}]}};
 
-                Blockly.serialization.workspaces.load(defaultCode, this.BLOCKLY_WORKSPACE);
+                // FCG:TODO Blockly.serialization.workspaces.load(defaultCode, this.BLOCKLY_WORKSPACE);
 
                 // When adding default editors, give them a path but make each unique by looking at all other open editors
                 if(this.checkAllEditorsForPath("/Games/HelloBlockly/HelloBlockly.blocks") == true){
