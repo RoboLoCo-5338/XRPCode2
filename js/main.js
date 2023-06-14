@@ -10,16 +10,6 @@ const layoutSaveKey = "layout";
 var myLayout = new GoldenLayout(document.getElementById("IDLayoutContainer"));
 
 var DIR = new DIRCHOOSER();
-var ARCADE = new Arcade();
-
-
-// Open the arcade if the url/link indicates to do so
-window.addEventListener("load", (event) => {
-    if(window.location.origin.indexOf("arcade.thumby.us") != -1){
-        ARCADE.show();
-    }
-});
-
 
 var onExportToEditor = (bytes) => {
     var editorSpriteID = 0;
@@ -94,19 +84,6 @@ if(localStorage.getItem(showChangelogVersion) == null){
 document.getElementById("IDUtilitesDropdown").addEventListener("mouseleave", () => {
     UIkit.dropdown(document.getElementById("IDUtilitesDropdown")).hide();
 })
-
-/*
-// Only show the Grayscale Bitmap Builder if an Editor tab is open with thumbyGrayscale.py
-document.getElementById("IDUtilitesDropdown").addEventListener("beforeshow", () => {
-    const grayscaleBitmapEditorLauncher = document.getElementById("IDAddGrayscaleBuilder");
-    grayscaleBitmapEditorLauncher.hidden = true;
-    for (const [id, editor] of Object.entries(EDITORS)) {
-        if (editor.EDITOR_PATH && editor.EDITOR_PATH.endsWith("/thumbyGrayscale.py")) {
-            grayscaleBitmapEditorLauncher.hidden = false;
-        }
-    }
-})
-*/
 
 var progressBarElem = document.getElementById("IDProgressBar");
 var lastMessage = undefined;
@@ -296,11 +273,6 @@ function invertPageTheme(){
 }
 
 
-//document.getElementById("IDArcadeBTN").onclick = async (event) => {
-//    ARCADE.show();
-//}
-
-
 document.getElementById("IDInvertThemeBTN").onclick = (event) => {
     invertPageTheme();
 }
@@ -442,28 +414,6 @@ document.getElementById("IDAddBlocklyEditorBTN").onclick = (event) =>{
     console.log("PAGE: +BlocklyEditor");
     myLayout.addComponent('Editor', {'isBlockly':true}, 'Editor');
 }
-
-// Add bitmap builder panel to layout
-/*
-document.getElementById("IDAddBitmapBuilder").onclick = (event) =>{
-    if(recursiveFindTitle(myLayout.saveLayout().root.content, "Bitmap Builder: 8 x 8") == false){
-        console.log("PAGE: +BitmapBuilder");
-        myLayout.addComponent('Bitmap Builder', undefined, 'Bitmap Builder');
-    }else{
-        alert("Only one bitmap builder can be open");
-    }
-}
-
-// Add bitmap builder panel to layout
-document.getElementById("IDAddGrayscaleBuilder").onclick = (event) =>{
-    if(recursiveFindTitle(myLayout.saveLayout().root.content, "Grayscale Builder") == false){
-        console.log("PAGE: +GrayscaleBuilder");
-        myLayout.addComponent('Grayscale Builder', undefined, 'Grayscale Builder');
-    }else{
-        alert("Only one grayscale bitmap builder can be open");
-    }
-}
-*/
 
 // Add FS panel to layout
 document.getElementById("IDAddFS").onclick = (event) =>{
@@ -902,122 +852,12 @@ function registerEditor(_container, state){
     EDITORS[editor.ID] = editor;
 }
 
-/*
-// Setup Bitmap builder module
-var BITMAPPER = undefined;
-function registerBitmapBuilder(_container, state){
-    BITMAPPER = new BITMAP_BUILDER(_container, state);
-    BITMAPPER.onExport = (lines) => {
-        if(LAST_ACTIVE_EDITOR != undefined){
-            LAST_ACTIVE_EDITOR.insert(lines)
-        }
-    }
-    BITMAPPER.onImport = () => {
-        if(LAST_ACTIVE_EDITOR != undefined){
-            return LAST_ACTIVE_EDITOR.getSelectedText();
-        }
-    }
-}
-*/
-
-// Setup Grayscale builder module
-var GRAYSCALEMAPPER = undefined;
-function registerGrayscaleBuilder(_container, state){
-    GRAYSCALEMAPPER = new GRAYSCALE_BUILDER(_container, state);
-    GRAYSCALEMAPPER.onExport = (lines) => {
-        if(LAST_ACTIVE_EDITOR != undefined){
-            LAST_ACTIVE_EDITOR.insert(lines)
-        }
-    }
-    GRAYSCALEMAPPER.onImport = () => {
-        if(LAST_ACTIVE_EDITOR != undefined){
-            return LAST_ACTIVE_EDITOR.getSelectedText();
-        }
-    }
-}
-
-
-ARCADE.onDownload = async (thumbyURL, binaryFileContents) => {
-    await REPL.uploadFile(thumbyURL, binaryFileContents, false, true);
-}
-
-ARCADE.onDoneDownload = async () => {
-    await REPL.getOnBoardFSTree();
-} 
-
-
-
-ARCADE.onOpen = async (arcadeGameFileURLS, gameName) => {
-
-    // Uncheck all emulation boxes in all editors
-    for (const [id, editor] of Object.entries(EDITORS)) {
-        editor.NORMAL_EMU_CHECKBOX.checked = false;
-        editor.MAIN_EMU_CHECKBOX.checked = false;
-    }
-
-    // Hide the arcade pop-up
-    ARCADE.hide();
-
-    // Loop through each URL for this open
-    for(let i=0; i<arcadeGameFileURLS.length; i++){
-        // Make URL and path from root
-        var thumbyPathAndURL = "/Games/" + arcadeGameFileURLS[i].split('/').slice(6).join('/');
-
-        // Make sure no editors with this file path already exist
-        let alreadyOpen = false;
-        for (const [id, editor] of Object.entries(EDITORS)) {
-
-            if(editor.EDITOR_PATH == thumbyPathAndURL){
-                editor._container.parent.focus();
-                alert("This file is already open in Editor" + id + "! Please close it first");
-                alreadyOpen = true;
-            }
-        }
-
-        // If not already open, update percent and get file data
-        if(alreadyOpen == false){
-            window.setPercent((i/arcadeGameFileURLS.length) * 100, "Opening: " + thumbyPathAndURL);
-
-            // Find editor with smallest ID, focus it, then add new editor with file contents
-            var currentId = Infinity;
-            for (const [id, editor] of Object.entries(EDITORS)) {
-                if(id < currentId){
-                    currentId = id;
-                }
-            }
-            if(currentId != Infinity){
-                EDITORS[currentId]._container.parent.focus();
-            }
-
-            // Get the file contents
-            await fetch(arcadeGameFileURLS[i]).then(async (response) => {
-                // Pass the file contents to the new editor using the state
-                var state = {};
-                state.value = Array.from(new Uint8Array(await response.arrayBuffer()));
-                state.path = thumbyPathAndURL;
-
-                // When games are opened, check the boxes so emulation can happen right away
-                if(thumbyPathAndURL.indexOf(gameName + ".py") != -1){
-                    state.mainChecked = true;
-                }else{
-                    state.normalChecked = true;
-                }
-
-                myLayout.addComponent('Editor', state, 'Editor');
-            });
-        }
-    }
-}
-
 
 
 // Register Golden layout panels
-//myLayout.registerComponentConstructor("Bitmap Builder", registerBitmapBuilder);
 myLayout.registerComponentConstructor("Filesystem", registerFilesystem);
-//myLayout.registerComponentConstructor("Grayscale Builder", registerGrayscaleBuilder);
 myLayout.registerComponentConstructor("Editor", registerEditor);
 myLayout.registerComponentConstructor("Shell", registerShell);
-//myLayout.registerComponentConstructor("Emulator", registerEmulator);
 
 
 // Restore from previous layout if it exists, otherwise default
