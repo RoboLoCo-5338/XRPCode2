@@ -365,7 +365,7 @@ class EditorWrapper{
         this.FILE_SAVEAS_BUTTON.onclick = () => {this.onSaveAsToThumby()};
         listElem.appendChild(this.FILE_SAVEAS_BUTTON);
         this.FILE_DROPDOWN_UL.appendChild(listElem);
-
+/*
         listElem = document.createElement("li");
         listElem.classList = "uk-nav-divider";
         this.FILE_DROPDOWN_UL.appendChild(listElem);
@@ -423,7 +423,7 @@ class EditorWrapper{
         }
         listElem.appendChild(this.FILE_BLOCKLY_BUTTON);
         this.FILE_DROPDOWN_UL.appendChild(listElem);
-
+*/
         var isBinary = localStorage.getItem("isBinary" + this.ID);
         var isBlockly = localStorage.getItem("isBlockly" + this.ID) || this.state.isBlockly;
 
@@ -688,14 +688,14 @@ class EditorWrapper{
                 // FCG:TODO Blockly.serialization.workspaces.load(defaultCode, this.BLOCKLY_WORKSPACE);
 
                 // When adding default editors, give them a path but make each unique by looking at all other open editors
-                if(this.checkAllEditorsForPath("/Games/HelloBlockly/HelloBlockly.blocks") == true){
+                if(this.checkAllEditorsForPath("/HelloBlockly.blocks") == true){
                     var helloWorldNum = 1;
-                    while(this.checkAllEditorsForPath("/Games/HelloBlockly/HelloBlockly" + helloWorldNum + ".blocks")){
+                    while(this.checkAllEditorsForPath("/HelloBlockly" + helloWorldNum + ".blocks")){
                         helloWorldNum = helloWorldNum + 1;
                     }
-                    this.setPath("/Games/HelloBlockly/HelloBlockly" + helloWorldNum + ".blocks");
+                    this.setPath("/HelloBlockly" + helloWorldNum + ".blocks");
                 }else{
-                    this.setPath("/Games/HelloBlockly/HelloBlockly.blocks");
+                    this.setPath("/HelloBlockly.blocks");
                 }
                 this.setTitle("Editor" + this.ID + ' - *' + this.EDITOR_PATH);
             }
@@ -837,14 +837,14 @@ class EditorWrapper{
             this.ACE_EDITOR.setValue(this.defaultCode, 1);
 
             // When adding default editors, give them a path but make each unique by looking at all other open editors
-            if(this.checkAllEditorsForPath("/Games/HelloWorld/HelloWorld.py") == true){
+            if(this.checkAllEditorsForPath("/HelloWorld.py") == true){
                 var helloWorldNum = 1;
-                while(this.checkAllEditorsForPath("/Games/HelloWorld/HelloWorld" + helloWorldNum + ".py")){
+                while(this.checkAllEditorsForPath("/HelloWorld" + helloWorldNum + ".py")){
                     helloWorldNum = helloWorldNum + 1;
                 }
-                this.setPath("/Games/HelloWorld/HelloWorld" + helloWorldNum + ".py");
+                this.setPath("/HelloWorld" + helloWorldNum + ".py");
             }else{
-                this.setPath("/Games/HelloWorld/HelloWorld.py");
+                this.setPath("/HelloWorld.py");
             }
 
             this.setTitle("Editor" + this.ID + ' - ' + this.EDITOR_PATH);

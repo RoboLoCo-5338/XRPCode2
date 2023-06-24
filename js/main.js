@@ -272,7 +272,7 @@ function invertPageTheme(){
     setEditorThemeList()
 }
 
-
+/*
 document.getElementById("IDInvertThemeBTN").onclick = (event) => {
     invertPageTheme();
 }
@@ -386,11 +386,13 @@ document.getElementById("IDNewGameBTN").onclick = async (event) => {
 document.getElementById("IDDisconnectThumbyBTN").onclick = (event) =>{
     REPL.disconnect();
 }
+*/
 
 document.getElementById("IDStopBTN").onclick = (event) =>{
     REPL.stop();
 }
 
+/*
 // Reset page by clearing storage and refreshing
 document.getElementById("IDHardResetBTN").onclick = (event) =>{
     if(!confirm("Are you sure? This will erase and reset everything about the page (code, bitmap, etc)")){
@@ -405,19 +407,19 @@ document.getElementById("IDHardResetBTN").onclick = (event) =>{
     // Refresh the page
     location.reload(true);
 }
-
+*/
 // Add editor panel to layout
 document.getElementById("IDAddEditorBTN").onclick = (event) =>{
     console.log("PAGE: +Editor");
-    myLayout.addComponent('Editor', undefined, 'Editor');
+    myLayout.addComponent('Editor', {"value":undefined, choose:true}, 'Editor');
 }
-
+/*
 // Add blockly editor panel to layout
 document.getElementById("IDAddBlocklyEditorBTN").onclick = (event) =>{
     console.log("PAGE: +BlocklyEditor");
     myLayout.addComponent('Editor', {'isBlockly':true}, 'Editor');
 }
-
+*/
 // Add FS panel to layout
 document.getElementById("IDAddFS").onclick = (event) =>{
     if(recursiveFindTitle(myLayout.saveLayout().root.content, "Filesystem") == false){
@@ -468,7 +470,7 @@ function recursiveFindEditors(content, editors){
     }
 }
 
-
+/*
 // Does a soft reset that repositions all page elements
 document.getElementById("IDResetLayoutBTN").onclick = (event) =>{
     console.log("PAGE: reset layout");
@@ -525,7 +527,7 @@ document.getElementById("IDResetLayoutBTN").onclick = (event) =>{
     }
     location.reload();
 }
-
+*/
 
 // Setup REPL module
 var REPL = new ReplJS();

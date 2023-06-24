@@ -27,7 +27,7 @@ class FILESYSTEM{
         this.FS_FOOTER_DIV = document.createElement("div");
         this.FS_FOOTER_DIV.classList = "fs_footer uk-button-group";
         this.FS_ALL_DIV.appendChild(this.FS_FOOTER_DIV);
-
+/*
         this.FS_REFORMAT_BTN = document.createElement("button");
         this.FS_REFORMAT_BTN.classList.add("uk-button");
         this.FS_REFORMAT_BTN.classList.add("uk-button-secondary");
@@ -44,7 +44,7 @@ class FILESYSTEM{
         this.FS_UPDATE_LIBS_BTN.innerText = "UPDATE LIBRARIES";
         this.FS_UPDATE_LIBS_BTN.title = "Overwrites all default files in lib directory";
         this.FS_FOOTER_DIV.appendChild(this.FS_UPDATE_LIBS_BTN);
-
+*/
 
         this.FS_UPLOAD_BTN = document.createElement("button");
         this.FS_UPLOAD_BTN.classList = "uk-button uk-button-secondary uk-button-small uk-width-1-1";
@@ -160,15 +160,15 @@ class FILESYSTEM{
 
 
     disableButtons(){
-        this.FS_REFORMAT_BTN.disabled = true;
-        this.FS_UPDATE_LIBS_BTN.disabled = true;
+        //this.FS_REFORMAT_BTN.disabled = true;
+        //this.FS_UPDATE_LIBS_BTN.disabled = true;
         this.FS_UPLOAD_BTN.disabled = true;
     }
 
 
     enableButtons(){
-        this.FS_REFORMAT_BTN.disabled = false;
-        this.FS_UPDATE_LIBS_BTN.disabled = false;
+        //this.FS_REFORMAT_BTN.disabled = false;
+        //this.FS_UPDATE_LIBS_BTN.disabled = false;
         this.FS_UPLOAD_BTN.disabled = false;
     }
 

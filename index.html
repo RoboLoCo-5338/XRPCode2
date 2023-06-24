@@ -81,14 +81,16 @@
                         <div uk-dropdown="mode: click; boundary: ! .uk-button-group; boundary-align: true;"></div>
 
                         <button id="IDConnectThumbyBTN" title="Connect XRP to page manually, or automatically if connected before" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap" uk-icon="shrink">Connect XRP</button>
-                        <button id="IDDisconnectThumbyBTN" title="Disconnect XRP from page" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap" uk-icon="expand">Disconnect XRP</button>
-
+                        <!-- <button id="IDDisconnectThumbyBTN" title="Disconnect XRP from page" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap" uk-icon="expand">Disconnect XRP</button>
+                        -->
+                        <button title="Adds a code editor panel" id="IDAddEditorBTN" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap uk-text-left" uk-icon="file-edit">New File</button>
                         <button id="IDStopBTN" title="Stop XRP" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap">STOP &#x23f9</button>
 
 
                         <button id="IDUtilites" title="Common utilities for firmware, page layout, page state, theme, and widgets" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap" type="button">Utilities&#9662</button>
                         <div id="IDUtilitesDropdown" uk-dropdown="offset: 0; mode: click; delay-hide: 200">
                             <ul class="uk-nav uk-dropdown-nav">
+                              <!-- 
                                 <li><button id="IDNewGameBTN" title="Generates file structure needed for getting a game to show up on the Thumby start-up screen" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1">Make New Game</button></li>
                                 <li class="uk-nav-divider"></li>
 
@@ -104,6 +106,7 @@
                                 </div>
 
                                 <li class="uk-nav-divider"></li>
+                              -->
                                 <li><button title="Updates MicroPython" id="IDUpdateMicroPython" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1">Update MicroPython</button></li>
                                 <li><button title="Update the XRP Library" id="IDUpdateLibrary" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1">Update Library</button></li>
                                 <!-- <li><button title="Downloads firmware for reformatting Thumby, follow the below steps &#10; 1. Turn on Thumby &#10; 2. Hold down bottom-left or down d-pad button &#10; 3. Turn Thumby back off while holding button, keep holding for 3s &#10; 4. Turn Thumby back on and release button &#10; 5. Download firmware .uf2 file by clicking this button &#10; 6. Drag .uf2 file to Thumby RP2040 volume using a file explorer" onclick="window.open('https://github.com/TinyCircuits/TinyCircuits-Thumby-Code-Editor/raw/master/ThumbyFirmware.uf2');" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1">Download Firmware</button></li> -->
@@ -112,9 +115,10 @@
                                 <button title="Buttons for adding back any panel" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1">Windows&#9662</button>
                                 <div uk-dropdown="offset: 0; mode: click">
                                     <ul class="uk-nav uk-dropdown-nav">
-                                        <li><button title="Adds a code editor panel" id="IDAddEditorBTN" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap uk-text-left">+ Editor</button></li>
                                         <!-- <li class="uk-nav-divider"></li> -->
+                                        <!--
                                         <li><button title="Adds a visual code editor panel" id="IDAddBlocklyEditorBTN" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap uk-text-left">+ Blockly Editor</button></li>
+                                        -->
                                         <!-- <li class="uk-nav-divider"></li> -->
                                         <li><button title="Adds a filesystem panel (only one can be open at a time)" id="IDAddFS" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap uk-text-left">+ Filesystem</button></li>
                                         <!-- <li class="uk-nav-divider"></li> -->
@@ -128,9 +132,9 @@
 
                 <div class="header_link_space">
                     <div class="uk-button-group uk-width-1-1 uk-height-1-1">
-                        <button title="Opens link in new tab" onclick="window.open('https://thumby.us/Code-Editor/Get-Started/', '_blank');" class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link">Tutorial</button>
-                        <button title="Opens link in new tab" onclick="window.open('https://thumby.us/API/Get-Started/', '_blank');" class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link">XRP API</button>
-
+                        <button title="Opens link in new tab" onclick="window.open('https://introduction-to-robotics.readthedocs.io/en/latest/index.html', '_blank');" class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link">Tutorial</button>
+                        <button title="Opens link in new tab" onclick="window.open('https://introduction-to-robotics.readthedocs.io/en/latest/index.html', '_blank');" class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link">XRP API</button>
+                      <!--
                         <button class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link" type="button">Other Links&#9662</button>
                         <div uk-dropdown="offset: 0; delay-hide: 200">
                             <ul class="uk-nav uk-dropdown-nav">
@@ -142,6 +146,7 @@
                                 <li><button title="Opens link in new tab" onclick="window.open('https://xrp.wpi.edu', '_blank');" class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link" style="height:40px">Contact Us</button></li>
                             </ul>
                         </div>
+                        -->
                         <button class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1">Version: 0.9</button>
 
                     </div>
