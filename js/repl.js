@@ -23,6 +23,9 @@ class ReplJS{
         // Used to stop interaction with the RP2040
         this.BUSY = false;
 
+        //They pressed the STOP button while a program was executing
+        this.STOP = false;
+
         // ### CALLBACKS ###
         // Functions defined outside this module but used inside
         this.onData = undefined;
@@ -405,6 +408,15 @@ class ReplJS{
         this.startReaduntil("Raspberry Pi Pico W with RP2040");
         await this.writeToDevice("\r" + this.CTRL_CMD_NORMALMODE);
         await this.haltUntilRead(3);
+
+        // if they pushed the stop button while lines was executing
+        if(this.STOP) { 
+            var cmd = "import XRPLib.resetbot\n"
+            await this.writeUtilityCmdRaw(cmd, true, 1);
+            await this.getToNormal();
+            this.STOP = false
+        }
+
         this.BUSY = false;
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: out of executeLines");
 
@@ -1016,6 +1028,20 @@ class ReplJS{
         }
     }
 
+    async stop(){
+        if(this.DEBUG_CONSOLE_ON) console.log("fcg: in stop");
+        
+        if(this.BUSY){
+            await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT + this.CTRL_CMD_KINTERRUPT);  // ctrl-C twice: interrupt any running program
+            this.STOP = true;
+            return
+        }
+
+        // otherwise just invoke resetbot to stop all motors
+        var cmd = "import XRPLib.resetbot\n"
+        await this.writeUtilityCmdRaw(cmd, true, 1);
+        await this.getToNormal(3);
+    }
 
     async disconnect(){
         if(this.PORT != undefined){

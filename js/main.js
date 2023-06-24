@@ -387,6 +387,9 @@ document.getElementById("IDDisconnectThumbyBTN").onclick = (event) =>{
     REPL.disconnect();
 }
 
+document.getElementById("IDStopBTN").onclick = (event) =>{
+    REPL.stop();
+}
 
 // Reset page by clearing storage and refreshing
 document.getElementById("IDHardResetBTN").onclick = (event) =>{
@@ -846,9 +849,7 @@ function registerEditor(_container, state){
     editor.onFastExecute = async (lines) => {
         REPL.executeLines(lines);
     }
-    //editor.onEmulate = async (lines) => {
-    //    await EMU.startEmulator(lines);
-    //}
+   
     EDITORS[editor.ID] = editor;
 }
 

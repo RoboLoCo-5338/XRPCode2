@@ -111,6 +111,10 @@ class EditorWrapper{
             }
         });
 
+        if(state["type"] == "viewer"){
+            this.ACE_EDITOR.setReadOnly(true);
+            this.setTitle("RO " + state["name"] + ".PY");
+        }
         // Used for setting the active editor outside this module, typically for bit map builder
         this.onFocus = undefined;
         this.onSaveToThumby = undefined;
@@ -602,17 +606,20 @@ class EditorWrapper{
 
         this.OPEN_PYTHON = document.createElement("button");
         this.OPEN_PYTHON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
-        this.OPEN_PYTHON.textContent = "Open Python";
+        this.OPEN_PYTHON.textContent = "View Python";
         this.OPEN_PYTHON.title = "Open a new editor with the Python from this code";
         this.OPEN_PYTHON.onclick = (ev) => {
-            this._container.layoutManager.addComponent('Editor', {'value':this.getValue()}, 'Editor');
-            alert('Do not edit the Python code: changes made in the exported Python will not update the blocks.');
+            let nm = this.EDITOR_TITLE.split('/');
+            let nm1 = nm[nm.length - 1];
+            let nm2 = nm1.split('.')[0];
+            this._container.layoutManager.addComponent('Editor', {'value':this.getValue(), "type":"viewer", "name":nm2}, 'Editor');
+            //alert('Do not edit the Python code: changes made in the exported Python will not update the blocks.');
         };
         this.HEADER_TOOLBAR_DIV.appendChild(this.OPEN_PYTHON);
 
         this.FAST_EXECUTE_BUTTON = document.createElement("button");
         this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
-        this.FAST_EXECUTE_BUTTON.textContent = "\u21bb Fast Execute";
+        this.FAST_EXECUTE_BUTTON.textContent = "Execute Code \u23f5";
         this.FAST_EXECUTE_BUTTON.title = "Execute editor contents at root '/' of Thumby";
         this.FAST_EXECUTE_BUTTON.onclick = () => {this.onFastExecute(this.getValue())};
         this.HEADER_TOOLBAR_DIV.appendChild(this.FAST_EXECUTE_BUTTON);
@@ -764,7 +771,7 @@ class EditorWrapper{
         
         this.FAST_EXECUTE_BUTTON = document.createElement("button");
         this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
-        this.FAST_EXECUTE_BUTTON.textContent = "\u21bb Fast Execute";
+        this.FAST_EXECUTE_BUTTON.textContent = "Execute Code \u23f5";
         this.FAST_EXECUTE_BUTTON.title = "Execute editor contents at root '/' of Thumby";
         this.FAST_EXECUTE_BUTTON.onclick = () => {this.onFastExecute(this.getValue())};
         this.HEADER_TOOLBAR_DIV.appendChild(this.FAST_EXECUTE_BUTTON);
@@ -1264,11 +1271,9 @@ class EditorWrapper{
     // Expose common Ace editor operation
     getValue(){
         if(this.isBlockly){
-            return ("#### !!!! BLOCKLY EXPORT !!!! ####\n" +
-              this.blockly_fix_for_micropython(
-                  Blockly.Python.workspaceToCode(this.BLOCKLY_WORKSPACE)) +
-              "\n#### !!!! BLOCKLY EXPORT !!!! ####"
-            );
+            return (this.blockly_fix_for_micropython(
+                  Blockly.Python.workspaceToCode(this.BLOCKLY_WORKSPACE))
+                   );
         }else{
             return this.ACE_EDITOR.getValue();
         }
