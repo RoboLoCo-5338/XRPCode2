@@ -113,7 +113,7 @@ class FILESYSTEM{
         this.FS_ROOT = new TreeNode("\\");                               // Create the root-node
         this.FS_TREE = new TreeView(this.FS_ROOT, this.FS_AREA_DIV);     // Create the tree
         this.FS_TREE.reload();                                           // Always use this when you change the TreeView or any of its nodes
-
+        //this.FS_TREE.collapseAllNodes();
 
         this.clearToWaiting();
 
@@ -270,7 +270,7 @@ class FILESYSTEM{
             if(!isNaN(nodeKey)){                                                                    // Check if number (false means number inside string)
                 var fileOrDir = Object.keys(fsNode[nodeKey])[0];                                    // Get string key that's either FILE or DIR
                 if(fileOrDir == "D"){                                                               // Found dir, add name to tree and make recursive call
-                    var dirTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir]);                     // Make FS tree node for dir
+                    var dirTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir],{expanded:false});                     // Make FS tree node for dir
 
                     // Assign event so that left clicked nodes can be opened in webpage
                     dirTreeNode.on("click", (event, node) => {
@@ -356,7 +356,7 @@ class FILESYSTEM{
 
                     treeNode.addChild(newFileTreeNode);                                         // Add file name as child node
                 }else if(fileOrDir == "D"){                                                     // Found dir, add name to tree and make recursive call
-                    var dirTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir]);                 // Make FS tree node for dir
+                    var dirTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir],{expanded:false});                 // Make FS tree node for dir
 
                     // Assign event so that right clicked nodes bring up a menu
                     // to rename, copy, cut, paste, open, or delete file on-board

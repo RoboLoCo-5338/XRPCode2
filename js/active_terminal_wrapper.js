@@ -65,7 +65,7 @@ class ActiveTerminal{
         // Functions defined outside this module but used inside
         this.onType = undefined;
 
-        this.writeln("OPENStem XRP Code Editor");
+        this.writeln("XRP Bot Development Enviroment");
         this.writeln("Waiting for connection... (click 'Connect XRP')");
 
         this.AUTO_RESIZING = true;
