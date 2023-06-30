@@ -926,12 +926,12 @@ class ReplJS{
             this.startReaduntil("OK");
             await this.writeToDevice(cmd + "\x04");
         }
-
+        var writable;
         window.setPercent(3);
         try{
             let dirHandler = await window.showDirectoryPicker({mode: "readwrite"});
             let fileHandle = await dirHandler.getFileHandle("firmware.uf2", {create: true});
-            let writable = await fileHandle.createWritable();
+            writable = await fileHandle.createWritable();
         }catch(err){
             console.log(err);
             alert("error updating MicroPython")
@@ -939,7 +939,7 @@ class ReplJS{
         }
         window.setPercent(35);
 
-        let data = await (await fetch("micropython/rp2-pico-w-20230426-v1.20.0.uf2")).arrayBuffer();
+        let data = await (await fetch("micropython/firmware.uf2")).arrayBuffer();
         window.setPercent(85);
 
         await writable.write(data);
@@ -957,7 +957,7 @@ class ReplJS{
         // do a softreset, but time out if no response
         this.startReaduntil("MPY: soft reboot");
         await this.writeToDevice(this.CTRL_CMD_SOFTRESET);
-        let result = await this.haltUntilRead(3, 50);
+        let result = await this.haltUntilRead(3, 50);  //FCG - is this the right amount of delay to always work?
         if(result == undefined){
             this.HAS_MICROPYTHON = false;
             return false;
