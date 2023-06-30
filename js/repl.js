@@ -20,6 +20,8 @@ class ReplJS{
         this.COLLECT_RAW_DATA = false;
         this.COLLECTED_RAW_DATA = [];
 
+        this.HAS_MICROPYTHON = false;
+
         // Used to stop interaction with the RP2040
         this.BUSY = false;
 
@@ -34,7 +36,7 @@ class ReplJS{
         this.onFSData = undefined;
         this.doPrintSeparator = undefined;
         this.forceTermNewline = undefined;
-        this.onShowUpdate = undefined;
+        //this.onShowUpdate = undefined;
         this.showMicropythonUpdate = undefined;
 
         // ### MicroPython Control Commands ###
@@ -149,11 +151,12 @@ class ReplJS{
     // Providing an offset will skip subsequent lines after the
     // found line set by startReaduntil.
     // Loops forever if never finds line set by startReaduntil()
-    async haltUntilRead(omitOffset = 0){
+    async haltUntilRead(omitOffset = 0, waitTime = -1){
         var waitOmitOffset = 0;
+        var numTimes = waitTime;
 
         // Re-evaluate collected data for readUntil line every 85ms
-        while (this.DISCONNECT == false) {
+        while (this.DISCONNECT == false && numTimes != 0) {
             var tempLines = this.COLLECTED_DATA.split('\r\n');
 
             for(var i=0; i<tempLines.length; i++){
@@ -180,6 +183,9 @@ class ReplJS{
                 }
             }
             await new Promise(resolve => setTimeout(resolve, 85));
+            if (waitTime != -1){
+                numTimes--;
+            }
         }
     }
 
@@ -739,16 +745,19 @@ class ReplJS{
         var cmd =   "import os\n" +
                     "import sys\n" +
 
+                    "print(sys.implementation[1])\n" +                    
                     "try:\n" +
-                    "    f = open(\"/lib/thumby.py\", \"r\")\n" +
+                    "    f = open(\"/lib/XRPLib/board.py\", \"r\")\n" +
                     "    while True:\n" +
                     "        line = f.readline()\n" +
+                    "        if len(line) == 0:\n" +
+                    "            print(\"ERROR EOF\")\n" +
+                    "            break\n" +                                                            
                     "        if \"__version__ = \" in line:\n" +
                     "            print(line.split('\\\'')[1])\n" +
-                    "            print(sys.implementation[1])\n" +
                     "            break\n" +
                     "except:\n" +
-                    "    print(\"ERROR\")\n";
+                    "    print(\"ERROR EX\")\n";
 
         var hiddenLines = await this.writeUtilityCmdRaw(cmd, true, 1);
 
@@ -860,24 +869,45 @@ class ReplJS{
 
 
     async checkIfNeedUpdate(){
-        return //FCG this is a good rutine for us to do
-        let info = await this.getVersionInfo();
-
-        if(info[0] < window.latestThumbyLibraryVersion){
-            // Need to update Micropython libraries, change color of FS update button
-            this.onShowUpdate();
+        if(!this.HAS_MICROPYTHON){
+             this.showMicropythonUpdate();
+             return;
         }
 
-        let major = parseInt(info[1].split(", ")[0].substring(1));
-        let minor = parseInt(info[1].split(", ")[1]);
-        let micro = parseInt(info[1].split(", ")[2].substring(0, 1));
+        let info = await this.getVersionInfo();
+
+        let major = parseInt(info[0].split(", ")[0].substring(1));
+        let minor = parseInt(info[0].split(", ")[1]);
+        let micro = parseInt(info[0].split(", ")[2].substring(0, 1));
 
         if(major < window.window.latestMicroPythonVersion[0] || minor < window.window.latestMicroPythonVersion[1] || micro < window.window.latestMicroPythonVersion[2]){
             // Need to update MicroPython
-            this.showMicropythonUpdate();
+            //alert("Need to update Micropython")
+            await this.showMicropythonUpdate();
+            return;
+        }
+
+        if(info[1] != window.latestLibraryVersion){
+            // Need to update the XRP libraries, change color of FS update button
+            // Do we delete the XRPLib directory before putting in the new library?
+            await this.updateLibrary();
+            //this.onShowUpdate();
         }
     }
 
+    async updateLibrary(){
+        alert("need to update the XRPLib - Needd a yes or no on this")
+        window.setPercent(1, "Updating XRPLib...");
+        let percent_per = 99 / window.libraryList.length;
+        let cur_percent = 1 + percent_per;
+
+        for(let i=0; i<window.libraryList.length; i++){
+            window.setPercent(cur_percent);   
+            await this.uploadFile("lib/XRPLib/" + window.libraryList[i], await window.downloadFile("lib/XRPLib/" + window.libraryList[i]), false);
+            cur_percent += percent_per;
+        }
+        window.resetPercentDelay();
+    }
 
     async updateMicroPython(){
         if(this.BUSY == true){
@@ -887,59 +917,83 @@ class ReplJS{
 
         window.setPercent(1, "Updating MicroPython...");
 
-        let cmd = "import machine\n" +
-                  "machine.bootloader()\n";
-        
-        await this.getToRaw();
+        if(this.HAS_MICROPYTHON){
+            let cmd = "import machine\n" +
+                    "machine.bootloader()\n";
+            
+            await this.getToRaw();
 
-        this.startReaduntil("OK");
-        await this.writeToDevice(cmd + "\x04");
+            this.startReaduntil("OK");
+            await this.writeToDevice(cmd + "\x04");
+        }
 
         window.setPercent(3);
-
-        let dirHandler = await window.showDirectoryPicker({mode: "readwrite"});
-        let fileHandle = await dirHandler.getFileHandle("firmware.uf2", {create: true});
-        let writable = await fileHandle.createWritable();
+        try{
+            let dirHandler = await window.showDirectoryPicker({mode: "readwrite"});
+            let fileHandle = await dirHandler.getFileHandle("firmware.uf2", {create: true});
+            let writable = await fileHandle.createWritable();
+        }catch(err){
+            console.log(err);
+            alert("error updating MicroPython")
+            return;                                                                     // If the user doesn't allow tab to save to opened file, don't edit file
+        }
         window.setPercent(35);
 
-        let data = await (await fetch("rp2-pico-20220618-v1.19.1.uf2")).arrayBuffer();
+        let data = await (await fetch("micropython/rp2-pico-w-20230426-v1.20.0.uf2")).arrayBuffer();
         window.setPercent(85);
 
         await writable.write(data);
         window.resetPercentDelay();
+        this.HAS_MICROPYTHON = true;
 
         await writable.close();
-
-        setTimeout(() => {
-            alert("You may need to click 'Connect XRP' to select the updated device");
-        }, 1000);
 
         this.BUSY = false;
     }
 
-
+    async checkIfMP(){
+        //throw a couple of ctrl-Cs at it in case a program is running
+        await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT + this.CTRL_CMD_KINTERRUPT);  // ctrl-C twice: interrupt any running program
+        // do a softreset, but time out if no response
+        this.startReaduntil("MPY: soft reboot");
+        await this.writeToDevice(this.CTRL_CMD_SOFTRESET);
+        let result = await this.haltUntilRead(3, 50);
+        if(result == undefined){
+            this.HAS_MICROPYTHON = false;
+            return false;
+        }
+        this.HAS_MICROPYTHON = true;
+        return true;
+    }
     async openPort(){
         if(this.PORT != undefined){
             this.DISCONNECT = false;
             try{
                 await this.PORT.open({ baudRate: 115200 });
                 this.WRITER = await this.PORT.writable.getWriter();     // Make a writer since this is the first time port opened
-                this.readLoop();                                        // Start read loop
+                this.readLoop();                // Start read loop
+                if(await this.checkIfMP()){
+                    this.onConnect();
+                    this.BUSY = false;
+                    await this.getToNormal();
+                    await this.getOnBoardFSTree();
+                } 
 
-                this.onConnect();
-                await this.getToNormal();
-                this.BUSY = false;  // Was true from connect()
-                await this.getOnBoardFSTree();
+                this.BUSY = false;
                 await this.checkIfNeedUpdate();
-
+                                                 
             }catch(err){
                 if(err.name == "InvalidStateError"){
                     if(this.DEBUG_CONSOLE_ON) console.log("%cPort already open, everything good to go!", "color: lime");
+                    if (await this.checkIfMP()){
+                        this.onConnect();
+                        this.BUSY = false;
+                        await this.getToNormal();
+                    
+                        await this.getOnBoardFSTree();
+                    }
 
-                    this.onConnect();
-                    await this.getToNormal();
-                    this.BUSY = false;  // Was true from connect()
-                    await this.getOnBoardFSTree();
+                    this.BUSY = false; 
                     await this.checkIfNeedUpdate();
                     
                 }else if(err.name == "NetworkError"){

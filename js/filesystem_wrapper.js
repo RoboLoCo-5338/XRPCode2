@@ -163,6 +163,7 @@ class FILESYSTEM{
         //this.FS_REFORMAT_BTN.disabled = true;
         //this.FS_UPDATE_LIBS_BTN.disabled = true;
         this.FS_UPLOAD_BTN.disabled = true;
+        this.FS_REFRESH_BTN.disabled = true;
     }
 
 
@@ -170,6 +171,7 @@ class FILESYSTEM{
         //this.FS_REFORMAT_BTN.disabled = false;
         //this.FS_UPDATE_LIBS_BTN.disabled = false;
         this.FS_UPLOAD_BTN.disabled = false;
+        this.FS_REFRESH_BTN.disabled = false;
     }
 
 
@@ -209,7 +211,7 @@ class FILESYSTEM{
         }
     }
 
-
+/*
     removeUpdate(){
         this.FS_UPDATE_LIBS_BTN.classList = "uk-button uk-button-primary uk-button-small uk-width-1-1";
     }
@@ -218,7 +220,7 @@ class FILESYSTEM{
     showUpdate(){
         this.FS_UPDATE_LIBS_BTN.classList = "uk-button uk-button-danger uk-button-small uk-width-1-1";
     }
-
+*/
 
     async downloadSelected(selectedNode, isDir, fullPath){
         // If directory, find all child nodes and download them, otherwise download single file

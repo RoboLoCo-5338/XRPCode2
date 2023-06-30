@@ -52,11 +52,14 @@ var onExportToEditor = (bytes) => {
 // Update version string in index.html and play.html as well to match
 const showChangelogVersion = 23;
 
-// This should match what is in /ThumbyGames/lib/thumby.py as '__version__'
-window.latestThumbyLibraryVersion = 1.9;
+// This should match what is in /lib/XRPLib/board.py as '__version__'
+window.latestLibraryVersion = 0.8;
 
 // This should match what is on the actual Thumby firmware found through import sys and sys.implementation
-window.latestMicroPythonVersion = [1, 19, 1];
+window.latestMicroPythonVersion = [1, 20, 0];
+
+//list of the library files to update
+window.libraryList = ["board.py","button.py","defaults.py","drivetrain.py","encoded_motor.py","encoder.py","imu.py","led.py","motor.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","webserver.py"]
 
 if(localStorage.getItem(showChangelogVersion) == null){
     console.log("Updates to IDE! Showing changelog...");    // Show message in console
@@ -715,7 +718,7 @@ function registerShell(_container, state){
         ATERM.writeln('\n\r\x1b[1;31m' + "Disconnected" + '\x1b[1;0m');
         ATERM.writeln("Waiting for connection... (click 'Connect XRP')");
         FS.clearToWaiting();
-        FS.removeUpdate();
+        //FS.removeUpdate();
 
         FS.disableButtons();
     }
@@ -735,8 +738,12 @@ function registerShell(_container, state){
     REPL.forceTermNewline = () => {
         ATERM.write("\r\n");
     }
-    REPL.onShowUpdate = () => {FS.showUpdate()};
-    REPL.showMicropythonUpdate = () => {
+    //REPL.onShowUpdate = () => {FS.showUpdate()};
+    REPL.showMicropythonUpdate = async () => {
+        if(!REPL.HAS_MICROPYTHON){
+            alert("do bootsel thing");
+        }
+
         document.getElementById("updateMPOverlay").style.display = "block";
         document.getElementById("updateMP").style.display = "block";
         document.getElementById("updateMPYes").onclick = (event) => {
@@ -746,7 +753,6 @@ function registerShell(_container, state){
             document.getElementById("updateMPOk").onclick = (event) => {
                 document.getElementById("updateMPOverlay").style.display = "none";
                 document.getElementById("updateMPExtraInfo").style.display = "none";
-
                 REPL.updateMicroPython();
             }
         }

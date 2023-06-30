@@ -609,10 +609,9 @@ class EditorWrapper{
         this.OPEN_PYTHON.textContent = "View Python";
         this.OPEN_PYTHON.title = "Open a new editor with the Python from this code";
         this.OPEN_PYTHON.onclick = (ev) => {
-            let nm = this.EDITOR_TITLE.split('/');
-            let nm1 = nm[nm.length - 1];
-            let nm2 = nm1.split('.')[0];
-            this._container.layoutManager.addComponent('Editor', {'value':this.getValue(), "type":"viewer", "name":nm2}, 'Editor');
+            let nm = this.EDITOR_TITLE.split('/').at(-1);
+            let nm1 = nm.split('.')[0];
+            this._container.layoutManager.addComponent('Editor', {'value':this.getValue(), "type":"viewer", "name":nm1}, 'Editor');
             //alert('Do not edit the Python code: changes made in the exported Python will not update the blocks.');
         };
         this.HEADER_TOOLBAR_DIV.appendChild(this.OPEN_PYTHON);
@@ -1221,10 +1220,10 @@ class EditorWrapper{
 
         var fileHandle = undefined;
         try{
-            if(this.CURRENT_FILE_NAME  == ""){
+            if(this.EDITOR_PATH  == ""){
                 this.FILE_OPTIONS.suggestedName = "NewFile.py";
             }else{
-                this.FILE_OPTIONS.suggestedName = this.CURRENT_FILE_NAME;
+                this.FILE_OPTIONS.suggestedName = this.EDITOR_PATH.split('/').at(-1);
             }
             fileHandle = await window.showSaveFilePicker(this.FILE_OPTIONS);            // Let the user pick location to save with dialog
         }catch(err){                                                                    // If the user aborts, stop function execution, leave unsaved
