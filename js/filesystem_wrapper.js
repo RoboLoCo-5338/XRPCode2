@@ -50,7 +50,7 @@ class FILESYSTEM{
         this.FS_UPLOAD_BTN.classList = "uk-button uk-button-secondary uk-button-small uk-width-1-1";
         this.FS_UPLOAD_BTN.onclick = () => {this.onUploadFiles()};
         this.FS_UPLOAD_BTN.innerText = "UPLOAD FILES";
-        this.FS_UPLOAD_BTN.title = "Uploads files to Thumby (use this for text and binary files)";
+        this.FS_UPLOAD_BTN.title = "Uploads files to the XRP";
         this.FS_FOOTER_DIV.appendChild(this.FS_UPLOAD_BTN);
 
 
@@ -101,8 +101,8 @@ class FILESYSTEM{
         this.FS_DROPDOWN_DOWNLOAD_BTN = document.createElement("button");
         this.FS_DROPDOWN_DOWNLOAD_BTN.classList = "uk-button uk-button-secondary uk-width-1-1";
         this.FS_DROPDOWN_DOWNLOAD_BTN.onclick = () => {this.downloadSelected(this.FS_TREE.getSelectedNodes()[0], this.getSelectedNodeFileOrDir(), this.getSelectedNodePath())};
-        this.FS_DROPDOWN_DOWNLOAD_BTN.innerText = "Download";
-        this.FS_DROPDOWN_DOWNLOAD_BTN.title = "Downloads selected items to computer (all files under directory will be downloaded)";
+        this.FS_DROPDOWN_DOWNLOAD_BTN.innerText = "Export to PC";
+        this.FS_DROPDOWN_DOWNLOAD_BTN.title = "Exports the selected items to your computer (all files under directory will be exported)";
         li.appendChild(this.FS_DROPDOWN_DOWNLOAD_BTN);
         this.FS_DROPDOWN_UL.appendChild(li);
 

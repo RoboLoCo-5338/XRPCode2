@@ -591,6 +591,7 @@ class EditorWrapper{
         if(lastEditorSavedToThumby != null){
             this.SAVED_TO_THUMBY = (lastEditorSavedToThumby === 'true');
         }
+        this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
     }
 
     turnIntoBlocklyViewer(data){
@@ -660,6 +661,7 @@ class EditorWrapper{
                     }
                     this.SAVED_TO_THUMBY = false;
                     localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
+                    this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
                 }
             });
             //blocklyRegister(this.BLOCKLY_WORKSPACE);
@@ -819,6 +821,7 @@ class EditorWrapper{
                     }
                     this.SAVED_TO_THUMBY = false;
                     localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
+                    this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
                 }
             }else{
                 this.INSERT_RESTORE = true;
@@ -1014,7 +1017,11 @@ class EditorWrapper{
 
 
     setTitle(title){
-        this._container.setTitle(title.split('/').at(-1));
+        var t = title.split('/').at(-1);
+        if(!this.SAVED_TO_THUMBY){
+            t = t + " \u2022";
+        }
+        this._container.setTitle(t);
 
         // Make the tab title show the full path
         if(this._container._tab != undefined){

@@ -60,6 +60,7 @@ window.latestMicroPythonVersion = [1, 20, 0];
 
 //list of the library files to update
 window.libraryList = ["board.py","button.py","defaults.py","drivetrain.py","encoded_motor.py","encoder.py","imu.py","led.py","motor.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","webserver.py"]
+//[TODO] Add the example list
 
 if(localStorage.getItem(showChangelogVersion) == null){
     console.log("Updates to IDE! Showing changelog...");    // Show message in console
@@ -107,7 +108,8 @@ window.resetPercentDelay = () => {
     }, 100);
 }
 
-
+//[TODO] updte the default config
+//[TODO] Filesystem and shell should not have close options
 var defaultConfig = {
     header:{
         popout: false,
@@ -143,7 +145,7 @@ var defaultConfig = {
                 content:[{
                     type: 'component',
                     componentName: 'Filesystem',
-                    componentState: { label: 'Filesystem' },
+                    componentState: { label: 'XRP Files' },
                     title: 'Filesystem',
                     id: "aFilesystem"
                 }]
@@ -807,7 +809,7 @@ function registerEditor(_container, state){
             }
         }else{
             console.log('Saved');
-            editor.SAVED_TO_THUMBY = true;
+            editor.setSaved();
             editor.updateTitleSaved();
 
             if(editor.isEditorBinary()){
@@ -855,6 +857,8 @@ function registerEditor(_container, state){
         }
     }
     editor.onFastExecute = async (lines) => {
+        //[TODO] save the file
+        //[TODO] update the main file
         REPL.executeLines(lines);
     }
    
