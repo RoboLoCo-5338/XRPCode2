@@ -747,7 +747,7 @@ class ReplJS{
 
                     "print(sys.implementation[1])\n" +                    
                     "try:\n" +
-                    "    f = open(\"/lib/XRPLib/board.py\", \"r\")\n" +
+                    "    f = open(\"/lib/XRPLib/version.py\", \"r\")\n" +
                     "    while True:\n" +
                     "        line = f.readline()\n" +
                     "        if len(line) == 0:\n" +

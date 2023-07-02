@@ -52,14 +52,14 @@ var onExportToEditor = (bytes) => {
 // Update version string in index.html and play.html as well to match
 const showChangelogVersion = 23;
 
-// This should match what is in /lib/XRPLib/board.py as '__version__'
+// This should match what is in /lib/XRPLib/version.py as '__version__'
 window.latestLibraryVersion = 0.8;
 
 // This should match what is on the actual Thumby firmware found through import sys and sys.implementation
 window.latestMicroPythonVersion = [1, 20, 0];
 
 //list of the library files to update
-window.libraryList = ["board.py","button.py","defaults.py","drivetrain.py","encoded_motor.py","encoder.py","imu.py","led.py","motor.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","webserver.py"]
+window.libraryList = ["board.py","button.py","defaults.py","drivetrain.py","encoded_motor.py","encoder.py","imu.py","led.py","motor.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","version.py","webserver.py"]
 //[TODO] Add the example list
 
 if(localStorage.getItem(showChangelogVersion) == null){
