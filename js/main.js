@@ -741,7 +741,7 @@ function registerShell(_container, state){
     //REPL.onShowUpdate = () => {FS.showUpdate()};
     REPL.showMicropythonUpdate = async () => {
         if(!REPL.HAS_MICROPYTHON){
-            alert("do bootsel thing");
+            alert("press the reset button while holding down the BOOTSEL button. Then click OK to continue");
         }
 
         document.getElementById("updateMPOverlay").style.display = "block";
