@@ -785,6 +785,13 @@ class ReplJS{
         window.resetPercentDelay();
     }
 
+    async updateMainFile(fileToEx){
+        var value = "with open('"+fileToEx+"', mode='r') as exfile:\n" +
+                    "    code = exfile.read()\n"+
+                    "exec(code)";
+        await this.uploadFile("//main.py", value, true, false);
+        window.resetPercentDelay();
+    }
 
     async uploadFiles(path, fileHandles){
         if(this.BUSY == true){

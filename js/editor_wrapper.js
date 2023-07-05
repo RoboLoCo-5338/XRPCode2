@@ -659,8 +659,8 @@ class EditorWrapper{
                     }else{
                         this.setTitle("*Editor" + this.ID);
                     }
-                    this.SAVED_TO_THUMBY = false;
-                    localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
+                    //this.SAVED_TO_THUMBY = false;
+                    //localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
                     this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
                 }
             });
@@ -960,7 +960,7 @@ class EditorWrapper{
         localStorage.setItem("EditorAutocompleteState", this.AUTOCOMPLETE_STATE);
 
         // Apply to all editors, even this one
-        //[TODO] While this iterates through all the editors it does not setup the current editor correctly so the set state only does the current editor
+        //[TODO] This should proably only apply to this editor since that is the way fonts work
         for (const [id, editor] of Object.entries(this.EDITORS)) {
             if(!editor.isBlockly) {
                 editor.setAutocompleteState(this.AUTOCOMPLETE_STATE);

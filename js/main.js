@@ -787,7 +787,7 @@ function registerEditor(_container, state){
             alert("No XRP connected, did not save to device");
             return;
         }
-
+        //[TODO] handle saving an untiled file.
         if(editor.EDITOR_PATH == undefined || editor.EDITOR_PATH == ""){
             console.log('Pick a folder');
             var path = await DIR.getPathFromUser(editor._container.element);
@@ -816,7 +816,7 @@ function registerEditor(_container, state){
                 editor.getDBFile(async (fileData) => {
                     var busy = await REPL.uploadFile(editor.EDITOR_PATH, fileData, true, false);
                     if(busy != true){
-                        REPL.getOnBoardFSTree();
+                        await REPL.getOnBoardFSTree();
                     }
                 })
             }else if(editor.isBlockly){
@@ -827,7 +827,7 @@ function registerEditor(_container, state){
                       editor.EDITOR_PATH.replace(/\.blocks$/, ".py"), editor.getValue(), true, false);
                 }
                 if(busy != true){
-                    REPL.getOnBoardFSTree();
+                    await REPL.getOnBoardFSTree();
                 }
             }else{
                 if(editor.getValue().indexOf("#### !!!! BLOCKLY EXPORT !!!! ####") != -1){
@@ -841,7 +841,7 @@ function registerEditor(_container, state){
                 }
                 var busy = await REPL.uploadFile(editor.EDITOR_PATH, editor.getValue(), true, false);
                 if(busy != true){
-                    REPL.getOnBoardFSTree();
+                    await REPL.getOnBoardFSTree();
                 }
             }
         }
@@ -857,8 +857,13 @@ function registerEditor(_container, state){
         }
     }
     editor.onFastExecute = async (lines) => {
-        //[TODO] save ALL the files
+        for (const [id, editor] of Object.entries(EDITORS)) {
+            if(!editor.SAVED_TO_THUMBY) {
+                await editor.onSaveToThumby();
+            }
+        }
         //[TODO] update the main file
+        await REPL.updateMainFile(editor.EDITOR_PATH);
         REPL.executeLines(lines);
     }
    
