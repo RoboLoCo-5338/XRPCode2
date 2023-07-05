@@ -75,7 +75,7 @@ class FILESYSTEM{
         this.FS_DROPDOWN_DELETE_BTN.classList = "uk-button uk-button-secondary uk-width-1-1";
         this.FS_DROPDOWN_DELETE_BTN.onclick = () => {this.onDelete(this.getSelectedNodePath(true)); this.FS_DROPDOWN_DIV.style.display = "none";};
         this.FS_DROPDOWN_DELETE_BTN.innerText = "Delete";
-        this.FS_DROPDOWN_DELETE_BTN.title = "Deletes selected file or directory on Thumby";
+        this.FS_DROPDOWN_DELETE_BTN.title = "Deletes selected file or directory on XRP";
         li.appendChild(this.FS_DROPDOWN_DELETE_BTN);
         this.FS_DROPDOWN_UL.appendChild(li);
 
@@ -84,7 +84,7 @@ class FILESYSTEM{
         this.FS_DROPDOWN_RENAME_BTN.classList = "uk-button uk-button-secondary uk-width-1-1";
         this.FS_DROPDOWN_RENAME_BTN.onclick = () => {this.onRename(this.getSelectedNodePath())};
         this.FS_DROPDOWN_RENAME_BTN.innerText = "Rename";
-        this.FS_DROPDOWN_RENAME_BTN.title = "Renames selected file or directory on Thumby";
+        this.FS_DROPDOWN_RENAME_BTN.title = "Renames selected file or directory on XRP";
         li.appendChild(this.FS_DROPDOWN_RENAME_BTN);
         this.FS_DROPDOWN_UL.appendChild(li);
 
@@ -304,6 +304,37 @@ class FILESYSTEM{
         // Loop through keys of current item. Can be int or object/dict.
         // check if int keyed nodes are dict, if so, call this function on them
         // and use none int keyed node to fill it
+
+        treeNode.on("contextmenu", (event, node) => {
+            console.log("File/Dir right clicked");
+
+            // Show menu for renaming, moving, deleting files and move to cursor.
+            if( node.toString() == "\\"){
+                this.FS_DROPDOWN_UL.children[1].hidden = true;
+            }
+            else{
+                this.FS_DROPDOWN_UL.children[1].hidden = false;
+            }
+            this.FS_DROPDOWN_DIV.style.display = "block";
+            this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
+
+            let top = (event.clientY - this.FS_DROPDOWN_DIV.clientHeight + 3);
+            if(top < 0){
+                top = 0;
+            }
+            this.FS_DROPDOWN_DIV.style.top = top + 'px';
+
+            var selectedNodes = this.FS_TREE.getSelectedNodes();
+
+            // Unselect all nodes so next time multiple are not selected
+            for(var i=0; i<selectedNodes.length; i++){
+                selectedNodes[i].setSelected(false);
+            }
+
+            node.setSelected(true);
+            return false;
+        }, false);
+
         for(var nodeKey in fsNode){
             if(!isNaN(nodeKey)){                                                                // Check if number (false means number inside string)
                 var fileOrDir = Object.keys(fsNode[nodeKey])[0];                                // Get string key that's either FILE or DIR

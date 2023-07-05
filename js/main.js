@@ -857,7 +857,7 @@ function registerEditor(_container, state){
         }
     }
     editor.onFastExecute = async (lines) => {
-        //[TODO] save the file
+        //[TODO] save ALL the files
         //[TODO] update the main file
         REPL.executeLines(lines);
     }

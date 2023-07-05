@@ -960,8 +960,11 @@ class EditorWrapper{
         localStorage.setItem("EditorAutocompleteState", this.AUTOCOMPLETE_STATE);
 
         // Apply to all editors, even this one
+        //[TODO] While this iterates through all the editors it does not setup the current editor correctly so the set state only does the current editor
         for (const [id, editor] of Object.entries(this.EDITORS)) {
-            this.setAutocompleteState(this.AUTOCOMPLETE_STATE);
+            if(!editor.isBlockly) {
+                editor.setAutocompleteState(this.AUTOCOMPLETE_STATE);
+            }
         }
     }
 
