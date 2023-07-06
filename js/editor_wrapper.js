@@ -90,6 +90,7 @@ class EditorWrapper{
                 oldElem.parentNode.replaceChild(newElem, oldElem);
 
                 newElem.onclick = () => {
+                    //[TODO] handle the closing of the last file. (and see if the >1 code below is a bug.)
                     if(Object.keys(this.EDITORS).length > 1){
                         if(this.SAVED_TO_THUMBY == false && !confirm('You have unsaved changes, are you sure you want to close this editor?')) {
                             return;
@@ -111,6 +112,7 @@ class EditorWrapper{
             }
         });
 
+        //[TODO] This should now be a model of the code.
         if(state["type"] == "viewer"){
             this.ACE_EDITOR.setReadOnly(true);
             this.setTitle("RO " + state["name"] + ".PY");
@@ -312,7 +314,7 @@ class EditorWrapper{
         this.FILE_BUTTON = document.createElement("button");
         this.FILE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.FILE_BUTTON.textContent = "File\u25BE";
-        this.FILE_BUTTON.title = "File operations for PC and Thumby";
+        this.FILE_BUTTON.title = "File operations for PC and XRP";
         this.HEADER_TOOLBAR_DIV.appendChild(this.FILE_BUTTON);
 
         this.FILE_DROPDOWN = document.createElement("div");
@@ -619,7 +621,7 @@ class EditorWrapper{
 
         this.FAST_EXECUTE_BUTTON = document.createElement("button");
         this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
-        this.FAST_EXECUTE_BUTTON.textContent = "Execute Code \u23f5";
+        this.FAST_EXECUTE_BUTTON.textContent = "Run \u23f5";
         this.FAST_EXECUTE_BUTTON.title = "Execute editor contents at root '/' of Thumby";
         this.FAST_EXECUTE_BUTTON.onclick = () => {this.onFastExecute(this.getValue())};
         this.HEADER_TOOLBAR_DIV.appendChild(this.FAST_EXECUTE_BUTTON);
@@ -689,25 +691,11 @@ class EditorWrapper{
                 // FCG:TODO Blockly.serialization.workspaces.load(defaultCode, this.BLOCKLY_WORKSPACE);
 
                 // When adding default editors, give them a path but make each unique by looking at all other open editors
-                if(this.checkAllEditorsForPath("/HelloBlockly.blocks") == true){
-                    var helloWorldNum = 1;
-                    while(this.checkAllEditorsForPath("/HelloBlockly" + helloWorldNum + ".blocks")){
-                        helloWorldNum = helloWorldNum + 1;
-                    }
-                    this.setPath("/HelloBlockly" + helloWorldNum + ".blocks");
-                }else{
-                    this.setPath("/HelloBlockly.blocks");
-                }
+                this.setPath("/untitled-" + this.ID + ".blocks");
                 this.setTitle("Editor" + this.ID + ' - *' + this.EDITOR_PATH);
+                
             }
             // Ensure all Blockly editors have a path set. Let's keep it simple for the <3n00bs<3
-            if(!this.EDITOR_PATH){
-                var fileNum = 1;
-                while(this.checkAllEditorsForPath(`/Games/NewGame${fileNum}/NewGame${fileNum}.blocks`)){
-                    fileNum += 1;
-                }
-                this.setPath(`/Games/NewGame${fileNum}/NewGame${fileNum}.blocks`);
-            }
         }
         this.resize();
     }
@@ -772,7 +760,7 @@ class EditorWrapper{
         
         this.FAST_EXECUTE_BUTTON = document.createElement("button");
         this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
-        this.FAST_EXECUTE_BUTTON.textContent = "Execute Code \u23f5";
+        this.FAST_EXECUTE_BUTTON.textContent = "Run \u23f5";
         this.FAST_EXECUTE_BUTTON.title = "Execute editor contents at root '/' of Thumby";
         this.FAST_EXECUTE_BUTTON.onclick = () => {this.onFastExecute(this.getValue())};
         this.HEADER_TOOLBAR_DIV.appendChild(this.FAST_EXECUTE_BUTTON);
@@ -838,17 +826,7 @@ class EditorWrapper{
         }else{
             this.ACE_EDITOR.setValue(this.defaultCode, 1);
 
-            // When adding default editors, give them a path but make each unique by looking at all other open editors
-            if(this.checkAllEditorsForPath("/HelloWorld.py") == true){
-                var helloWorldNum = 1;
-                while(this.checkAllEditorsForPath("/HelloWorld" + helloWorldNum + ".py")){
-                    helloWorldNum = helloWorldNum + 1;
-                }
-                this.setPath("/HelloWorld" + helloWorldNum + ".py");
-            }else{
-                this.setPath("/HelloWorld.py");
-            }
-
+            this.setPath("/untitled-" + this.ID + ".py");
             this.setTitle("Editor" + this.ID + ' - ' + this.EDITOR_PATH);
         }
 

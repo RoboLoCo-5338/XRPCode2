@@ -60,6 +60,7 @@ window.latestMicroPythonVersion = [1, 20, 0];
 
 //list of the library files to update
 window.libraryList = ["board.py","button.py","defaults.py","drivetrain.py","encoded_motor.py","encoder.py","imu.py","led.py","motor.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","version.py","webserver.py"]
+window.phewList = ["dns.py","logging.py","server.py","template.py"];
 //[TODO] Add the example list
 
 if(localStorage.getItem(showChangelogVersion) == null){
@@ -787,7 +788,7 @@ function registerEditor(_container, state){
             alert("No XRP connected, did not save to device");
             return;
         }
-        //[TODO] handle saving an untiled file.
+        
         if(editor.EDITOR_PATH == undefined || editor.EDITOR_PATH == ""){
             console.log('Pick a folder');
             var path = await DIR.getPathFromUser(editor._container.element);
@@ -808,6 +809,11 @@ function registerEditor(_container, state){
                 editor.onSaveToThumby();
             }
         }else{
+            //check if name is untitled
+            if(editor.EDITOR_TITLE.search("untitled") != -1){
+                editor.onSaveAsToThumby();
+                return;
+            }
             console.log('Saved');
             editor.setSaved();
             editor.updateTitleSaved();
@@ -848,7 +854,7 @@ function registerEditor(_container, state){
     }
     editor.onSaveAsToThumby = async () => {
         console.log('Pick a folder');
-        var path = await DIR.getPathFromUser(editor._container.element);
+        var path = await DIR.getPathFromUser(editor._container.element, false, editor.EDITOR_TITLE.split('/').at(-1));
         if(path != undefined){
             editor.setPath(path);
             editor.setSaved();
@@ -857,12 +863,13 @@ function registerEditor(_container, state){
         }
     }
     editor.onFastExecute = async (lines) => {
+        //save all unsaved files
         for (const [id, editor] of Object.entries(EDITORS)) {
             if(!editor.SAVED_TO_THUMBY) {
                 await editor.onSaveToThumby();
             }
         }
-        //[TODO] update the main file
+        // update the main file so if they unplug the robot and turn it on it will execute this program.
         await REPL.updateMainFile(editor.EDITOR_PATH);
         REPL.executeLines(lines);
     }

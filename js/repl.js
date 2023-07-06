@@ -905,7 +905,7 @@ class ReplJS{
     async updateLibrary(){
         alert("need to update the XRPLib - Needd a yes or no on this")
         window.setPercent(1, "Updating XRPLib...");
-        let percent_per = 99 / window.libraryList.length;
+        let percent_per = 99 / (window.libraryList.length + window.phewList.length);
         let cur_percent = 1 + percent_per;
 
         for(let i=0; i<window.libraryList.length; i++){
@@ -913,7 +913,15 @@ class ReplJS{
             await this.uploadFile("lib/XRPLib/" + window.libraryList[i], await window.downloadFile("lib/XRPLib/" + window.libraryList[i]), false);
             cur_percent += percent_per;
         }
+
+        for(let i=0; i<window.phewList.length; i++){
+            window.setPercent(cur_percent);   
+            await this.uploadFile("lib/XRPLib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i]), false);
+            cur_percent += percent_per;
+        }
+
         window.resetPercentDelay();
+        await this.getOnBoardFSTree();
     }
 
     async updateMicroPython(){

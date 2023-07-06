@@ -133,8 +133,8 @@ class DIRCHOOSER{
     async waitForUser(){
         this.WAITING_FOR_USER = 1;
         this.LAST_SELECTED_PATH = "";
-        this.DIR_CHOOSER_FOOTER_OUTPUT.value = "FINAL PATH: "
-        this.DIR_CHOOSER_FOOTER_INPUT.value = "";
+        //this.DIR_CHOOSER_FOOTER_OUTPUT.value = "FINAL PATH: "
+        //this.DIR_CHOOSER_FOOTER_INPUT.value = "";
         this.updateFinalPath();
 
         while (this.WAITING_FOR_USER == 1) {
@@ -151,7 +151,7 @@ class DIRCHOOSER{
 
 
 
-    async getPathFromUser(editorDiv, disableFileName = false){
+    async getPathFromUser(editorDiv, disableFileName = false, filename = ""){
         if(disableFileName){
             this.DIR_CHOOSER_FOOTER_INPUT.disabled = true;
             this.DIR_CHOOSER_FOOTER_INPUT.style.backgroundColor = "lightgray";
@@ -159,6 +159,9 @@ class DIRCHOOSER{
             this.DIR_CHOOSER_FOOTER_INPUT.disabled = false;
             this.DIR_CHOOSER_FOOTER_INPUT.style.backgroundColor = "white";
         }
+        
+        this.DIR_CHOOSER_FOOTER_INPUT.value = filename;
+        this.updateFinalPath();
 
         editorDiv.appendChild(this.DIR_CHOOSER_DIV);
         this.FS_ROOT = new TreeNode("\\");                                      // Start new tree from start/root
@@ -173,8 +176,8 @@ class DIRCHOOSER{
                 return undefined;
             }
         }else{
-            console.log("No filesystem, Thumby not connected");
-            alert("No filesystem, Thumby not connected");
+            console.log("No filesystem, XRP not connected");
+            alert("No filesystem, XRP not connected");
             return undefined;
         }
     }
