@@ -417,6 +417,7 @@ document.getElementById("IDHardResetBTN").onclick = (event) =>{
 // Add editor panel to layout
 document.getElementById("IDAddEditorBTN").onclick = (event) =>{
     console.log("PAGE: +Editor");
+    EDITORS[0]._container.focus();   //make sure the focus is on the editor section.
     myLayout.addComponent('Editor', {"value":undefined, choose:true}, 'Editor');
 }
 /*
@@ -567,7 +568,7 @@ function registerFilesystem(_container, state){
             console.log("Pick files to upload");
             const fileHandles = await window.showOpenFilePicker({multiple: true});
             if(fileHandles && fileHandles.length > 0){
-                var path = await DIR.getPathFromUser(document.body, true);
+                var path = await DIR.getPathFromUser(document.body, true, fileHandles[0].name);
                 if(path != undefined){
                     REPL.uploadFiles(path, fileHandles);
                 }
@@ -599,6 +600,7 @@ function registerFilesystem(_container, state){
 
         var rawFileBytes = await REPL.getFileContents(filePath);
         if(rawFileBytes == undefined){
+            //[TODO] This should report something to the user
             return; // RP2040 was busy
         }
 

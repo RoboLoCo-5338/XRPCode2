@@ -90,24 +90,28 @@ class EditorWrapper{
                 oldElem.parentNode.replaceChild(newElem, oldElem);
 
                 newElem.onclick = () => {
-                    //[TODO] handle the closing of the last file. (and see if the >1 code below is a bug.)
-                    if(Object.keys(this.EDITORS).length > 1){
-                        if(this.SAVED_TO_THUMBY == false && !confirm('You have unsaved changes, are you sure you want to close this editor?')) {
-                            return;
-                        }
-
-                        // Remove this since only needed for editor
-                        window.removeEventListener("resize", this.windowResizeListener);
-
-                        delete EDITORS[this.ID];
-                        this.clearStorage();
-
-                        // Clear the binary file from database that this editor had a reference to
-                        if(this.isEditorBinary()) this.deleteDBFile();
-
-                        console.log("Cleared info for Editor: " + this._container.title);
-                        this._container.close();
+                    if(this.SAVED_TO_THUMBY == false && !confirm('You have unsaved changes, are you sure you want to close this editor?')) {
+                        return;
                     }
+
+                    // Remove this since only needed for editor
+                    window.removeEventListener("resize", this.windowResizeListener);
+
+                    delete EDITORS[this.ID];
+                    this.clearStorage();
+
+                    // Clear the binary file from database that this editor had a reference to
+                    if(this.isEditorBinary()) this.deleteDBFile();
+
+                    console.log("Cleared info for Editor: " + this._container.title);
+                    
+                    if(Object.keys(this.EDITORS).length == 0){      //this is the last editor, so open the choose file 
+                        this._container.parent.focus();
+                        document.getElementById("IDAddEditorBTN").click();
+                    }
+
+                    this._container.close();
+                    
                 }
             }
         });
