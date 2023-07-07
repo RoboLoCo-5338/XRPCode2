@@ -56,7 +56,7 @@ const showChangelogVersion = 23;
 window.latestLibraryVersion = 0.8;
 
 // This should match what is on the actual Thumby firmware found through import sys and sys.implementation
-window.latestMicroPythonVersion = [1, 20, 0];
+window.latestMicroPythonVersion = [1, 20, 1];
 
 //list of the library files to update
 window.libraryList = ["board.py","button.py","defaults.py","drivetrain.py","encoded_motor.py","encoder.py","imu.py","led.py","motor.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","version.py","webserver.py"]
@@ -64,8 +64,15 @@ window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"
 //[TODO] Add the example list
 
 if(localStorage.getItem(showChangelogVersion) == null){
+    //[Change layout] if we need to change the layout:
+    // 1 - If all files are not saved hit Cancel and save them
+    // 2 - Refresh again and then hit OK
+    // 3 - localStorage.clear();
+
     console.log("Updates to IDE! Showing changelog...");    // Show message in console
     localStorage.removeItem(showChangelogVersion-1);        // Remove flag from last version
+
+     
 
     fetch("CHANGELOG.txt").then(async (response) => {
         await response.text().then((text) => {
@@ -86,9 +93,9 @@ if(localStorage.getItem(showChangelogVersion) == null){
 
 
 // Want the dropdown to disappear if mouse leaves it (doesn't disappear if mouse leaves button that starts it though)
-document.getElementById("IDUtilitesDropdown").addEventListener("mouseleave", () => {
-    UIkit.dropdown(document.getElementById("IDUtilitesDropdown")).hide();
-})
+//document.getElementById("IDUtilitesDropdown").addEventListener("mouseleave", () => {
+//    UIkit.dropdown(document.getElementById("IDUtilitesDropdown")).hide();
+//})
 
 var progressBarElem = document.getElementById("IDProgressBar");
 var lastMessage = undefined;
@@ -109,8 +116,6 @@ window.resetPercentDelay = () => {
     }, 100);
 }
 
-//[TODO] updte the default config
-//[TODO] Filesystem and shell should not have close options
 var defaultConfig = {
     header:{
         popout: false,
@@ -434,6 +439,8 @@ document.getElementById("IDAddBlocklyEditorBTN").onclick = (event) =>{
     myLayout.addComponent('Editor', {'isBlockly':true}, 'Editor');
 }
 */
+
+/*
 // Add FS panel to layout
 document.getElementById("IDAddFS").onclick = (event) =>{
     if(recursiveFindTitle(myLayout.saveLayout().root.content, "Filesystem") == false){
@@ -455,6 +462,7 @@ document.getElementById("IDAddShell").onclick = (event) =>{
         alert("Only one shell can be open");
     }
 }
+*/
 
 // Return true if a panel with this title exists, false otherwise
 function recursiveFindTitle(content, title){
@@ -657,7 +665,7 @@ function registerFilesystem(_container, state){
 }
 
 
-
+/*
 document.getElementById("IDUpdateMicroPython").onclick = (event) => {
     if(REPL.PORT != undefined){
         document.getElementById("updateMPOverlay").style.display = "block";
@@ -709,7 +717,7 @@ document.getElementById("IDUpdateLibrary").onclick = (event) => {
     myLayout.addComponent('Editor', state, 'Editor');
     
 }
-
+*/
 
 
 // Terminal module
@@ -872,6 +880,10 @@ function registerEditor(_container, state){
         }
     }
     editor.onFastExecute = async (lines) => {
+        if(REPL.BUSY) {
+            alert("Another program is already running. Stop that program and then press RUN again.")
+            return;
+        }
         //save all unsaved files
         for (const [id, editor] of Object.entries(EDITORS)) {
             if(!editor.SAVED_TO_THUMBY) {
@@ -880,7 +892,7 @@ function registerEditor(_container, state){
         }
         // update the main file so if they unplug the robot and turn it on it will execute this program.
         await REPL.updateMainFile(editor.EDITOR_PATH);
-        REPL.executeLines(lines);
+        await REPL.executeLines(lines);
     }
    
     EDITORS[editor.ID] = editor;

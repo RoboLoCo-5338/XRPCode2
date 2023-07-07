@@ -877,11 +877,18 @@ class ReplJS{
 
     async checkIfNeedUpdate(){
         if(!this.HAS_MICROPYTHON){
-             this.showMicropythonUpdate();
+             await this.showMicropythonUpdate();
              return;
         }
 
         let info = await this.getVersionInfo();
+
+        if(info[1] != window.latestLibraryVersion){
+            // Need to update the XRP libraries, change color of FS update button
+            // Do we delete the XRPLib directory before putting in the new library?
+            await this.updateLibrary();
+            //this.onShowUpdate();
+        }
 
         let major = parseInt(info[0].split(", ")[0].substring(1));
         let minor = parseInt(info[0].split(", ")[1]);
@@ -894,12 +901,7 @@ class ReplJS{
             return;
         }
 
-        if(info[1] != window.latestLibraryVersion){
-            // Need to update the XRP libraries, change color of FS update button
-            // Do we delete the XRPLib directory before putting in the new library?
-            await this.updateLibrary();
-            //this.onShowUpdate();
-        }
+       
     }
 
     async updateLibrary(){
