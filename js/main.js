@@ -56,7 +56,7 @@ const showChangelogVersion = 23;
 window.latestLibraryVersion = 0.8;
 
 // This should match what is on the actual Thumby firmware found through import sys and sys.implementation
-window.latestMicroPythonVersion = [1, 20, 1];
+window.latestMicroPythonVersion = [1, 20, 0];
 
 //list of the library files to update
 window.libraryList = ["board.py","button.py","defaults.py","drivetrain.py","encoded_motor.py","encoder.py","imu.py","led.py","motor.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","version.py","webserver.py"]
