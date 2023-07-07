@@ -60,7 +60,7 @@ window.latestMicroPythonVersion = [1, 20, 0];
 
 //list of the library files to update
 window.libraryList = ["board.py","button.py","defaults.py","drivetrain.py","encoded_motor.py","encoder.py","imu.py","led.py","motor.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","version.py","webserver.py"]
-window.phewList = ["dns.py","logging.py","server.py","template.py"];
+window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
 //[TODO] Add the example list
 
 if(localStorage.getItem(showChangelogVersion) == null){

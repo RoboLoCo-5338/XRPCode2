@@ -455,11 +455,20 @@ class EditorWrapper{
                 console.log("INIT BLOCKLY VIEWER");
                 localStorage.setItem("isBlockly" + this.ID, true);
                 localStorage.setItem("isBinary" + this.ID, false);
+                if(this.SAVED_TO_THUMBY == undefined){
+                    localStorage.setItem("EditorSavedToThumby" + this.ID, true); //it already had text so must be coming from the XRP so already saved
+                    this.SAVED_TO_THUMBY = true;
+                }
+                
                 this.turnIntoBlocklyViewer(text);
             }else if(text.indexOf("�") == -1 && text.indexOf("") == -1 && text.indexOf("") == -1 && text.indexOf("") == -1){
                 console.log("INIT CODE VIEWER");
                 localStorage.setItem("isBlockly" + this.ID, false);
                 localStorage.setItem("isBinary" + this.ID, false);
+                if(this.SAVED_TO_THUMBY == undefined){
+                    localStorage.setItem("EditorSavedToThumby" + this.ID, true); //it already had text so must be coming from the XRP so already saved
+                    this.SAVED_TO_THUMBY = true;
+                }
                 this.turnIntoCodeViewer(text);
             }else{
                 console.log("INIT BINARY VIEWER");
@@ -616,10 +625,14 @@ class EditorWrapper{
         this.OPEN_PYTHON.textContent = "View Python";
         this.OPEN_PYTHON.title = "Open a new editor with the Python from this code";
         this.OPEN_PYTHON.onclick = (ev) => {
-            let nm = this.EDITOR_TITLE.split('/').at(-1);
-            let nm1 = nm.split('.')[0];
-            this._container.layoutManager.addComponent('Editor', {'value':this.getValue(), "type":"viewer", "name":nm1}, 'Editor');
-            //alert('Do not edit the Python code: changes made in the exported Python will not update the blocks.');
+            document.getElementById("view-python-button").onclick = (ev) => {
+                    this.opAce.destroy();
+            };
+            this.opAce = ace.edit("view-python-ace");
+            this.opAce.session.setMode("ace/mode/python");
+            this.opAce.setTheme("ace/theme/tomorrow_night_bright");
+            this.opAce.setValue(this.getValue(), 1);
+            UIkit.modal(document.getElementById("view-python-code")).show();
         };
         this.HEADER_TOOLBAR_DIV.appendChild(this.OPEN_PYTHON);
 
@@ -1112,7 +1125,9 @@ class EditorWrapper{
                 }
             }
         }
-
+        this.SAVED_TO_THUMBY = false;
+        localStorage.setItem("EditorSavedToThumby" + this.ID, false); //We just imported from the PC, so not saved yet.
+        
         this.initEditorPanelUI(data);
         
         // Make sure the hover title is set

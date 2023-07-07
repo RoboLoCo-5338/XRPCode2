@@ -916,7 +916,7 @@ class ReplJS{
 
         for(let i=0; i<window.phewList.length; i++){
             window.setPercent(cur_percent);   
-            await this.uploadFile("lib/XRPLib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i]), false);
+            await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i]), false);
             cur_percent += percent_per;
         }
 
