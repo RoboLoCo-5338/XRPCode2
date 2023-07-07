@@ -141,38 +141,45 @@ var defaultConfig = {
             id: 'rootrow',
             content:[{
                 type: 'stack',
-                width: 20,
-                id: 'BitmapPlusFS',
+                width: 18,
+                id: 'justFS',
                 content:[{
                     type: 'component',
                     componentName: 'Filesystem',
+                    isClosable: false,
                     componentState: { label: 'XRP Files' },
                     title: 'Filesystem',
                     id: "aFilesystem"
                 }]
             },{
                 type: 'column',
-                id: "Editor",
                 content:[{
-                    type: 'component',
-                    componentName: 'Editor',
-                    componentState: { label: 'Editor', editor: undefined, choose: true},
-                    title: 'Editor',
-                    id: "aEditor"
+                    type: 'stack',
+                    id: "EditorAndShell",
+                    content:[{
+                        type: 'component',
+                        componentName: 'Editor',
+                        componentState: { label: 'Editor', editor: undefined, choose: true},
+                        title: 'Editor',
+                        id: "aEditor"
+                    }],
+                },
+                {
+                    type: 'stack',
+                    content:[{
+                        type: 'component',
+                        componentName: 'Shell',
+                        isClosable: false,
+                        componentState: { label: 'Shell' },
+                        title: 'Shell',
+                        id: "aShell"
+                    }],
+                    height: 20
                 }]
-            },{
-                type: 'column',
-                content:[{
-                    type: 'component',
-                    componentName: 'Shell',
-                    componentState: { label: 'Shell' },
-                    title: 'Shell',
-                    id: "aShell"
-                }]
-            }]
-        }]
-    }]
-};
+            }],    
+        }],
+    }],
+}; 
 
 
 function invertPageTheme(){
