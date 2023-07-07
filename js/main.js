@@ -891,7 +891,12 @@ function registerEditor(_container, state){
             }
         }
         // update the main file so if they unplug the robot and turn it on it will execute this program.
-        await REPL.updateMainFile(editor.EDITOR_PATH);
+        //[TODO] temp fix for blocks files - will be fixed when blocks is 1 file
+        let file = editor.EDITOR_PATH
+        if(file.indexOf(".blocks") != -1){
+            file = file.replace(".blocks", ".py");
+        }
+        await REPL.updateMainFile(file);
         await REPL.executeLines(lines);
     }
    
