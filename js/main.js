@@ -235,9 +235,9 @@ function invertPageTheme(){
             }
 
             if(href.indexOf("uikit-dark.css") != -1){
-                link.href = "uikit-3.7.3/css/uikit-light.css";
+                link.href = "uikit-3.16.22/css/uikit-light.css";
             }else if(href.indexOf("uikit-light.css") != -1){
-                link.href = "uikit-3.7.3/css/uikit-dark.css";
+                link.href = "uikit-3.16.22/css/uikit-dark.css";
             }
 
             if(href.indexOf("shell-dark.css") != -1){

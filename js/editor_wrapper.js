@@ -116,11 +116,6 @@ class EditorWrapper{
             }
         });
 
-        //[TODO] This should now be a model of the code.
-        if(state["type"] == "viewer"){
-            this.ACE_EDITOR.setReadOnly(true);
-            this.setTitle("RO " + state["name"] + ".PY");
-        }
         // Used for setting the active editor outside this module, typically for bit map builder
         this.onFocus = undefined;
         this.onSaveToThumby = undefined;
@@ -316,7 +311,7 @@ class EditorWrapper{
 
         // Binary and code viewer always have file button and dropdown
         this.FILE_BUTTON = document.createElement("button");
-        this.FILE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.FILE_BUTTON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.FILE_BUTTON.textContent = "File\u25BE";
         this.FILE_BUTTON.title = "File operations for PC and XRP";
         this.HEADER_TOOLBAR_DIV.appendChild(this.FILE_BUTTON);
@@ -334,21 +329,21 @@ class EditorWrapper{
 
         var listElem = document.createElement("li");
         this.FILE_EXPORT_BUTTON = document.createElement("button");
-        this.FILE_EXPORT_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.FILE_EXPORT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
         this.FILE_EXPORT_BUTTON.textContent = "Export to PC";
         this.FILE_EXPORT_BUTTON.title = "Export editor contents to file on PC";
         this.FILE_EXPORT_BUTTON.onclick = () => {this.exportFileAs()}
         listElem.appendChild(this.FILE_EXPORT_BUTTON);
         this.FILE_DROPDOWN_UL.appendChild(listElem);
 
-        listElem = document.createElement("li");
-        this.FILE_IMPORT_BUTTON = document.createElement("button");
-        this.FILE_IMPORT_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
-        this.FILE_IMPORT_BUTTON.textContent = "Import from PC";
-        this.FILE_IMPORT_BUTTON.title = "Import editor contents from file on PC";
-        this.FILE_IMPORT_BUTTON.onclick = () => {this.openFile()}
-        listElem.appendChild(this.FILE_IMPORT_BUTTON);
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
+        //listElem = document.createElement("li");
+        //this.FILE_IMPORT_BUTTON = document.createElement("button");
+        //this.FILE_IMPORT_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        //this.FILE_IMPORT_BUTTON.textContent = "Import from PC";
+        //this.FILE_IMPORT_BUTTON.title = "Import editor contents from file on PC";
+        //this.FILE_IMPORT_BUTTON.onclick = () => {this.openFile()}
+        //listElem.appendChild(this.FILE_IMPORT_BUTTON);
+        //this.FILE_DROPDOWN_UL.appendChild(listElem);
 
         listElem = document.createElement("li");
         listElem.classList = "uk-nav-divider";
@@ -356,7 +351,7 @@ class EditorWrapper{
 
         listElem = document.createElement("li");
         this.FILE_SAVE_BUTTON = document.createElement("button");
-        this.FILE_SAVE_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.FILE_SAVE_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
         this.FILE_SAVE_BUTTON.textContent = "Save to XRP";
         this.FILE_SAVE_BUTTON.title = "Save editor contents to file on XRP (ctrl-s)";
         this.FILE_SAVE_BUTTON.onclick = () => {this.onSaveToThumby()};
@@ -365,7 +360,7 @@ class EditorWrapper{
 
         listElem = document.createElement("li");
         this.FILE_SAVEAS_BUTTON = document.createElement("button");
-        this.FILE_SAVEAS_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.FILE_SAVEAS_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
         this.FILE_SAVEAS_BUTTON.textContent = "Save As to XRP";
         this.FILE_SAVEAS_BUTTON.title = "Save editor contents to file on XRP under a specific path";
         this.FILE_SAVEAS_BUTTON.onclick = () => {this.onSaveAsToThumby()};
@@ -621,7 +616,7 @@ class EditorWrapper{
         this.EDITOR_DIV.appendChild(this.BLOCKLY_DIV);
 
         this.OPEN_PYTHON = document.createElement("button");
-        this.OPEN_PYTHON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.OPEN_PYTHON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.OPEN_PYTHON.textContent = "View Python";
         this.OPEN_PYTHON.title = "Open a new editor with the Python from this code";
         this.OPEN_PYTHON.onclick = (ev) => {
@@ -630,6 +625,7 @@ class EditorWrapper{
             };
             this.opAce = ace.edit("view-python-ace");
             this.opAce.session.setMode("ace/mode/python");
+            this.opAce.setReadOnly(true);
             this.opAce.setTheme("ace/theme/tomorrow_night_bright");
             this.opAce.setValue(this.getValue(), 1);
             UIkit.modal(document.getElementById("view-python-code")).show();
@@ -637,7 +633,7 @@ class EditorWrapper{
         this.HEADER_TOOLBAR_DIV.appendChild(this.OPEN_PYTHON);
 
         this.FAST_EXECUTE_BUTTON = document.createElement("button");
-        this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.FAST_EXECUTE_BUTTON.textContent = "Run \u23f5";
         this.FAST_EXECUTE_BUTTON.title = "Execute editor contents at root '/' of Thumby";
         this.FAST_EXECUTE_BUTTON.onclick = () => {this.onFastExecute(this.getValue())};
@@ -678,8 +674,10 @@ class EditorWrapper{
                     }else{
                         this.setTitle("*Editor" + this.ID);
                     }
-                    //this.SAVED_TO_THUMBY = false;
-                    //localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
+                    //[TODO] - determine when a file is being opened so it doesn't do this every refresh of the browser.
+                    
+                    this.SAVED_TO_THUMBY = false;
+                    localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
                     this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
                 }
             });
@@ -722,7 +720,7 @@ class EditorWrapper{
         listElem.classList = "uk-nav-divider";
 
         this.VIEW_BUTTON = document.createElement("button");
-        this.VIEW_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.VIEW_BUTTON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.VIEW_BUTTON.textContent = "View\u25BE";
         this.VIEW_BUTTON.title = "View settings";
         this.HEADER_TOOLBAR_DIV.appendChild(this.VIEW_BUTTON);
@@ -734,13 +732,13 @@ class EditorWrapper{
             UIkit.dropdown(this.VIEW_DROPDOWN).hide();
         })
 
-        this.VIEW_DROPDOWN_UL = document.createElement("div");
-        this.VIEW_DROPDOWN_UL.classList = "uk-nav uk-dropdown-nav";
+        this.VIEW_DROPDOWN_UL = document.createElement("ul");
+        this.VIEW_DROPDOWN_UL.classList = "uk-nav uk-dropdown-nav uk-dark";
         this.VIEW_DROPDOWN.appendChild(this.VIEW_DROPDOWN_UL);
 
         listElem = document.createElement("li");
         this.VIEW_INC_FONT_BUTTON = document.createElement("button");
-        this.VIEW_INC_FONT_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.VIEW_INC_FONT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
         this.VIEW_INC_FONT_BUTTON.textContent = "Increase Font";
         this.VIEW_INC_FONT_BUTTON.title = "Increase editor font size";
         this.VIEW_INC_FONT_BUTTON.onclick = () => {this.increaseFontSize()};
@@ -749,7 +747,7 @@ class EditorWrapper{
 
         listElem = document.createElement("li");
         this.VIEW_DEC_FONT_BUTTON = document.createElement("button");
-        this.VIEW_DEC_FONT_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.VIEW_DEC_FONT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
         this.VIEW_DEC_FONT_BUTTON.textContent = "Decrease Font";
         this.VIEW_DEC_FONT_BUTTON.title = "Decrease editor font size";
         this.VIEW_DEC_FONT_BUTTON.onclick = () => {this.decreaseFontSize()};
@@ -758,7 +756,7 @@ class EditorWrapper{
 
         listElem = document.createElement("li");
         this.VIEW_RESET_FONT_BUTTON = document.createElement("button");
-        this.VIEW_RESET_FONT_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.VIEW_RESET_FONT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
         this.VIEW_RESET_FONT_BUTTON.textContent = "Reset Font Size";
         this.VIEW_RESET_FONT_BUTTON.title = "Reset font to default";
         this.VIEW_RESET_FONT_BUTTON.onclick = () => {this.resetFontSize()};
@@ -767,7 +765,7 @@ class EditorWrapper{
 
         listElem = document.createElement("li");
         this.VIEW_AUTOCOMPLETE_BUTTON = document.createElement("button");
-        this.VIEW_AUTOCOMPLETE_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.VIEW_AUTOCOMPLETE_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
         this.VIEW_AUTOCOMPLETE_BUTTON.textContent = "Turn live autocomplete ...";
         this.VIEW_AUTOCOMPLETE_BUTTON.title = "When turned off, basic autocomplete can be accessed using left-ctrl + space. Affects all editors";
         this.VIEW_AUTOCOMPLETE_BUTTON.onclick = () => {this.toggleAutocompleteStateForAll()};
@@ -776,7 +774,7 @@ class EditorWrapper{
 
         
         this.FAST_EXECUTE_BUTTON = document.createElement("button");
-        this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.FAST_EXECUTE_BUTTON.textContent = "Run \u23f5";
         this.FAST_EXECUTE_BUTTON.title = "Execute editor contents at root '/' of Thumby";
         this.FAST_EXECUTE_BUTTON.onclick = () => {this.onFastExecute(this.getValue())};
