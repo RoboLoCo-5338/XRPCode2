@@ -48,12 +48,12 @@ class EditorWrapper{
             this.setTitle("Choose Mode")
             this.HEADER_TOOLBAR_DIV.innerHTML = "Please choose your Editor preference:"
             var micropython_button = document.createElement("button");
-            micropython_button.classList = "uk-button uk-button-primary uk-width-1-2 uk-height-1-1 uk-text-small";
+            micropython_button.classList = "uk-button uk-button-secondary uk-width-1-2 uk-height-1-1 uk-text-small";
             micropython_button.innerHTML = '<img src="css/micropython.png" class="uk-width-1-2"/><p>MICRO PYTHON</p><p>(text code editor)</p>';
             micropython_button.title = "Load a MicroPython Editor for normal text-based coding.";
             this.EDITOR_DIV.appendChild(micropython_button);
             var blockly_button = document.createElement("button");
-            blockly_button.classList = "uk-button uk-button-primary uk-width-1-2 uk-height-1-1 uk-text-small";
+            blockly_button.classList = "uk-button uk-button-secondary uk-width-1-2 uk-height-1-1 uk-text-small";
             blockly_button.innerHTML = '<img src="css/blockly.svg" class="uk-width-1-2"/><p>BLOCKLY</p><p>(visual block editor)<p/>';
             blockly_button.title = "Load a Blockly Editor for visual block-based coding.";
             this.EDITOR_DIV.appendChild(blockly_button);
@@ -97,6 +97,11 @@ class EditorWrapper{
                     // Remove this since only needed for editor
                     window.removeEventListener("resize", this.windowResizeListener);
 
+                    if(Object.keys(this.EDITORS).length == 1){      //this is the last editor, so open the choose file 
+                        this._container.parent.focus();
+                        document.getElementById("IDAddEditorBTN").click();
+                    }
+
                     delete EDITORS[this.ID];
                     this.clearStorage();
 
@@ -105,10 +110,7 @@ class EditorWrapper{
 
                     console.log("Cleared info for Editor: " + this._container.title);
                     
-                    if(Object.keys(this.EDITORS).length == 0){      //this is the last editor, so open the choose file 
-                        this._container.parent.focus();
-                        document.getElementById("IDAddEditorBTN").click();
-                    }
+                    
 
                     this._container.close();
                     
@@ -654,7 +656,7 @@ class EditorWrapper{
     setupBlockly(data){
         if(!this.BLOCKLY_WORKSPACE){
             this.BLOCKLY_WORKSPACE = Blockly.inject(this.BLOCKLY_DIV,{
-                toolbox: document.getElementById('toolbox'),
+                toolbox: blocklyToolbox,
                 move:{
                     scrollbars: {horizontal: true, vertical: true},
                     drag: true,
@@ -681,6 +683,7 @@ class EditorWrapper{
                     this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
                 }
             });
+
             //blocklyRegister(this.BLOCKLY_WORKSPACE);
             // Ctrl+s / Cmd+s (Save)
             this.BLOCKLY_DIV.onkeydown = (e) => {

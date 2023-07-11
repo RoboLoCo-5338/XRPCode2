@@ -50,7 +50,7 @@ var onExportToEditor = (bytes) => {
 
 // Show pop-up containing IDE changelog every time showChangelogVersion is increased
 // Update version string in index.html and play.html as well to match
-const showChangelogVersion = 23;
+const showChangelogVersion = 1;
 
 // This should match what is in /lib/XRPLib/version.py as '__version__'
 window.latestLibraryVersion = 0.8;
@@ -64,31 +64,37 @@ window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"
 //[TODO] Add the example list
 
 if(localStorage.getItem(showChangelogVersion) == null){
-    //[Change layout] if we need to change the layout:
-    // 1 - If all files are not saved hit Cancel and save them
-    // 2 - Refresh again and then hit OK
-    // 3 - localStorage.clear();
+    // [TODO] - For this verion only !!!
+    let answer = await confirmMessage("This version requires a reset of your local information about this editor.<br>" +
+                                        "If you have unsaved files then press CANCEL, save your files, and then refresh this borwser window.<br><br>" +
+                                        "Otherwise press OK");
+    if(answer){
 
-    console.log("Updates to IDE! Showing changelog...");    // Show message in console
-    localStorage.removeItem(showChangelogVersion-1);        // Remove flag from last version
+    
+       //[TODO] - For this verion only!!!!
+        localStorage.clear();
 
-     
+        console.log("Updates to IDE! Showing changelog...");    // Show message in console
+        localStorage.removeItem(showChangelogVersion-1);        // Remove flag from last version
 
-    fetch("CHANGELOG.txt").then(async (response) => {
-        await response.text().then((text) => {
-            var listener = window.addEventListener("keydown", (event) => {
-                document.getElementById("IDChangelog").style.display = "none";
-                window.removeEventListener("keydown", listener);
+        
+
+        fetch("CHANGELOG.txt").then(async (response) => {
+            await response.text().then((text) => {
+                var listener = window.addEventListener("keydown", (event) => {
+                    document.getElementById("IDChangelog").style.display = "none";
+                    window.removeEventListener("keydown", listener);
+                });
+                document.getElementById("IDChnagelogExitBtn").onclick = (event) => {
+                    document.getElementById("IDChangelog").style.display = "none";
+                }
+                document.getElementById("IDChangelog").style.display = "flex";
+                document.getElementById("IDChangelogText").innerText = text;
             });
-            document.getElementById("IDChnagelogExitBtn").onclick = (event) => {
-                document.getElementById("IDChangelog").style.display = "none";
-            }
-            document.getElementById("IDChangelog").style.display = "flex";
-            document.getElementById("IDChangelogText").innerText = text;
         });
-    });
 
-    localStorage.setItem(showChangelogVersion, true);       // Set this show not shown on next page load
+        localStorage.setItem(showChangelogVersion, true);       // Set this show not shown on next page load
+    }
 }
 
 
@@ -429,7 +435,12 @@ document.getElementById("IDHardResetBTN").onclick = (event) =>{
 // Add editor panel to layout
 document.getElementById("IDAddEditorBTN").onclick = (event) =>{
     console.log("PAGE: +Editor");
-    EDITORS[0]._container.focus();   //make sure the focus is on the editor section.
+    var id1;
+    for (const [id] of Object.entries(EDITORS)) {
+        id1 = id;
+        break;
+        }
+    EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
     myLayout.addComponent('Editor', {"value":undefined, choose:true}, 'Editor');
 }
 /*
@@ -761,28 +772,23 @@ function registerShell(_container, state){
     //REPL.onShowUpdate = () => {FS.showUpdate()};
     REPL.showMicropythonUpdate = async () => {
         if(!REPL.HAS_MICROPYTHON){
-            alert("press the reset button while holding down the BOOTSEL button. Then click OK to continue");
-        }
-
-        document.getElementById("updateMPOverlay").style.display = "block";
-        document.getElementById("updateMP").style.display = "block";
-        document.getElementById("updateMPYes").onclick = (event) => {
-            document.getElementById("updateMP").style.display = "none";
-            document.getElementById("updateMPExtraInfo").style.display = "block";
-
-            document.getElementById("updateMPOk").onclick = (event) => {
-                document.getElementById("updateMPOverlay").style.display = "none";
-                document.getElementById("updateMPExtraInfo").style.display = "none";
-                REPL.updateMicroPython();
+            let answer = await confirmMessage("We have detected there is no MicroPython on your XRP.<br>" +
+                    "If you think this is incorrect press CANCEL<br>" +
+                    "if correct please press the reset button while holding down the BOOTSEL button.<br>Then click OK to continue");
+            if(!answer){
+                return;
             }
         }
-        document.getElementById("updateMPNo").onclick = (event) => {
-            document.getElementById("updateMPOverlay").style.display = "none";
-            document.getElementById("updateMP").style.display = "none";
+
+        let answer = await confirmMessage("The MicroPython on your XRP needs to be updated..<br>Would you like to update now?");
+        if(answer){
+            await alertMessage("When the <b>Select Folder</b> window comes up select the <b>RPI-RP2</b> drive when it appears.<br>Next click on 'Edit Files'<br>Then wait for the XRP to connect, it may take a few seconds");
+            REPL.updateMicroPython();
         }
+
+        
     };
 }
-
 
 /*
 var EMU;
@@ -960,6 +966,24 @@ String.prototype.convertToHex = function (delim) {
     }).join(delim || "");
 };
 
+async function alertMessage(message){
+    await UIkit.modal.alert(message).then(function () {
+        console.log('Alert closed.')
+    });
+}
+window.alertMessage = alertMessage;
+
+var CONFIRM  = false;
+
+async function confirmMessage(message){
+    await UIkit.modal.confirm(message).then(function () {
+        CONFIRM = true;
+    }, function () {
+        CONFIRM = false;
+    });
+    return CONFIRM;
+}
+window.confirmMessage = confirmMessage;
 
 async function downloadFile(filePath, binary) {
     let response = await fetch(filePath);

@@ -358,7 +358,7 @@ Blockly.Blocks['xrp_sleep'] = {
       .appendField(new Blockly.FieldNumber(0, 0), "TIME");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(230);
+    this.setColour(200);
     this.setTooltip("");
     this.setHelpUrl("");
   }

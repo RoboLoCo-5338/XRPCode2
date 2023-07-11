@@ -7,25 +7,25 @@
 
     <title>XRP Code Editor</title>
 
-        <link rel="stylesheet" href="uikit-3.16.22/css/uikit.css?version=23" />
+        <link rel="stylesheet" href="uikit-3.16.22/css/uikit.css?version=1" />
 
 
-        <link rel="stylesheet" href="js/xterm/css/xterm.css?version=23"/>
-        <link rel="stylesheet" href="golden-layout/css/goldenlayout-base.css?version=23">
-        <link rel="stylesheet" href="golden-layout/css/themes/goldenlayout-dark-theme.css?version=23">
+        <link rel="stylesheet" href="js/xterm/css/xterm.css?version=1"/>
+        <link rel="stylesheet" href="golden-layout/css/goldenlayout-base.css?version=1">
+        <link rel="stylesheet" href="golden-layout/css/themes/goldenlayout-dark-theme.css?version=1">
 
-        <link rel="stylesheet" href="css/dark/main-dark.css?version=23">
-        <link rel="stylesheet" href="css/dark/fs-dark.css?version=23">
-        <link rel="stylesheet" href="css/dark/dir_chooser-dark.css?version=23">
-        <link rel="stylesheet" href="css/dark/bitmap_builder-dark.css?version=23">
-        <link rel="stylesheet" href="css/dark/shell-dark.css?version=23">
-        <link rel="stylesheet" href="css/dark/editor-dark.css?version=23">
-        <link rel="stylesheet" href="css/dark/emulator-dark.css?version=23">
-        <link rel="stylesheet" href="css/dark/changelog-dark.css?version=23">
-        <link rel="stylesheet" href="css/dark/arcade-dark.css?version=23">
-        <link rel="stylesheet" href="css/dark/importer-dark.css?version=23">
+        <link rel="stylesheet" href="css/dark/main-dark.css?version=1">
+        <link rel="stylesheet" href="css/dark/fs-dark.css?version=1">
+        <link rel="stylesheet" href="css/dark/dir_chooser-dark.css?version=1">
+        <link rel="stylesheet" href="css/dark/bitmap_builder-dark.css?version=1">
+        <link rel="stylesheet" href="css/dark/shell-dark.css?version=1">
+        <link rel="stylesheet" href="css/dark/editor-dark.css?version=1">
+        <link rel="stylesheet" href="css/dark/emulator-dark.css?version=1">
+        <link rel="stylesheet" href="css/dark/changelog-dark.css?version=1">
+        <link rel="stylesheet" href="css/dark/arcade-dark.css?version=1">
+        <link rel="stylesheet" href="css/dark/importer-dark.css?version=1">
 
-        <link rel="stylesheet" href="js/treejs/treejs.css?version=23" />
+        <link rel="stylesheet" href="js/treejs/treejs.css?version=1" />
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,32 +34,7 @@
     </head>
 
     <body>
-        <div id="updateMPOverlay" class="update_mp_overlay">
-            <div id="updateMP" class="update_mp">
-                <p style="margin: 10px">
-                    The MicroPython on your XRP needs to be updated..<br><br>Would you like to update now?
-                </p>
-
-                <button id="updateMPYes" style="width:175px; height:50px; position:absolute; left:30px; bottom:10px" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap">
-                    Yes
-                </button>
-
-                <button id="updateMPNo" style="width:175px; height:50px; position:absolute; right:30px; bottom:10px" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap">
-                    No
-                </button>
-            </div>
-
-            <div id="updateMPExtraInfo" class="update_mp_extra">
-                <p style="margin: 10px">
-                    When the "Select Folder" window comes up select the 'RPI-RP2' drive when it appears.<br><br>Next click on 'Edit Files'<br><br>Then wait for the XRP to connect, it may take a few seconds
-                </p>
-
-                <button id="updateMPOk" style="width:175px; height:50px; position:absolute; left:0; right:0; margin-left:auto; margin-right:auto; bottom:10px" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap">
-                    OK
-                </button>
-            </div>
-        </div>
-
+        
         <div id="IDChangelog" class="changelog">
             <button id="IDChnagelogExitBtn" class="changelog_exit_btn" uk-icon="icon: close"></button>
             <div id="IDChangelogText" class="changelog_text"></div>
@@ -134,7 +109,7 @@
                 <div class="header_link_space">
                     <div class="uk-button-group uk-width-1-1 uk-height-1-1">
                         <button title="Opens link in new tab" onclick="window.open('https://introduction-to-robotics.readthedocs.io/en/latest/index.html', '_blank');" class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link">Tutorial</button>
-                        <button title="Opens link in new tab" onclick="window.open('https://introduction-to-robotics.readthedocs.io/en/latest/index.html', '_blank');" class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link">XRP API</button>
+                        <button title="Opens link in new tab" onclick="window.open('https://open-stem.github.io/XRP_MicroPython/', '_blank');" class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link">XRP API</button>
                       <!--
                         <button class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link" type="button">Other Links&#9662</button>
                         <div uk-dropdown="offset: 0; delay-hide: 200">
@@ -169,432 +144,44 @@
           </div>
         </div>
 
-        <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
-            <category name="DriveTrain" colour="#A65C5C">
-             
-              <block type="xrp_straight_effort">
-                <value name="dist">
-                  <shadow type="math_number">
-                    <field name="NUM">150</field>
-                  </shadow>
-                </value>
-                <value name="effort">
-                  <shadow type="math_number">
-                    <field name="NUM">0.5</field>
-                  </shadow>
-                </value>
-              </block>
-
-              <block type="xrp_turn_effort">
-                <value name="angle">
-                  <shadow type="math_number">
-                    <field name="NUM">90</field>
-                  </shadow>
-                </value>
-                <value name="effort">
-                  <shadow type="math_number">
-                    <field name="NUM">0.5</field>
-                  </shadow>
-                </value>
-              </block>
-
-              <block type="xrp_seteffort">
-                <value name="LEFT">
-                  <shadow type="math_number">
-                    <field name="NUM">0</field>
-                  </shadow>
-                </value>
-                <value name="RIGHT">
-                  <shadow type="math_number">
-                    <field name="NUM">0</field>
-                  </shadow>
-                </value>
-              </block>
-
-              <block type="xrp_stop_motors"></block>
-            </category>
-
-            <category name="Servos" colour="#A65C5C">              
-              <block type="xrp_servo_deg">
-                <value name="degrees">
-                  <shadow type="math_number">
-                    <field name="NUM">90</field>
-                  </shadow>
-                </value>
-              </block>            
-            </category>
-            
-            <category name="Sensors" colour="#A6A65C">
-              <block type="xrp_resetencoders"></block>
-              <block type="xrp_getleftencoder"></block>
-              <block type="xrp_getrightencoder"></block>
-              <block type="xrp_getsonardist"></block>
-              <block type="xrp_l_refl"></block>
-              <block type="xrp_r_refl"></block>
-              <block type="xrp_yaw"></block>
-              <block type="xrp_roll"></block>
-              <block type="xrp_pitch"></block>
-                                                       
-            </category>
-            <category name="Control Board" colour="#5C9AA6">
-              <block type="xrp_led_on"></block>
-              <block type="xrp_led_off"></block>
-              
-              <block type="xrp_button_pressed"></block>
-      
-            </category>
-            <category name="Logic" colour="#5b80a5">
-              <block type="xrp_sleep">
-                <field name="TIME">0</field>
-              </block>
-              <block type="controls_if"></block>
-              <block type="logic_compare">
-                <field name="OP">EQ</field>
-              </block>
-              <block type="logic_operation">
-                <field name="OP">AND</field>
-              </block>
-              <block type="logic_negate"></block>
-              <block type="logic_boolean">
-                <field name="BOOL">TRUE</field>
-              </block>
-              <block type="logic_null"></block>
-              <block type="logic_ternary"></block>
-            </category>
-            <category name="Loops" colour="#5ba55b">
-              <block type="controls_repeat_ext">
-                <value name="TIMES">
-                  <shadow type="math_number">
-                    <field name="NUM">10</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="controls_whileUntil">
-                <field name="MODE">WHILE</field>
-              </block>
-              <block type="controls_for">
-                <field name="VAR" id="FgA,0kVszQhxNMx=)la5">i</field>
-                <value name="FROM">
-                  <shadow type="math_number">
-                    <field name="NUM">1</field>
-                  </shadow>
-                </value>
-                <value name="TO">
-                  <shadow type="math_number">
-                    <field name="NUM">10</field>
-                  </shadow>
-                </value>
-                <value name="BY">
-                  <shadow type="math_number">
-                    <field name="NUM">1</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="controls_forEach">
-                <field name="VAR" id="9{j=i/F_P/N0P#IyZ@13">j</field>
-              </block>
-              <block type="controls_flow_statements">
-                <field name="FLOW">BREAK</field>
-              </block>
-            </category>
-            <category name="Math" colour="#5b67a5">
-              <block type="math_number">
-                <field name="NUM">0</field>
-              </block>
-              <block type="math_arithmetic">
-                <field name="OP">ADD</field>
-                <value name="A">
-                  <shadow type="math_number">
-                    <field name="NUM">1</field>
-                  </shadow>
-                </value>
-                <value name="B">
-                  <shadow type="math_number">
-                    <field name="NUM">1</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="math_single">
-                <field name="OP">ROOT</field>
-                <value name="NUM">
-                  <shadow type="math_number">
-                    <field name="NUM">9</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="math_trig">
-                <field name="OP">SIN</field>
-                <value name="NUM">
-                  <shadow type="math_number">
-                    <field name="NUM">45</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="math_constant">
-                <field name="CONSTANT">PI</field>
-              </block>
-              <block type="math_number_property">
-                <mutation divisor_input="false"></mutation>
-                <field name="PROPERTY">EVEN</field>
-                <value name="NUMBER_TO_CHECK">
-                  <shadow type="math_number">
-                    <field name="NUM">0</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="math_round">
-                <field name="OP">ROUND</field>
-                <value name="NUM">
-                  <shadow type="math_number">
-                    <field name="NUM">3.1</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="math_on_list">
-                <mutation op="SUM"></mutation>
-                <field name="OP">SUM</field>
-              </block>
-              <block type="math_modulo">
-                <value name="DIVIDEND">
-                  <shadow type="math_number">
-                    <field name="NUM">64</field>
-                  </shadow>
-                </value>
-                <value name="DIVISOR">
-                  <shadow type="math_number">
-                    <field name="NUM">10</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="math_constrain">
-                <value name="VALUE">
-                  <shadow type="math_number">
-                    <field name="NUM">50</field>
-                  </shadow>
-                </value>
-                <value name="LOW">
-                  <shadow type="math_number">
-                    <field name="NUM">1</field>
-                  </shadow>
-                </value>
-                <value name="HIGH">
-                  <shadow type="math_number">
-                    <field name="NUM">100</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="math_random_int">
-                <value name="FROM">
-                  <shadow type="math_number">
-                    <field name="NUM">1</field>
-                  </shadow>
-                </value>
-                <value name="TO">
-                  <shadow type="math_number">
-                    <field name="NUM">100</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="math_random_float"></block>
-            </category>
-            <category name="Text" colour="#5ba58c">
-              <block type="text">
-                <field name="TEXT"></field>
-              </block>
-              <block type="text_join">
-                <mutation items="2"></mutation>
-              </block>
-              <block type="text_append">
-                <field name="VAR" id="dd-~qR|Y8067Rw6PQ`CU">item</field>
-                <value name="TEXT">
-                  <shadow type="text">
-                    <field name="TEXT"></field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="text_length">
-                <value name="VALUE">
-                  <shadow type="text">
-                    <field name="TEXT">abc</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="text_isEmpty">
-                <value name="VALUE">
-                  <shadow type="text">
-                    <field name="TEXT"></field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="text_indexOf">
-                <field name="END">FIRST</field>
-                <value name="VALUE">
-                  <block type="variables_get">
-                    <field name="VAR" id="!8T!Ua3M|iS_pf63Fo8P">text</field>
-                  </block>
-                </value>
-                <value name="FIND">
-                  <shadow type="text">
-                    <field name="TEXT">abc</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="text_charAt">
-                <mutation at="true"></mutation>
-                <field name="WHERE">FROM_START</field>
-                <value name="VALUE">
-                  <block type="variables_get">
-                    <field name="VAR" id="!8T!Ua3M|iS_pf63Fo8P">text</field>
-                  </block>
-                </value>
-              </block>
-              <block type="text_getSubstring">
-                <mutation at1="true" at2="true"></mutation>
-                <field name="WHERE1">FROM_START</field>
-                <field name="WHERE2">FROM_START</field>
-                <value name="STRING">
-                  <block type="variables_get">
-                    <field name="VAR" id="!8T!Ua3M|iS_pf63Fo8P">text</field>
-                  </block>
-                </value>
-              </block>
-              <block type="text_changeCase">
-                <field name="CASE">UPPERCASE</field>
-                <value name="TEXT">
-                  <shadow type="text">
-                    <field name="TEXT">abc</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="text_trim">
-                <field name="MODE">BOTH</field>
-                <value name="TEXT">
-                  <shadow type="text">
-                    <field name="TEXT">abc</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="text_print">
-                <value name="TEXT">
-                  <shadow type="text">
-                    <field name="TEXT">abc</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="text_prompt_ext">
-                <mutation type="TEXT"></mutation>
-                <field name="TYPE">TEXT</field>
-                <value name="TEXT">
-                  <shadow type="text">
-                    <field name="TEXT">abc</field>
-                  </shadow>
-                </value>
-              </block>
-            </category>
-            <category name="Lists" colour="#745ba5">
-              <block type="lists_create_with">
-                <mutation items="0"></mutation>
-              </block>
-              <block type="lists_create_with">
-                <mutation items="3"></mutation>
-              </block>
-              <block type="lists_repeat">
-                <value name="NUM">
-                  <shadow type="math_number">
-                    <field name="NUM">5</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="lists_length"></block>
-              <block type="lists_isEmpty"></block>
-              <block type="lists_indexOf">
-                <field name="END">FIRST</field>
-                <value name="VALUE">
-                  <block type="variables_get">
-                    <field name="VAR" id="99zG#BOx8Ju]uWKIKU.J">list</field>
-                  </block>
-                </value>
-              </block>
-              <block type="lists_getIndex">
-                <mutation statement="false" at="true"></mutation>
-                <field name="MODE">GET</field>
-                <field name="WHERE">FROM_START</field>
-                <value name="VALUE">
-                  <block type="variables_get">
-                    <field name="VAR" id="99zG#BOx8Ju]uWKIKU.J">list</field>
-                  </block>
-                </value>
-              </block>
-              <block type="lists_setIndex">
-                <mutation at="true"></mutation>
-                <field name="MODE">SET</field>
-                <field name="WHERE">FROM_START</field>
-                <value name="LIST">
-                  <block type="variables_get">
-                    <field name="VAR" id="99zG#BOx8Ju]uWKIKU.J">list</field>
-                  </block>
-                </value>
-              </block>
-              <block type="lists_getSublist">
-                <mutation at1="true" at2="true"></mutation>
-                <field name="WHERE1">FROM_START</field>
-                <field name="WHERE2">FROM_START</field>
-                <value name="LIST">
-                  <block type="variables_get">
-                    <field name="VAR" id="99zG#BOx8Ju]uWKIKU.J">list</field>
-                  </block>
-                </value>
-              </block>
-              <block type="lists_split">
-                <mutation mode="SPLIT"></mutation>
-                <field name="MODE">SPLIT</field>
-                <value name="DELIM">
-                  <shadow type="text">
-                    <field name="TEXT">,</field>
-                  </shadow>
-                </value>
-              </block>
-              <block type="lists_sort">
-                <field name="TYPE">NUMERIC</field>
-                <field name="DIRECTION">1</field>
-              </block>
-            </category>
-            <category name="Variables" colour="#a55b80" custom="VARIABLE"></category>
-            <category name="Functions" colour="#995ba5" custom="PROCEDURE"></category>
-            <sep></sep>
-          </xml>
-          <xml xmlns="https://developers.google.com/blockly/xml" id="workspaceBlocks" style="display: none">
-            <variables><variable id="sV[YiybSVpx-~;1;D:vv">sides</variable></variables><block type="procedures_defnoreturn" id="IsxZeLy(~T83p5;F]|/z" x="63" y="38"><mutation><arg name="sides" varid="sV[YiybSVpx-~;1;D:vv"></arg></mutation><field name="NAME">polygon</field><comment pinned="false" h="80" w="160">Draw a polygon with any given sides</comment><statement name="STACK"><block type="controls_repeat_ext" id="BrMKqWjxOkTv)Nb0:19X"><value name="TIMES"><block type="variables_get" id="FXg,ZI8c]uXY5M**o,4o"><field name="VAR" id="sV[YiybSVpx-~;1;D:vv">sides</field></block></value><statement name="DO"><block type="xrp_straight" id="{LmoLT:Ok841t}OJ.KK}"><value name="dist"><block type="math_number" id="gW#L*x3VXJ8}B_n#qI77"><field name="NUM">150</field></block></value><next><block type="xrp_turn" id="E,,A#fLe0lZMJc+N.Hf?"><value name="angle"><block type="math_arithmetic" id="j;O(Fx/%;`NtZNs(qL6="><field name="OP">DIVIDE</field><value name="A"><shadow type="math_number" id="{/Drmz[VsPo89q%PwaVZ"><field name="NUM">1</field></shadow><block type="math_number" id="el_J8yGp-ywNqRw~22Jc"><field name="NUM">360</field></block></value><value name="B"><shadow type="math_number" id="n!g~4v1Nsv3xP$n_tL[@"><field name="NUM">1</field></shadow><block type="variables_get" id="v1y!,?e!$9Fq*%J`t|4T"><field name="VAR" id="sV[YiybSVpx-~;1;D:vv">sides</field></block></value></block></value></block></next></block></statement></block></statement></block>
-          </xml>
+       
 
         <!-- https://stackoverflow.com/questions/61286599/how-to-force-browser-to-load-new-content -->
         
         <script src="uikit-3.16.22/js/uikit.min.js"></script>
         <script src="uikit-3.16.22/js/uikit-icons.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.3/dist/js/uikit-icons.min.js"></script>
-        <script src="js/blockly-9.2.0/blockly.min.js"></script>
-        <script src="js/blockly-9.2.0/python_compressed.js"></script>
+
+        <script src="js/blockly-10.0.0/blockly.min.js"></script>
+        <script src="js/blockly-10.0.0/python_compressed.js"></script>
+       
+
         <script src="js/jszip-3.10.1/jszip.min.js"></script>
-        <script src="js/treejs/tree.js?version=23"></script>
-        <script src="js/xterm-addon-fit/lib/xterm-addon-fit.js?version=23"></script>
-        <script src="js/ace/ace.js?version=23" type="text/javascript" charset="utf-8"></script>
+
+        <script src="js/treejs/tree.js?version=1"></script>
+
+        <script src="js/xterm-addon-fit/lib/xterm-addon-fit.js?version=1"></script>
+
+        <script src="js/ace/ace.js?version=1" type="text/javascript" charset="utf-8"></script>
+        <script src="js/ace/ext-language_tools.js?version=1"></script>
 
         <script src="js/xrp_blocks.js"></script>
         <script src="js/xrp_blocks_python.js"></script>
-        <scrpit src="js/blocklyworkspace.js"></scrpit>
+        <script src="js/xrp_blockly_toolbox.js"></script>
+        <!--<scrpit src="js/blocklyworkspace.js"></scrpit> -->
 
-        <!-- <script src="js/blocks.js?version=23"></script> -->
+        <!-- <script src="js/blocks.js?version=1"></script> -->
 
-        <script src="js/ace/ext-language_tools.js?version=23"></script>
+
         
-        <script src="js/editor_wrapper.js?version=23"></script>
-        <script src="js/filesystem_wrapper.js?version=23"></script>
-        <script src="js/dir_chooser.js?version=23"></script>
-        <script src="js/xterm/lib/xterm.js?version=23"></script>
-        <script src="js/active_terminal_wrapper.js?version=23"></script>
-        <script src="js/repl.js?version=23"></script>
-        <script src="js/importer.js?version=23"></script>
-        <script type="module" src="golden-layout/bundle/esm/golden-layout.js?version=23"></script>
-        <script type="module" src="js/main.js?version=23"></script>
+        <script src="js/editor_wrapper.js?version=1"></script>
+        <script src="js/filesystem_wrapper.js?version=1"></script>
+        <script src="js/dir_chooser.js?version=1"></script>
+        <script src="js/xterm/lib/xterm.js?version=1"></script>
+        <script src="js/active_terminal_wrapper.js?version=1"></script>
+        <script src="js/repl.js?version=1"></script>
+        <script src="js/importer.js?version=1"></script>
+        <script type="module" src="golden-layout/bundle/esm/golden-layout.js?version=1"></script>
+        <script type="module" src="js/main.js?version=1"></script>
     </body>
 </html>
