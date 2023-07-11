@@ -905,7 +905,12 @@ class ReplJS{
     }
 
     async updateLibrary(){
-        alert("need to update the XRPLib - Needd a yes or no on this")
+        let answer = await window.confirmMessage("The library files on the XRP are out of date.<br>" +
+                "The new version is version " + window.latestLibraryVersion +"<br>" +
+                "press OK to update");
+        if(!answer){
+            return; //they pressed CANCEL
+        }
         window.setPercent(1, "Updating XRPLib...");
         let percent_per = 99 / (window.libraryList.length + window.phewList.length);
         let cur_percent = 1 + percent_per;
