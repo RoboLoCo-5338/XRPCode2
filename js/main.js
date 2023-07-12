@@ -53,7 +53,7 @@ var onExportToEditor = (bytes) => {
 const showChangelogVersion = 1;
 
 // This should match what is in /lib/XRPLib/version.py as '__version__'
-window.latestLibraryVersion = [0,9,1];
+window.latestLibraryVersion = [0,9,3];
 
 // This should match what is on the actual Thumby firmware found through import sys and sys.implementation
 window.latestMicroPythonVersion = [1, 20, 0];
