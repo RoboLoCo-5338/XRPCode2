@@ -71,6 +71,12 @@ var blocklyToolbox = {
                         "kind": "BLOCK",
                         "type": "xrp_getrightencoder"
                     },
+                ]},
+                {
+                "kind": "CATEGORY",
+                "name": "Distance",
+                "colour": "#A6A65C",
+                "contents": [
                     {
                         "kind": "BLOCK",
                         "type": "xrp_getsonardist"
@@ -275,6 +281,11 @@ var blocklyToolbox = {
             "contents": [
                 {
                     "kind": "BLOCK",
+                    "blockxml": "<block type=\"text_print\">\n                <value name=\"TEXT\">\n                  <shadow type=\"text\">\n                    <field name=\"TEXT\">abc</field>\n                  </shadow>\n                </value>\n              </block>",
+                    "type": "text_print"
+                },
+                {
+                    "kind": "BLOCK",
                     "blockxml": "<block type=\"text\">\n                <field name=\"TEXT\"></field>\n              </block>",
                     "type": "text"
                 },
@@ -322,11 +333,6 @@ var blocklyToolbox = {
                     "kind": "BLOCK",
                     "blockxml": "<block type=\"text_trim\">\n                <field name=\"MODE\">BOTH</field>\n                <value name=\"TEXT\">\n                  <shadow type=\"text\">\n                    <field name=\"TEXT\">abc</field>\n                  </shadow>\n                </value>\n              </block>",
                     "type": "text_trim"
-                },
-                {
-                    "kind": "BLOCK",
-                    "blockxml": "<block type=\"text_print\">\n                <value name=\"TEXT\">\n                  <shadow type=\"text\">\n                    <field name=\"TEXT\">abc</field>\n                  </shadow>\n                </value>\n              </block>",
-                    "type": "text_print"
                 },
                 {
                     "kind": "BLOCK",

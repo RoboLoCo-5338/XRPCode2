@@ -53,47 +53,49 @@ var onExportToEditor = (bytes) => {
 const showChangelogVersion = 1;
 
 // This should match what is in /lib/XRPLib/version.py as '__version__'
-window.latestLibraryVersion = 0.8;
+window.latestLibraryVersion = [0,9,1];
 
 // This should match what is on the actual Thumby firmware found through import sys and sys.implementation
 window.latestMicroPythonVersion = [1, 20, 0];
 
 //list of the library files to update
-window.libraryList = ["board.py","button.py","defaults.py","drivetrain.py","encoded_motor.py","encoder.py","imu.py","led.py","motor.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","version.py","webserver.py"]
+window.libraryList = ["board.py","controller.py","defaults.py","differential_drive.py","encoded_motor.py","encoder.py","imu.py","motor.py","motor_group.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","timeout.py","version.py","webserver.py"]
 window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
 //[TODO] Add the example list
 
 if(localStorage.getItem(showChangelogVersion) == null){
-    // [TODO] - For this verion only !!!
-    let answer = await confirmMessage("This version requires a reset of your local information about this editor.<br>" +
-                                        "If you have unsaved files then press CANCEL, save your files, and then refresh this borwser window.<br><br>" +
-                                        "Otherwise press OK");
+    var answer = true;
+    if(localStorage.getItem(layoutSaveKey) != null){
+        // [TODO] - For this verion only !!!
+        answer = await confirmMessage("This version requires a reset of your local information about this editor.<br>" +
+                                            "If you have unsaved files then press CANCEL, save your files, and then refresh this borwser window.<br><br>" +
+                                            "Otherwise press OK");
+    }
     if(answer){
+        //[TODO] - For this verion only!!!!
+        localStorage.clear();
+    
+
+    console.log("Updates to IDE! Showing changelog...");    // Show message in console
+    localStorage.removeItem(showChangelogVersion-1);        // Remove flag from last version
 
     
-       //[TODO] - For this verion only!!!!
-        localStorage.clear();
 
-        console.log("Updates to IDE! Showing changelog...");    // Show message in console
-        localStorage.removeItem(showChangelogVersion-1);        // Remove flag from last version
-
-        
-
-        fetch("CHANGELOG.txt").then(async (response) => {
-            await response.text().then((text) => {
-                var listener = window.addEventListener("keydown", (event) => {
-                    document.getElementById("IDChangelog").style.display = "none";
-                    window.removeEventListener("keydown", listener);
-                });
-                document.getElementById("IDChnagelogExitBtn").onclick = (event) => {
-                    document.getElementById("IDChangelog").style.display = "none";
-                }
-                document.getElementById("IDChangelog").style.display = "flex";
-                document.getElementById("IDChangelogText").innerText = text;
+    fetch("CHANGELOG.txt").then(async (response) => {
+        await response.text().then((text) => {
+            var listener = window.addEventListener("keydown", (event) => {
+                document.getElementById("IDChangelog").style.display = "none";
+                window.removeEventListener("keydown", listener);
             });
+            document.getElementById("IDChnagelogExitBtn").onclick = (event) => {
+                document.getElementById("IDChangelog").style.display = "none";
+            }
+            document.getElementById("IDChangelog").style.display = "flex";
+            document.getElementById("IDChangelogText").innerText = text;
         });
+    });
 
-        localStorage.setItem(showChangelogVersion, true);       // Set this show not shown on next page load
+    localStorage.setItem(showChangelogVersion, true);       // Set this show not shown on next page load
     }
 }
 
@@ -596,6 +598,7 @@ function registerFilesystem(_container, state){
             if(fileHandles && fileHandles.length > 0){
                 var path = await DIR.getPathFromUser(document.body, true, fileHandles[0].name);
                 if(path != undefined){
+                    path = path.substring(1,path.lastIndexOf("/")+1);  //strip off the file name to get just the path.
                     REPL.uploadFiles(path, fileHandles);
                 }
             }
@@ -818,8 +821,7 @@ function registerEditor(_container, state){
             if(path != undefined){
                 // Make sure no editors with this file path already exist
                 for (const [id, editor] of Object.entries(EDITORS)) {
-                    if(editor.EDITOR_PATH == path
-                        || editor.EDITOR_PATH == path.replace(/\.blocks$/, '.py')){
+                    if(editor.EDITOR_PATH == path){
                         editor._container.parent.focus();
                         alert("This file is already open in Editor" + id + "! Please close it first");
                         return;
@@ -859,15 +861,6 @@ function registerEditor(_container, state){
                     await REPL.getOnBoardFSTree();
                 }
             }else{
-                if(editor.getValue().indexOf("#### !!!! BLOCKLY EXPORT !!!! ####") != -1){
-                    const checkBlocks = await REPL.checkFileExists(editor.EDITOR_PATH.replace(/\.py$/, ".blocks"));
-                    if(checkBlocks){
-                        alert("Detected export from Blockly. Please save to Thumby from the block file.");
-                        return;
-                    }else if(checkBlocks == undefined){
-                        return;
-                    }
-                }
                 var busy = await REPL.uploadFile(editor.EDITOR_PATH, editor.getValue(), true, false);
                 if(busy != true){
                     await REPL.getOnBoardFSTree();

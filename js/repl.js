@@ -795,14 +795,20 @@ class ReplJS{
 
     async uploadFiles(path, fileHandles){
         if(this.BUSY == true){
+            //[TODO] Need to notifiy user
             return;
         }
-
+        window.setPercent(1, "Uploading files...");
+        let percent_per = 99 / fileHandles.length;
+        let cur_percent = 1 + percent_per;
+        
         for(var i=0; i<fileHandles.length; i++){
+            window.setPercent(cur_percent);
+            cur_percent += percent_per;
             const file = await fileHandles[i].getFile();
 
             const bytes = new Uint8Array(await file.arrayBuffer());
-
+            //[TODO] Should we be doing this check?
             if(file.name.indexOf(".py") != -1 || file.name.indexOf(".txt") != -1 || file.name.indexOf(".text") != -1 || file.name.indexOf(".cfg") != -1){
                 await this.uploadFile(path + file.name, await file.text(), false, false);
             }else{
@@ -810,6 +816,7 @@ class ReplJS{
             }
         }
 
+        window.resetPercentDelay();
         await this.getOnBoardFSTree();
     }
 
@@ -883,16 +890,20 @@ class ReplJS{
 
         let info = await this.getVersionInfo();
 
-        if(info[1] != window.latestLibraryVersion){
+        let major = parseInt(info[1].split(".")[0]);
+        let minor = parseInt(info[1].split(".")[1]);
+        let micro = parseInt(info[1].split(".")[2]);
+        //[TODO] this is bad math. Combine the numbers to check greater or less
+        if(major < window.window.latestLibraryVersion[0] || minor < window.window.latestLibraryVersion[1] || micro < window.window.latestLibraryVersion[2]){
             // Need to update the XRP libraries, change color of FS update button
             // Do we delete the XRPLib directory before putting in the new library?
-            await this.updateLibrary();
+            await this.updateLibrary(info[1]);
             //this.onShowUpdate();
         }
 
-        let major = parseInt(info[0].split(", ")[0].substring(1));
-        let minor = parseInt(info[0].split(", ")[1]);
-        let micro = parseInt(info[0].split(", ")[2].substring(0, 1));
+        major = parseInt(info[0].split(", ")[0].substring(1));
+        minor = parseInt(info[0].split(", ")[1]);
+        micro = parseInt(info[0].split(", ")[2].substring(0, 1));
 
         if(major < window.window.latestMicroPythonVersion[0] || minor < window.window.latestMicroPythonVersion[1] || micro < window.window.latestMicroPythonVersion[2]){
             // Need to update MicroPython
@@ -904,9 +915,10 @@ class ReplJS{
        
     }
 
-    async updateLibrary(){
+    async updateLibrary(curVer){
         let answer = await window.confirmMessage("The library files on the XRP are out of date.<br>" +
-                "The new version is version " + window.latestLibraryVersion +"<br>" +
+                "The current version is " + curVer +
+                " The new version is version " + window.latestLibraryVersion +"<br>" +
                 "press OK to update");
         if(!answer){
             return; //they pressed CANCEL
