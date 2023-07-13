@@ -302,6 +302,30 @@ class ReplJS{
         }
     }
 
+    // Given a path, delete it on RP2040
+    async isPowerSwitchOn(path){
+        if(this.BUSY == true){
+            return;
+        }
+        this.BUSY = true;
+
+        var cmd =   "from XRPLib.board import Board\n" +
+                    "board = Board.get_default_board()\n" +
+                    "print(board.are_motors_powered())\n";
+
+
+        var hiddenLines = await this.writeUtilityCmdRaw(cmd, true, 1);
+
+        await this.getToNormal(3);
+        this.BUSY = false;
+        if(hiddenLines[0] == "OKTrue"){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 
     async getOnBoardFSTree(){
         if(this.BUSY == true){
@@ -883,42 +907,55 @@ class ReplJS{
 
 
     async checkIfNeedUpdate(){
+        //if no micropython on the XRP
         if(!this.HAS_MICROPYTHON){
              await this.showMicropythonUpdate();
              return;
         }
 
+        //get version information from the XRP
         let info = await this.getVersionInfo();
 
-        let major = parseInt(info[1].split(".")[0]);
-        let minor = parseInt(info[1].split(".")[1]);
-        let micro = parseInt(info[1].split(".")[2]);
-        //[TODO] this is bad math. Combine the numbers to check greater or less
-        if(major < window.window.latestLibraryVersion[0] || minor < window.window.latestLibraryVersion[1] || micro < window.window.latestLibraryVersion[2]){
-            // Need to update the XRP libraries, change color of FS update button
-            // Do we delete the XRPLib directory before putting in the new library?
+        //if no library or the library is out of date
+        if(Number.isNaN(info[1]) || this.isVersionNewer(window.latestLibraryVersion, info[1])){
+            this.deleteFileOrDir("/lib/XRPLib");  //delete all the files first to avoid any confusion.
             await this.updateLibrary(info[1]);
-            //this.onShowUpdate();
         }
-
-        major = parseInt(info[0].split(", ")[0].substring(1));
-        minor = parseInt(info[0].split(", ")[1]);
-        micro = parseInt(info[0].split(", ")[2].substring(0, 1));
-
-        if(major < window.window.latestMicroPythonVersion[0] || minor < window.window.latestMicroPythonVersion[1] || micro < window.window.latestMicroPythonVersion[2]){
+        
+        info[0]= info[0].replace(/[\(\)]/g, "").replace(/,\s/g, "."); //convert to a semantic version
+        //if the microPython is out of date
+        if(this.isVersionNewer(window.latestMicroPythonVersion, info[0])){
             // Need to update MicroPython
             //alert("Need to update Micropython")
             await this.showMicropythonUpdate();
             return;
         }
+    }
 
-       
+    isVersionNewer(v1, v2) {
+        let v1parts = v1;
+        let v2parts = v2.split('.').map(Number);
+    
+        while (v1parts.length < v2parts.length) v1parts.push(0);
+        while (v2parts.length < v1parts.length) v2parts.push(0);
+    
+        for (let i = 0; i < v1parts.length; ++i) {
+            if (v1parts[i] > v2parts[i]) {
+                return true;
+            } else if (v1parts[i] < v2parts[i]) {
+                return false;
+            }
+        }
+        return false;
     }
 
     async updateLibrary(curVer){
+        if(curVer == "ERROR EX"){
+            curVer = "None";
+        }
         let answer = await window.confirmMessage("The library files on the XRP are out of date.<br>" +
                 "The current version is " + curVer +
-                " The new version is version " + window.latestLibraryVersion +"<br>" +
+                " The new version is version " + window.latestLibraryVersion[0] + "." + window.latestLibraryVersion[1] + "." + window.latestLibraryVersion[2] +"<br>" +
                 "press OK to update");
         if(!answer){
             return; //they pressed CANCEL

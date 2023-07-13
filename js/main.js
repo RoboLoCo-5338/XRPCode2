@@ -783,7 +783,7 @@ function registerShell(_container, state){
             }
         }
 
-        let answer = await confirmMessage("The MicroPython on your XRP needs to be updated..<br>Would you like to update now?");
+        let answer = await confirmMessage("The MicroPython on your XRP needs to be updated. The new version is " + window.latestMicroPythonVersion[0] + "." + window.latestMicroPythonVersion[1] + "." + window.latestMicroPythonVersion[2] +"<br>Would you like to update now?");
         if(answer){
             await alertMessage("When the <b>Select Folder</b> window comes up select the <b>RPI-RP2</b> drive when it appears.<br>Next click on 'Edit Files'<br>Then wait for the XRP to connect, it may take a few seconds");
             REPL.updateMicroPython();
@@ -883,6 +883,12 @@ function registerEditor(_container, state){
             alert("Another program is already running. Stop that program and then press RUN again.")
             return;
         }
+        //check if power switch is on.
+        if(! await REPL.isPowerSwitchOn()) {
+            await window.alertMessage("The power switch on the XRP is not on. Motors and servos will not work.<br>Turn on the switch and then press RUN again.")
+            return;
+        }
+
         //save all unsaved files
         for (const [id, editor] of Object.entries(EDITORS)) {
             if(!editor.SAVED_TO_THUMBY) {
@@ -896,6 +902,7 @@ function registerEditor(_container, state){
             file = file.replace(".blocks", ".py");
         }
         await REPL.updateMainFile(file);
+        ATERM.TERM.scrollToBottom();
         await REPL.executeLines(lines);
     }
    
