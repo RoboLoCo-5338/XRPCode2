@@ -53,7 +53,7 @@ var onExportToEditor = (bytes) => {
 const showChangelogVersion = 1;
 
 // This should match what is in /lib/XRPLib/version.py as '__version__'
-window.latestLibraryVersion = [0,9,3];
+window.latestLibraryVersion = [0,9,4];
 
 // This should match what is on the actual Thumby firmware found through import sys and sys.implementation
 window.latestMicroPythonVersion = [1, 20, 0];
@@ -879,6 +879,10 @@ function registerEditor(_container, state){
         }
     }
     editor.onFastExecute = async (lines) => {
+        if(REPL.DISCONNECT == true){
+            window.alertMessage("Can not run program no XRP connected");
+            return;
+        }
         if(REPL.BUSY) {
             alert("Another program is already running. Stop that program and then press RUN again.")
             return;

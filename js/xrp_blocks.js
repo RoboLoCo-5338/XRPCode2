@@ -1,3 +1,102 @@
+
+Blockly.Blocks['xrp_motor_effort'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Motor:")
+      .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
+      .appendField("effort:")
+      .appendField(new Blockly.FieldNumber(0.8, -1, 1), 'effortNumber');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);  
+    this.setColour(0);
+    this.setTooltip("Set the effort for the selected motor");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_motor_speed'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Motor:")
+      .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
+      .appendField("speed:")
+      .appendField(new Blockly.FieldNumber(10), 'speedNumber');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);  
+    this.setColour(0);
+    this.setTooltip("Set the speed in RPM for the selected motor");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_motor_get_speed'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Motor:")
+      .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
+      .appendField("Speed")
+    this.setOutput(true, null);
+    this.setColour(0);
+    this.setTooltip("Get the speed of the selected motor");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_motor_direction'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Motor:")
+      .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
+      .appendField("direction:")
+      .appendField(new Blockly.FieldDropdown([["Reverse", "True"], ["Forward", "False"]]), "DIRECTION");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);  
+    this.setColour(0);
+    this.setTooltip("Set the default direction of the selected motor");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_motor_get_position'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Motor:")
+      .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
+      .appendField("Position")
+    this.setOutput(true, null);
+    this.setColour(0);
+    this.setTooltip("Get the position (number of revolutions) of the selected motor since the last reset");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_motor_get_ticks'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Motor:")
+      .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
+      .appendField("Ticks")
+    this.setOutput(true, null);
+    this.setColour(0);
+    this.setTooltip("Get the number of encoder ticks of the selected motor since the last reset");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_motor_reset_position'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Motor:")
+      .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
+      .appendField("Reset Encoder")
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);  
+    this.setColour(0);
+    this.setTooltip("Reset the position and ticks for the selected motor");
+    this.setHelpUrl("");
+  }
+};
+
 Blockly.Blocks['xrp_straight_effort'] = {
   init: function () {
     this.appendValueInput("dist")
@@ -17,12 +116,11 @@ Blockly.Blocks['xrp_straight_effort'] = {
 
 Blockly.Blocks['xrp_turn_effort'] = {
   init: function () {
-    this.appendValueInput("angle")
-      .setCheck("Number")
-      .appendField("Turn");
-    this.appendValueInput("effort")
-      .setCheck("Number")
-      .appendField("Effort");
+    this.appendDummyInput()
+        .appendField('Turn')
+        .appendField(new Blockly.FieldNumber(90, -360, 360), 'angle')
+        .appendField("Effort")
+        .appendField(new Blockly.FieldNumber(0.5, -1, 1), 'effort');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -207,6 +305,18 @@ Blockly.Blocks['xrp_button_pressed'] = {
     this.appendDummyInput()
       .appendField("User Button");
     this.setOutput(true, null);
+    this.setColour(190);
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_wait_for_button_press'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Wait for Button Press");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
     this.setColour(190);
     this.setTooltip("");
     this.setHelpUrl("");

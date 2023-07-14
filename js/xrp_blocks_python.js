@@ -1,5 +1,65 @@
 const PY = Blockly.Python;
 
+Blockly.Python['xrp_motor_effort'] = function (block) {
+  PY.definitions_['import_motor'] = 'from XRPLib.encoded_motor import EncodedMotor';
+  var index = block.getFieldValue("MOTOR");
+  PY.definitions_[`motor${index}_setup`] = `motor${index} = EncodedMotor.get_default_encoded_motor(${index})`;
+  var value_effort = block.getFieldValue("effortNumber");
+  var code = `motor${index}.set_effort(${value_effort})\n`;
+  return code;
+};
+
+Blockly.Python['xrp_motor_speed'] = function (block) {
+  PY.definitions_['import_motor'] = 'from XRPLib.encoded_motor import EncodedMotor';
+  var index = block.getFieldValue("MOTOR");
+  PY.definitions_[`motor${index}_setup`] = `motor${index} = EncodedMotor.get_default_encoded_motor(${index})`;
+  var value_speed = block.getFieldValue("speedNumber");
+  if(value_speed == 0) value_speed = "";
+  var code = `motor${index}.set_speed(${value_speed})\n`;
+  return code;
+};
+
+Blockly.Python['xrp_motor_get_speed'] = function (block) {
+  PY.definitions_['import_motor'] = 'from XRPLib.encoded_motor import EncodedMotor';
+  var index = block.getFieldValue("MOTOR");
+  PY.definitions_[`motor${index}_setup`] = `motor${index} = EncodedMotor.get_default_encoded_motor(${index})`;
+  var code = `motor${index}.get_speed()`;
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_motor_direction'] = function (block) {
+  PY.definitions_['import_motor'] = 'from XRPLib.encoded_motor import EncodedMotor';
+  var index = block.getFieldValue("MOTOR");
+  PY.definitions_[`motor${index}_setup`] = `motor${index} = EncodedMotor.get_default_encoded_motor(${index})`;
+  var value_direction = block.getFieldValue("DIRECTION");
+  var code = `motor${index}._motor.flip_dir = (${value_direction})\n`;
+  return code;
+};
+
+Blockly.Python['xrp_motor_get_position'] = function (block) {
+  PY.definitions_['import_motor'] = 'from XRPLib.encoded_motor import EncodedMotor';
+  var index = block.getFieldValue("MOTOR");
+  PY.definitions_[`motor${index}_setup`] = `motor${index} = EncodedMotor.get_default_encoded_motor(${index})`;
+  var code = `motor${index}.get_position()`;
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_motor_get_ticks'] = function (block) {
+  PY.definitions_['import_motor'] = 'from XRPLib.encoded_motor import EncodedMotor';
+  var index = block.getFieldValue("MOTOR");
+  PY.definitions_[`motor${index}_setup`] = `motor${index} = EncodedMotor.get_default_encoded_motor(${index})`;
+  var code = `motor${index}.get_position_ticks()`;
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_motor_reset_position'] = function (block) {
+  PY.definitions_['import_motor'] = 'from XRPLib.encoded_motor import EncodedMotor';
+  var index = block.getFieldValue("MOTOR");
+  PY.definitions_[`motor${index}_setup`] = `motor${index} = EncodedMotor.get_default_encoded_motor(${index})`;
+  var code = `motor${index}.reset_encoder_position()\n`;
+  return code;
+};
+
 Blockly.Python['xrp_straight_effort'] = function (block) {
   PY.definitions_['import_drivetrain'] = 'from XRPLib.differential_drive import DifferentialDrive';
   PY.definitions_[`drietrain_setup`] = `differentialDrive = DifferentialDrive.get_default_differential_drive()`;
@@ -143,6 +203,13 @@ Blockly.Python['xrp_button_pressed'] = function (block) {
   var code = `board.is_button_pressed()`;
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['xrp_wait_for_button_press'] = function (block) {
+  PY.definitions_['import_board'] = 'from XRPLib.board import Board';
+  PY.definitions_[`board_setup`] = `board = Board.get_default_board()`;
+  var code = `board.wait_for_button()\n`
+  return code;
 };
 
 Blockly.Python['xrp_sleep'] = function (block) {

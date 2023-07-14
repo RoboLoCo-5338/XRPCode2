@@ -918,7 +918,6 @@ class ReplJS{
 
         //if no library or the library is out of date
         if(Number.isNaN(info[1]) || this.isVersionNewer(window.latestLibraryVersion, info[1])){
-            this.deleteFileOrDir("/lib/XRPLib");  //delete all the files first to avoid any confusion.
             await this.updateLibrary(info[1]);
         }
         
@@ -964,15 +963,19 @@ class ReplJS{
         let percent_per = 99 / (window.libraryList.length + window.phewList.length);
         let cur_percent = 1 + percent_per;
 
+        await this.deleteFileOrDir("/lib/XRPLib");  //delete all the files first to avoid any confusion.
         for(let i=0; i<window.libraryList.length; i++){
-            window.setPercent(cur_percent);   
-            await this.uploadFile("lib/XRPLib/" + window.libraryList[i], await window.downloadFile("lib/XRPLib/" + window.libraryList[i]), false);
+            window.setPercent(cur_percent);
+            //added a version number to ensure that the browser does not cache it.   
+            await this.uploadFile("lib/XRPLib/" + window.libraryList[i], await window.downloadFile("lib/XRPLib/" + window.libraryList[i] + "?version=" + window.latestLibraryVersion[2]) , false);
             cur_percent += percent_per;
         }
 
+        await this.deleteFileOrDir("/lib/phew");  //delete all the files first to avoid any confusion.
         for(let i=0; i<window.phewList.length; i++){
-            window.setPercent(cur_percent);   
-            await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i]), false);
+            window.setPercent(cur_percent);
+            //added a version number to ensure that the browser does not cache it.   
+            await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i] + "?version=" + window.latestLibraryVersion[2]), false);
             cur_percent += percent_per;
         }
 

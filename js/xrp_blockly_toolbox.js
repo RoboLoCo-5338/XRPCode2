@@ -2,6 +2,41 @@ var blocklyToolbox = {
     "contents": [
         {
             "kind": "CATEGORY",
+            "name": "Individual Motors",
+            "colour": "#A65C5C",
+            "contents": [
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_motor_effort",
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_motor_speed",
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_motor_direction",
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_motor_get_speed",
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_motor_get_position",
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_motor_get_ticks",
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_motor_reset_position",
+                },
+            ]
+        },
+        {
+            "kind": "CATEGORY",
             "name": "DriveTrain",
             "colour": "#A65C5C",
             "contents": [
@@ -16,10 +51,6 @@ var blocklyToolbox = {
                 {
                     "kind": "BLOCK",
                     "type": "xrp_turn_effort",
-                    "inputs":{
-                        "angle": {"shadow": {"type": "math_number", "fields": {"NUM": "90"}}},
-                        "effort": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}}
-                    },
                 },
                 {
                     "kind": "BLOCK",
@@ -132,6 +163,10 @@ var blocklyToolbox = {
                 {
                     "kind": "BLOCK",
                     "type": "xrp_button_pressed"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_wait_for_button_press"
                 }
             ]
         },
