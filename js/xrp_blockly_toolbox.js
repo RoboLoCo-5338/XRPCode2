@@ -63,7 +63,19 @@ var blocklyToolbox = {
                 {
                     "kind": "BLOCK",
                     "type": "xrp_stop_motors"
-                }
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_resetencoders"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_getleftencoder"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_getrightencoder"
+                },
             ]
         },
         {
@@ -85,24 +97,6 @@ var blocklyToolbox = {
             "name": "Sensors",
             "colour": "#A6A65C",
             "contents": [
-                {
-                "kind": "CATEGORY",
-                "name": "Encoders",
-                "colour": "#A6A65C",
-                "contents": [
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_resetencoders"
-                    },
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_getleftencoder"
-                    },
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_getrightencoder"
-                    },
-                ]},
                 {
                 "kind": "CATEGORY",
                 "name": "Distance",
@@ -145,6 +139,24 @@ var blocklyToolbox = {
                         "type": "xrp_pitch"
                     }
                 ]},
+                {
+                    "kind": "CATEGORY",
+                    "name": "Accelerometer",
+                    "colour": "#A6A65C",
+                    "contents": [
+                    {
+                        "kind": "BLOCK",
+                        "type": "xrp_acc_x"
+                    },
+                    {
+                        "kind": "BLOCK",
+                        "type": "xrp_acc_y"
+                    },
+                    {
+                        "kind": "BLOCK",
+                        "type": "xrp_acc_z"
+                    }
+                ]},
             ]
         },
         {
@@ -168,6 +180,48 @@ var blocklyToolbox = {
                     "kind": "BLOCK",
                     "type": "xrp_wait_for_button_press"
                 }
+            ]
+        },
+        {
+            "kind": "CATEGORY",
+            "name": "Web Server",
+            "colour": "#5C9AA6",
+            "contents": [
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_ws_forward_button"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_ws_back_button"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_ws_left_button"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_ws_right_button"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_ws_stop_button"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_ws_add_button"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_ws_log_data",
+                    "inputs":{
+                        "log_name": {"shadow": {"type": "text", "fields": {"text": "label"}}}
+                    },
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_ws_start_server"
+                },
             ]
         },
          {

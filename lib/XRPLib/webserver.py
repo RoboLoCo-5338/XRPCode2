@@ -33,12 +33,12 @@ class Webserver:
 
     def start_server(self, robot_number:int):
         """
-        Start the webserver
+        Start the webserver. The network password is the same as the name
 
         :param robot_number: The number of the robot, used to generate the access point name
         :type robot_number: int
         """
-        self.access_point = access_point(f"XRP_{robot_number}")
+        self.access_point = access_point(f"XRP_{robot_number}", f"XRP_{robot_number}")
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
         logging.info(f"Starting DNS Server at {self.ip}")
         dns.run_catchall(self.ip)
@@ -54,11 +54,10 @@ class Webserver:
             self._handleUserFunctionRequest(text)
             return self._generateHTML()
 
+
     def _wrong_host_redirect(self, request):
-        # Captive portal redirects any other host request to self.DOMAIN
-        body = "<!DOCTYPE html><head><meta http-equiv=\"refresh\" content=\"0;URL='http://"+self.DOMAIN+"'/ /></head>"
-        logging.info("Redirecting to https://"+self.DOMAIN+"/")
-        return body
+        # Catch all sends here. No special behavior really needed, just give them the control page 
+        return self._generateHTML()
 
     def _hotspot(self, request):
         # Redirect to Index Page

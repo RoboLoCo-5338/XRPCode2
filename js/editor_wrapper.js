@@ -620,7 +620,7 @@ class EditorWrapper{
         this.OPEN_PYTHON = document.createElement("button");
         this.OPEN_PYTHON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.OPEN_PYTHON.textContent = "View Python";
-        this.OPEN_PYTHON.title = "Open a new editor with the Python from this code";
+        this.OPEN_PYTHON.title = "View the python code generated from this Blockly";
         this.OPEN_PYTHON.onclick = (ev) => {
             document.getElementById("view-python-button").onclick = (ev) => {
                     this.opAce.destroy();
@@ -699,8 +699,10 @@ class EditorWrapper{
             var lastEditorValue = localStorage.getItem("EditorValue" + this.ID);
             if(data != undefined){
                 Blockly.serialization.workspaces.load(JSON.parse(data), this.BLOCKLY_WORKSPACE);
+                //Blockly.WorkspaceSvg.scrollCenter();
             }else if(lastEditorValue != null){
                 Blockly.serialization.workspaces.load(JSON.parse(lastEditorValue), this.BLOCKLY_WORKSPACE);
+                //Blockly.WorkspaceSvg.scrollCenter();
             }else{
                 const defaultCode = {"blocks":{"languageVersion":0,"blocks":[
                     {"block":{"type":"text_print",
