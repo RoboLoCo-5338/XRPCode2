@@ -642,6 +642,8 @@ class EditorWrapper{
         this.HEADER_TOOLBAR_DIV.appendChild(this.FAST_EXECUTE_BUTTON);
 
         if(this.BLOCKLY_WORKSPACE && data != undefined){
+            console.log("loaded workspace early notice");
+            this.LOADING_BLOCKLY = true; //let the onchange event know that we are loading
             Blockly.serialization.workspaces.load(JSON.parse(data), this.BLOCKLY_WORKSPACE);
         }
 
@@ -667,7 +669,12 @@ class EditorWrapper{
                 trashcan: true});
             // Saving of editor state
             this.BLOCKLY_WORKSPACE.addChangeListener((e)=>{
-                if(e.type == Blockly.Events.FINISHED_LOADING || e.isUiEvent){return}
+                if(e.type == Blockly.Events.FINISHED_LOADING){
+                    this.LOADING_BLOCKLY = false;
+                    return;
+                }
+                if(this.LOADING_BLOCKLY){return}
+                if(e.type == Blockly.Events.VIEWPORT_CHANGE || e.isUiEvent){return}
                 localStorage.setItem("EditorValue" + this.ID, JSON.stringify(
                     Blockly.serialization.workspaces.save(this.BLOCKLY_WORKSPACE)));
                 if(this.SAVED_TO_THUMBY == true || this.SAVED_TO_THUMBY == undefined){
@@ -698,16 +705,12 @@ class EditorWrapper{
             // Restoring of editor state
             var lastEditorValue = localStorage.getItem("EditorValue" + this.ID);
             if(data != undefined){
+                this.LOADING_BLOCKLY = true; //let the onchange event know that we are loading
                 Blockly.serialization.workspaces.load(JSON.parse(data), this.BLOCKLY_WORKSPACE);
             }else if(lastEditorValue != null){
+                this.LOADING_BLOCKLY = true; //let the onchange event know that we are loading
                 Blockly.serialization.workspaces.load(JSON.parse(lastEditorValue), this.BLOCKLY_WORKSPACE);
             }else{
-                const defaultCode = {"blocks":{"languageVersion":0,"blocks":[
-                    {"block":{"type":"text_print",
-                    "fields":{"TEXT":"Place code here"}}}]}};
-
-                // FCG:TODO Blockly.serialization.workspaces.load(defaultCode, this.BLOCKLY_WORKSPACE);
-
                 // When adding default editors, give them a path but make each unique by looking at all other open editors
                 this.setPath("/untitled-" + this.ID + ".blocks");
                 this.setTitle("Editor" + this.ID + ' - *' + this.EDITOR_PATH);

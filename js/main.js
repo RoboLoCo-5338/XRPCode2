@@ -816,7 +816,7 @@ function registerEditor(_container, state){
     editor.onSaveToThumby = async () => {
         // Warn user when trying to save and no Thumby is connected
         if(REPL.DISCONNECT == true){
-            alert("No XRP connected, did not save to device");
+            window.alertMessage("No XRP connected, did not save to device");
             return;
         }
         
