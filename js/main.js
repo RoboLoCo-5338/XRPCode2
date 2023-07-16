@@ -65,16 +65,17 @@ window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"
 
 if(localStorage.getItem(showChangelogVersion) == null){
     var answer = true;
+
+    /* Enable to force a clearing of the localStorage
+
     if(localStorage.getItem(layoutSaveKey) != null){
-        // [TODO] - For this verion only !!!
         answer = await confirmMessage("This version requires a reset of your local information about this editor.<br>" +
                                             "If you have unsaved files then press CANCEL, save your files, and then refresh this borwser window.<br><br>" +
                                             "Otherwise press OK");
     }
     if(answer){
-        //[TODO] - For this verion only!!!!
         localStorage.clear();
-    
+    */
 
     console.log("Updates to IDE! Showing changelog...");    // Show message in console
     localStorage.removeItem(showChangelogVersion-1);        // Remove flag from last version
@@ -96,7 +97,7 @@ if(localStorage.getItem(showChangelogVersion) == null){
     });
 
     localStorage.setItem(showChangelogVersion, true);       // Set this show not shown on next page load
-    }
+   // }
 }
 
 
@@ -848,7 +849,6 @@ function registerEditor(_container, state){
             editor.updateTitleSaved();
 
             if(editor.isBlockly){
-                //[TODO] finish save .blocks file only
                 var blockData = editor.getValue() + '\n\n\n## ' + getTimestamp() + '\n##XRPBLOCKS ' + editor.getBlockData();
                 var busy = await REPL.uploadFile(
                     editor.EDITOR_PATH, blockData, true, false);
@@ -870,7 +870,7 @@ function registerEditor(_container, state){
             editor.setPath(path);
             editor.setSaved();
             editor.updateTitleSaved();
-            editor.onSaveToThumby();
+            await editor.onSaveToThumby();
         }
     }
     editor.onFastExecute = async (lines) => {

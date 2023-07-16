@@ -33,12 +33,12 @@ class Webserver:
 
     def start_server(self, robot_number:int):
         """
-        Start the webserver. The network password is the same as the name
+        Start the webserver. The network password is "remote.xrp"
 
         :param robot_number: The number of the robot, used to generate the access point name
         :type robot_number: int
         """
-        self.access_point = access_point(f"XRP_{robot_number}", f"XRP_{robot_number}")
+        self.access_point = access_point(f"XRP_{robot_number}", "remote.xrp")
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
         logging.info(f"Starting DNS Server at {self.ip}")
         dns.run_catchall(self.ip)
@@ -54,11 +54,6 @@ class Webserver:
             self._handleUserFunctionRequest(text)
             return self._generateHTML()
 
-
-    def _wrong_host_redirect(self, request):
-        # Catch all sends here. No special behavior really needed, just give them the control page 
-        return self._generateHTML()
-
     def _hotspot(self, request):
         # Redirect to Index Page
         return self._generateHTML()
@@ -66,7 +61,7 @@ class Webserver:
     def _catch_all(self, request):
         # Catch all requests and redirect if necessary
         if request.headers.get("host") != self.DOMAIN:
-            return redirect("http://"+self.DOMAIN+"/wrong-host-redirect")
+            return redirect("http://"+self.DOMAIN+"/")
         return self._index_page(request=request)
         
     def log_data(self, label:str, data):
@@ -187,10 +182,6 @@ webserver = Webserver()
 def index(request):
     return webserver._index_page(request)
 
-@server.route("/wrong-host-redirect", methods=['GET'])
-def wrong_host_redirect(request):
-    return webserver._wrong_host_redirect(request)
-
 @server.route("/hotspot-detect.html", methods=["GET"])
 def hotspot(request):
     return webserver._hotspot(request)
@@ -203,7 +194,7 @@ _HTML1 = """
         <html>
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <meta http-equiv="refresh" content="1">
+            <meta http-equiv="refresh" content="0.25">
             
             <style>
                 a { text-decoration: none; }
