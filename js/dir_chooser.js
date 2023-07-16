@@ -177,7 +177,7 @@ class DIRCHOOSER{
             }
         }else{
             console.log("No filesystem, XRP not connected");
-            alert("No filesystem, XRP not connected");
+            window.alertMessage("No filesystem, XRP not connected");
             return undefined;
         }
     }

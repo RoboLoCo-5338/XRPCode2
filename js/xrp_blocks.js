@@ -75,10 +75,10 @@ Blockly.Blocks['xrp_motor_get_ticks'] = {
     this.appendDummyInput()
       .appendField("Motor:")
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
-      .appendField("Ticks")
+      .appendField("Encoder count")
     this.setOutput(true, null);
     this.setColour(0);
-    this.setTooltip("Get the number of encoder ticks of the selected motor since the last reset");
+    this.setTooltip("Get the number of encoder count of the selected motor since the last reset");
     this.setHelpUrl("");
   }
 };

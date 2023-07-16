@@ -900,6 +900,45 @@ function registerEditor(_container, state){
         ATERM.TERM.scrollToBottom();
         await REPL.executeLines(lines);
     }
+    editor.onConvert = async (oldPath, data, ID) => {
+        if(REPL.DISCONNECT == true){
+            window.alertMessage("Can not convert program no XRP connected");
+            return;
+        }
+        if(REPL.BUSY) {
+            this.alertMessage("Another program is already running. Stop that program and then press convert again.")
+            return;
+        }
+            //move the file to trash
+            //open a new file editor with a .py extension
+            //force a save
+        await REPL.buildPath("/trash"); //make sure the trash directory is there.
+        await REPL.renameFile(oldPath, "/trash" + oldPath);
+
+        //close the window
+        var ed = EDITORS[ID]
+        ed.clearStorage();
+        ed._container.close();
+        delete EDITORS[ID];
+        //bring the focus back to the editors
+        for (const [id] of Object.entries(EDITORS)) {
+            var id1 = id;
+            break;
+            }
+        EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
+
+        var newFile = oldPath.replace(".blocks", ".py");
+        var state = {};
+        state.value = data;
+        state.path = newFile;
+        await myLayout.addComponent('Editor', state, 'Editor');
+        //save the new file.
+        for (const [id, ed] of Object.entries(EDITORS)) {
+            if(ed.EDITOR_PATH == newFile){
+                ed.onSaveToThumby();
+            }
+            }
+    }
    
     EDITORS[editor.ID] = editor;
 }

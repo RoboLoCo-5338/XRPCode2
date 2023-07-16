@@ -127,6 +127,7 @@ class EditorWrapper{
         this.onFastExecute = undefined;
         this.onEmulate = undefined;
         this.onOpen = undefined;
+        this.onConvert = undefined;
 
         // Make sure mouse down anywhere on panel focuses the panel
         // Mouse down is used so New Tab, Open Python, etc can allow the focus out.
@@ -642,6 +643,21 @@ class EditorWrapper{
         this.FAST_EXECUTE_BUTTON.title = "Execute editor contents at root '/' of Thumby";
         this.FAST_EXECUTE_BUTTON.onclick = () => {this.onFastExecute(this.getValue())};
         this.HEADER_TOOLBAR_DIV.appendChild(this.FAST_EXECUTE_BUTTON);
+
+        this.CONVERT_PYTHON = document.createElement("button");
+        this.CONVERT_PYTHON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.CONVERT_PYTHON.textContent = "Convert To Python";
+        this.CONVERT_PYTHON.title = "Convert this blocks program to a python program";
+        this.CONVERT_PYTHON.onclick = async (ev) => {
+            //ask if OK to do
+            //call onConvert in main.js
+            if(! await window.confirmMessage("This will convert your Blocks program to a Python program.<br> This is not reversable, are you sure you want to continue?")){
+                return;
+            }
+            this.onConvert(this.EDITOR_PATH, this.getValue(), this.ID);
+        };
+        this.HEADER_TOOLBAR_DIV.appendChild(this.CONVERT_PYTHON);
+
 
         if(this.BLOCKLY_WORKSPACE && data != undefined){
             console.log("loaded workspace early notice");
