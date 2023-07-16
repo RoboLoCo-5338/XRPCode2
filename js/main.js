@@ -632,7 +632,11 @@ function registerFilesystem(_container, state){
             //[TODO] This should report something to the user
             return; // RP2040 was busy
         }
-
+        if(filePath.endsWith(".blocks")){
+            var data = new TextDecoder().decode(new Uint8Array(rawFileBytes));
+            var lines = data.split('##XRPBLOCKS ');
+            rawFileBytes = Array.from(new TextEncoder().encode(lines.slice(-1)[0]));
+        }
         // Find editor with smallest ID, focus it, then add new editor with file contents
         var currentId = Infinity;
         for (const [id, editor] of Object.entries(EDITORS)) {
@@ -836,27 +840,18 @@ function registerEditor(_container, state){
         }else{
             //check if name is untitled
             if(editor.EDITOR_TITLE.search("untitled") != -1){
-                editor.onSaveAsToThumby();
+                await editor.onSaveAsToThumby();
                 return;
             }
             console.log('Saved');
             editor.setSaved();
             editor.updateTitleSaved();
 
-            if(editor.isEditorBinary()){
-                editor.getDBFile(async (fileData) => {
-                    var busy = await REPL.uploadFile(editor.EDITOR_PATH, fileData, true, false);
-                    if(busy != true){
-                        await REPL.getOnBoardFSTree();
-                    }
-                })
-            }else if(editor.isBlockly){
+            if(editor.isBlockly){
+                //[TODO] finish save .blocks file only
+                var blockData = editor.getValue() + '\n\n\n## ' + getTimestamp() + '\n##XRPBLOCKS ' + editor.getBlockData();
                 var busy = await REPL.uploadFile(
-                    editor.EDITOR_PATH, editor.getBlockData(), true, false);
-                if(busy != true){
-                    busy = await REPL.uploadFile(
-                      editor.EDITOR_PATH.replace(/\.blocks$/, ".py"), editor.getValue(), true, false);
-                }
+                    editor.EDITOR_PATH, blockData, true, false);
                 if(busy != true){
                     await REPL.getOnBoardFSTree();
                 }
@@ -900,12 +895,7 @@ function registerEditor(_container, state){
             }
         }
         // update the main file so if they unplug the robot and turn it on it will execute this program.
-        //[TODO] temp fix for blocks files - will be fixed when blocks is 1 file
-        let file = editor.EDITOR_PATH
-        if(file.indexOf(".blocks") != -1){
-            file = file.replace(".blocks", ".py");
-        }
-        await REPL.updateMainFile(file);
+        await REPL.updateMainFile(editor.EDITOR_PATH);
         ATERM.TERM.scrollToBottom();
         await REPL.executeLines(lines);
     }
@@ -969,6 +959,18 @@ String.prototype.convertToHex = function (delim) {
         return ("0" + c.charCodeAt(0).toString(16)).slice(-2)
     }).join(delim || "");
 };
+
+/**
+ * Return the timestamp in fixed format
+ * @returns {String}    Timestamp in format [YYYY-MM-DD HH:MM:SS]
+ * @see https://stackoverflow.com/a/67705873
+ */
+function getTimestamp() {
+    const pad = (n, s = 2) => (`${new Array(s).fill(0)}${n}`).slice(-s);
+    const d = new Date();
+
+    return `[${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}]`;
+}
 
 async function alertMessage(message){
     await UIkit.modal.alert(message).then(function () {

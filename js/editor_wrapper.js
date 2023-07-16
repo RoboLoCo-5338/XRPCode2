@@ -699,10 +699,8 @@ class EditorWrapper{
             var lastEditorValue = localStorage.getItem("EditorValue" + this.ID);
             if(data != undefined){
                 Blockly.serialization.workspaces.load(JSON.parse(data), this.BLOCKLY_WORKSPACE);
-                //Blockly.WorkspaceSvg.scrollCenter();
             }else if(lastEditorValue != null){
                 Blockly.serialization.workspaces.load(JSON.parse(lastEditorValue), this.BLOCKLY_WORKSPACE);
-                //Blockly.WorkspaceSvg.scrollCenter();
             }else{
                 const defaultCode = {"blocks":{"languageVersion":0,"blocks":[
                     {"block":{"type":"text_print",
@@ -718,6 +716,9 @@ class EditorWrapper{
             // Ensure all Blockly editors have a path set. Let's keep it simple for the <3n00bs<3
         }
         this.resize();
+        this.BLOCKLY_WORKSPACE.zoomToFit();
+        this.BLOCKLY_WORKSPACE.scrollCenter();
+
     }
 
     turnIntoCodeViewer(data){
