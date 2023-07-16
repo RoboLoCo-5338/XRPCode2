@@ -604,7 +604,7 @@ function registerFilesystem(_container, state){
                 }
             }
         }else{
-            alert("XRP not connected, can't upload files");
+            window.alertMessage("XRP not connected, can't upload files");
         }
     }
     FS.onRefresh = async () => {
@@ -614,16 +614,17 @@ function registerFilesystem(_container, state){
             window.setPercent(99.8);
             window.resetPercentDelay();
         }else{
-            alert("XRP not connected");
+            window.alertMessage("XRP not connected");
         }
     }
     FS.onOpen = async (filePath) => {
         // Make sure no editors with this file path already exist
         for (const [id, editor] of Object.entries(EDITORS)) {
             if(editor.EDITOR_PATH != undefined
-                && editor.EDITOR_PATH.replace(/\.blocks$/, '.py') == filePath.replace(/\.blocks$/, '.py')){
+                && editor.EDITOR_PATH == filePath){
                 editor._container.parent.focus();
-                alert("This file is already open in Editor" + id + "! Please close it first");
+                //[TODO] If file open and no changes, just switch to that window, If open and changes, ask if OK to overwrite changes?
+                window.alertMessage("This file is already open in Editor" + id + "! Please close it first");
                 return;
             }
         }
@@ -828,7 +829,7 @@ function registerEditor(_container, state){
                 for (const [id, editor] of Object.entries(EDITORS)) {
                     if(editor.EDITOR_PATH == path){
                         editor._container.parent.focus();
-                        alert("This file is already open in Editor" + id + "! Please close it first");
+                        this.alertMessage("This file is already open in Editor" + id + "! Please close it first");
                         return;
                     }
                 }
@@ -879,7 +880,7 @@ function registerEditor(_container, state){
             return;
         }
         if(REPL.BUSY) {
-            alert("Another program is already running. Stop that program and then press RUN again.")
+            this.alertMessage("Another program is already running. Stop that program and then press RUN again.")
             return;
         }
         //check if power switch is on.

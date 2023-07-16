@@ -38,8 +38,10 @@ class EditorWrapper{
         this.EDITOR_DIV.classList.add("editor");
         this._container.element.appendChild(this.EDITOR_DIV);
 
-        this.defaultCode =   "import XRPLib\n" +
-                            "Write Code Here\n";
+        this.defaultCode =   "from XRPLib.defaults import *\n\n" +
+                            "# available variables frm defaults: left_motor, right_motor, drivetrain,\n" +
+                            "#      imu, rangefinder, reflectance, servo_one, boad, webserver\n" +
+                            "# Write your code Here\n";
 
         // If this is the first time loading the website (with the default
         // GoldenLayout setup), load a choice selector between MicroPython
@@ -89,8 +91,8 @@ class EditorWrapper{
                 var newElem = oldElem.cloneNode(true);
                 oldElem.parentNode.replaceChild(newElem, oldElem);
 
-                newElem.onclick = () => {
-                    if(this.SAVED_TO_THUMBY == false && !confirm('You have unsaved changes, are you sure you want to close this editor?')) {
+                 newElem.onclick = async () =>  {
+                    if(this.SAVED_TO_THUMBY == false && ! await window.confirmMessage('You have unsaved changes, are you sure you want to close this editor?')) {
                         return;
                     }
 
@@ -1094,7 +1096,7 @@ class EditorWrapper{
 
 
     async openFileContents(contents){
-        if(this.SAVED_TO_THUMBY == false && !confirm('You have unsaved changes, are you sure you want to overwrite this editor?')) {
+        if(this.SAVED_TO_THUMBY == false && ! await window.confirmMessage('You have unsaved changes, are you sure you want to overwrite this editor?')) {
             return;
         }
         this.ACE_EDITOR.setValue(contents, 1);
@@ -1103,7 +1105,7 @@ class EditorWrapper{
 
     // Opens a new tab with contents of local file from PC
     async openFile(){
-        if(this.SAVED_TO_THUMBY == false && !confirm('You have unsaved changes, are you sure you want to overwrite this editor?')) {
+        if(this.SAVED_TO_THUMBY == false && ! await window.confirmMessage('You have unsaved changes, are you sure you want to overwrite this editor?')) {
             return;
         }
 
