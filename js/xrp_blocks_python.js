@@ -44,11 +44,11 @@ Blockly.Python['xrp_motor_get_position'] = function (block) {
   return [code, Blockly.Python.ORDER_NONE];
 };
 
-Blockly.Python['xrp_motor_get_ticks'] = function (block) {
+Blockly.Python['xrp_motor_get_count'] = function (block) {
   PY.definitions_['import_motor'] = 'from XRPLib.encoded_motor import EncodedMotor';
   var index = block.getFieldValue("MOTOR");
   PY.definitions_[`motor${index}_setup`] = `motor${index} = EncodedMotor.get_default_encoded_motor(${index})`;
-  var code = `motor${index}.get_position_ticks()`;
+  var code = `motor${index}.get_position_count()`;
   return [code, Blockly.Python.ORDER_NONE];
 };
 
@@ -84,6 +84,15 @@ Blockly.Python['xrp_seteffort'] = function (block) {
   var value_l = Blockly.Python.valueToCode(block, 'LEFT', Blockly.Python.ORDER_ATOMIC);
   var value_r = Blockly.Python.valueToCode(block, 'RIGHT', Blockly.Python.ORDER_ATOMIC);
   var code = `differentialDrive.set_effort(${value_l}, ${value_r})\n`;
+  return code;
+};
+
+Blockly.Python['xrp_speed'] = function (block) {
+  PY.definitions_['import_drivetrain'] = 'from XRPLib.differential_drive import DifferentialDrive';
+  PY.definitions_[`drietrain_setup`] = `differentialDrive = DifferentialDrive.get_default_differential_drive()`;
+  var value_l = block.getFieldValue("LEFT");
+  var value_r = block.getFieldValue("RIGHT");
+  var code = `differentialDrive.set_speed(${value_l}, ${value_r})\n`;
   return code;
 };
 

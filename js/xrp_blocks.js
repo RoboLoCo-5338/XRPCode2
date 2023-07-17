@@ -70,7 +70,7 @@ Blockly.Blocks['xrp_motor_get_position'] = {
   }
 };
 
-Blockly.Blocks['xrp_motor_get_ticks'] = {
+Blockly.Blocks['xrp_motor_get_count'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("Motor:")
@@ -92,7 +92,7 @@ Blockly.Blocks['xrp_motor_reset_position'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);  
     this.setColour(0);
-    this.setTooltip("Reset the position and ticks for the selected motor");
+    this.setTooltip("Reset the position and count for the selected motor");
     this.setHelpUrl("");
   }
 };
@@ -146,6 +146,21 @@ Blockly.Blocks['xrp_seteffort'] = {
     this.setColour(0);
  this.setTooltip("");
  this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_speed'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Set Speed  Left")
+      .appendField(new Blockly.FieldNumber(60), 'LEFT')
+      .appendField("Right")
+      .appendField(new Blockly.FieldNumber(60), 'RIGHT');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);  
+    this.setColour(0);
+    this.setTooltip("Set the speed in RPM for the motors");
+    this.setHelpUrl("");
   }
 };
 

@@ -27,7 +27,7 @@ var blocklyToolbox = {
                 },
                 {
                     "kind": "BLOCK",
-                    "type": "xrp_motor_get_ticks",
+                    "type": "xrp_motor_get_count",
                 },
                 {
                     "kind": "BLOCK",
@@ -59,6 +59,10 @@ var blocklyToolbox = {
                         "LEFT": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}},
                         "RIGHT": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}}
                     },
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_speed",
                 },
                 {
                     "kind": "BLOCK",
