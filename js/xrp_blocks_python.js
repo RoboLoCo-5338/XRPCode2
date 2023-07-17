@@ -48,7 +48,7 @@ Blockly.Python['xrp_motor_get_count'] = function (block) {
   PY.definitions_['import_motor'] = 'from XRPLib.encoded_motor import EncodedMotor';
   var index = block.getFieldValue("MOTOR");
   PY.definitions_[`motor${index}_setup`] = `motor${index} = EncodedMotor.get_default_encoded_motor(${index})`;
-  var code = `motor${index}.get_position_count()`;
+  var code = `motor${index}.get_position_counts()`;
   return [code, Blockly.Python.ORDER_NONE];
 };
 
