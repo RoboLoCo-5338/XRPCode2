@@ -821,6 +821,19 @@ function registerEditor(_container, state){
             return;
         }
         
+        var data = editor.getValue();
+        if(data.startsWith("#XRPSETTING")){
+            var setting = data.split("#XRPSETTING")[1];
+            switch(setting){
+                case "-localstorage":
+                    localStorage.clear();
+                    break;
+                default:
+                    break;
+            }
+            return;
+        }
+
         if(editor.EDITOR_PATH == undefined || editor.EDITOR_PATH == ""){
             console.log('Pick a folder');
             var path = await DIR.getPathFromUser(editor._container.element);

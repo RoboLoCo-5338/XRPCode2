@@ -8,10 +8,16 @@ var blocklyToolbox = {
                 {
                     "kind": "BLOCK",
                     "type": "xrp_motor_effort",
+                    "inputs":{
+                        "effort": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}}
+                    },
                 },
                 {
                     "kind": "BLOCK",
                     "type": "xrp_motor_speed",
+                    "inputs":{
+                        "speed": {"shadow": {"type": "math_number", "fields": {"NUM": "60"}}}
+                    },
                 },
                 {
                     "kind": "BLOCK",
@@ -51,6 +57,10 @@ var blocklyToolbox = {
                 {
                     "kind": "BLOCK",
                     "type": "xrp_turn_effort",
+                    "inputs":{
+                        "degrees": {"shadow": {"type": "math_number", "fields": {"NUM": "90"}}},
+                        "effort": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}}
+                    },
                 },
                 {
                     "kind": "BLOCK",
@@ -63,6 +73,10 @@ var blocklyToolbox = {
                 {
                     "kind": "BLOCK",
                     "type": "xrp_speed",
+                    "inputs":{
+                        "LEFT": {"shadow": {"type": "math_number", "fields": {"NUM": "60"}}},
+                        "RIGHT": {"shadow": {"type": "math_number", "fields": {"NUM": "60"}}}
+                    },
                 },
                 {
                     "kind": "BLOCK",
@@ -219,12 +233,15 @@ var blocklyToolbox = {
                     "kind": "BLOCK",
                     "type": "xrp_ws_log_data",
                     "inputs":{
-                        "log_name": {"shadow": {"type": "text", "fields": {"text": "label"}}}
+                        "log_name": {"shadow": {"type": "text", "field": {"text": "label"}}}
                     },
                 },
                 {
                     "kind": "BLOCK",
-                    "type": "xrp_ws_start_server"
+                    "type": "xrp_ws_start_server",
+                    "inputs":{
+                        "id": {"shadow": {"type": "math_number", "fields": {"NUM": "1"}}}
+                    },
                 },
             ]
         },

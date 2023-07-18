@@ -1,11 +1,15 @@
 
+
+// Individual Motors
 Blockly.Blocks['xrp_motor_effort'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("Motor:")
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
       .appendField("effort:")
-      .appendField(new Blockly.FieldNumber(0.8, -1, 1), 'effortNumber');
+      this.appendValueInput("effort")
+        .setCheck("Number")
+    this.setInputsInline(true)
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);  
     this.setColour(0);
@@ -17,10 +21,12 @@ Blockly.Blocks['xrp_motor_effort'] = {
 Blockly.Blocks['xrp_motor_speed'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Motor:")
+      .appendField("Motor")
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
-      .appendField("speed:")
-      .appendField(new Blockly.FieldNumber(10), 'speedNumber');
+      .appendField("Speed")
+      this.appendValueInput("speed")
+        .setCheck("Number")
+    this.setInputsInline(true)  
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);  
     this.setColour(0);
@@ -97,6 +103,7 @@ Blockly.Blocks['xrp_motor_reset_position'] = {
   }
 };
 
+// DriveTrain
 Blockly.Blocks['xrp_straight_effort'] = {
   init: function () {
     this.appendValueInput("dist")
@@ -116,11 +123,12 @@ Blockly.Blocks['xrp_straight_effort'] = {
 
 Blockly.Blocks['xrp_turn_effort'] = {
   init: function () {
-    this.appendDummyInput()
-        .appendField('Turn')
-        .appendField(new Blockly.FieldNumber(90, -360, 360), 'angle')
-        .appendField("Effort")
-        .appendField(new Blockly.FieldNumber(0.5, -1, 1), 'effort');
+    this.appendValueInput("degrees")
+      .setCheck("Number")
+      .appendField("Turn");
+    this.appendValueInput("effort")
+      .setCheck("Number")
+      .appendField("Effort");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -135,27 +143,31 @@ Blockly.Blocks['xrp_seteffort'] = {
     this.appendDummyInput()
         .appendField("Set Effort");
     this.appendValueInput("LEFT")
-        .setCheck(null)
-        .appendField("L:");
+        .setCheck("Number")
+        .appendField("Left");
     this.appendValueInput("RIGHT")
-        .setCheck(null)
-        .appendField("R:");
+        .setCheck("Number")
+        .appendField("Right");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(0);
- this.setTooltip("");
- this.setHelpUrl("");
+    this.setTooltip("");
+    this.setHelpUrl("");
   }
 };
 
 Blockly.Blocks['xrp_speed'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Set Speed  Left")
-      .appendField(new Blockly.FieldNumber(60), 'LEFT')
-      .appendField("Right")
-      .appendField(new Blockly.FieldNumber(60), 'RIGHT');
+      .appendField("Set Speed");
+    this.appendValueInput("LEFT")
+      .setCheck(null)
+      .appendField("Left");
+    this.appendValueInput("RIGHT")
+      .setCheck(null)
+      .appendField("Right");
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);  
     this.setColour(0);
@@ -183,7 +195,7 @@ Blockly.Blocks['xrp_resetencoders'] = {
       .appendField("Reset Encoders");
       this.setPreviousStatement(true, null);
       this.setNextStatement(true, null);
-      this.setColour(60);
+      this.setColour(0);
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -194,7 +206,7 @@ Blockly.Blocks['xrp_getleftencoder'] = {
     this.appendDummyInput()
       .appendField("Left Encoder");
     this.setOutput(true, null);
-    this.setColour(60);
+    this.setColour(0);
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -205,12 +217,13 @@ Blockly.Blocks['xrp_getrightencoder'] = {
     this.appendDummyInput()
       .appendField("Right Encoder");
     this.setOutput(true, null);
-    this.setColour(60);
+    this.setColour(0);
     this.setTooltip("");
     this.setHelpUrl("");
   }
 };
 
+// Servo
 Blockly.Blocks['xrp_servo_deg'] = {
   init: function () {
     this.appendValueInput("degrees")
@@ -225,7 +238,7 @@ Blockly.Blocks['xrp_servo_deg'] = {
   }
 };
 
-
+// Sonar
 Blockly.Blocks['xrp_getsonardist'] = {
   init: function () {
     this.appendDummyInput()
@@ -237,6 +250,7 @@ Blockly.Blocks['xrp_getsonardist'] = {
   }
 };
 
+//reflectance
 Blockly.Blocks['xrp_l_refl'] = {
   init: function () {
     this.appendDummyInput()
@@ -259,6 +273,7 @@ Blockly.Blocks['xrp_r_refl'] = {
   }
 };
 
+//Gyro
 Blockly.Blocks['xrp_yaw'] = {
   init: function () {
     this.appendDummyInput()
@@ -292,6 +307,7 @@ Blockly.Blocks['xrp_pitch'] = {
   }
 };
 
+//Accelerometer 
 Blockly.Blocks['xrp_acc_x'] = {
   init: function () {
     this.appendDummyInput()
@@ -325,6 +341,7 @@ Blockly.Blocks['xrp_acc_z'] = {
   }
 };
 
+//Control Board
 Blockly.Blocks['xrp_led_on'] = {
   init: function () {
     this.appendDummyInput()
@@ -372,6 +389,7 @@ Blockly.Blocks['xrp_wait_for_button_press'] = {
   }
 };
 
+//Web Server
 Blockly.Blocks['xrp_ws_forward_button'] = {
   init: function () {
     this.appendDummyInput()
@@ -473,8 +491,10 @@ Blockly.Blocks['xrp_ws_log_data'] = {
 Blockly.Blocks['xrp_ws_start_server'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Start Web Server ID")
-      .appendField(new Blockly.FieldNumber(1), 'ID');
+      .appendField("Start Web Server ID");
+    this.appendValueInput("id")
+      .setCheck("Number")
+    this.setInputsInline(true)
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190);
@@ -483,7 +503,7 @@ Blockly.Blocks['xrp_ws_start_server'] = {
   }
 };
 
-
+//Logic
 Blockly.Blocks['xrp_sleep'] = {
   init: function () {
     this.appendDummyInput()
