@@ -1,2 +1,11 @@
 
-These are the changes since the last release of this XRDE
+Version 2.0
+Due to some of the changes to the Blockly old .blocks files may no longer work.
+   You can try loading your .blocks files. If a file will not load then right click on it
+   and delete the file. If it does load, then click on FILE and then SAVE TO XRP. This
+   will cause the file to be saved in the new format. If some of the blocks have "holes" in them,
+   you should delete that block and re-insert the block again.
+
+Export to PC now works better for .blocks files.
+
+

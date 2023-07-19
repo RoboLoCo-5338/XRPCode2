@@ -50,7 +50,7 @@ var onExportToEditor = (bytes) => {
 
 // Show pop-up containing IDE changelog every time showChangelogVersion is increased
 // Update version string in index.html and play.html as well to match
-const showChangelogVersion = 1;
+const showChangelogVersion = 2;
 
 // This should match what is in /lib/XRPLib/version.py as '__version__'
 window.latestLibraryVersion = [0,9,5];
