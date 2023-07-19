@@ -127,6 +127,7 @@ Blockly.Python['xrp_getrightencoder'] = function (block) {
   return [code, Blockly.Python.ORDER_NONE];
 };
 
+//Servo
 Blockly.Python['xrp_servo_deg'] = function (block) {
   PY.definitions_['import_servo'] = 'from XRPLib.servo import Servo';
   PY.definitions_[`servo_setup`] = `servo1 = Servo.get_default_servo()`;
@@ -135,6 +136,7 @@ Blockly.Python['xrp_servo_deg'] = function (block) {
   return code;
 };
 
+//Distance
 Blockly.Python['xrp_getsonardist'] = function (block) {
   PY.definitions_['import_rangefinder'] = 'from XRPLib.rangefinder import Rangefinder';
   PY.definitions_[`rangefinder_setup`] = `rangefinder = Rangefinder.get_default_rangefinder()`;
@@ -142,6 +144,7 @@ Blockly.Python['xrp_getsonardist'] = function (block) {
   return [code, Blockly.Python.ORDER_NONE];
 };
 
+//reflectance
 Blockly.Python['xrp_l_refl'] = function (block) {
   PY.definitions_['import_reflectance'] = 'from XRPLib.reflectance import Reflectance';
   PY.definitions_[`reflectance_setup`] = `reflectance = Reflectance.get_default_reflectance()`;
@@ -156,6 +159,7 @@ Blockly.Python['xrp_r_refl'] = function (block) {
   return [code, Blockly.Python.ORDER_NONE];
 };
 
+//Gyro
 Blockly.Python['xrp_yaw'] = function (block) {
   PY.definitions_['import_imu'] = 'from XRPLib.imu import IMU';
   PY.definitions_[`imu_setup`] = `imu = IMU.get_default_imu()\nimu.calibrate(1)`;
@@ -177,6 +181,7 @@ Blockly.Python['xrp_pitch'] = function (block) {
   return [code, Blockly.Python.ORDER_NONE];
 };
 
+//Accelerometer
 Blockly.Python['xrp_acc_x'] = function (block) {
   PY.definitions_['import_imu'] = 'from XRPLib.imu import IMU';
   PY.definitions_[`imu_setup`] = `imu = IMU.get_default_imu()\nimu.calibrate(1)`;
@@ -198,6 +203,7 @@ Blockly.Python['xrp_acc_z'] = function (block) {
   return [code, Blockly.Python.ORDER_NONE];
 };
 
+//Control Board
 Blockly.Python['xrp_led_on'] = function (block) {
   PY.definitions_['import_board'] = 'from XRPLib.board import Board';
   PY.definitions_[`board_setup`] = `board = Board.get_default_board()`;
@@ -226,43 +232,60 @@ Blockly.Python['xrp_wait_for_button_press'] = function (block) {
   return code;
 };
 
+//Web Server
+var nextFunc = 0;
+function getFuncName(){
+  nextFunc++;
+  return "func" + nextFunc;
+}
+
 Blockly.Python['xrp_ws_forward_button'] = function (block) {
   PY.definitions_['import_webserver'] = 'from XRPLib.webserver import Webserver';
   PY.definitions_[`webserver_setup`] = `webserver = Webserver.get_default_webserver()`;
-  var func = block.getFieldValue("NAME");
-  var code = `webserver.registerForwardButton(${func})\n`
+  var func = Blockly.Python.statementToCode(block, 'func');
+  var funcName = getFuncName();
+  var code = `\ndef ${funcName}():\n${func}\n`
+  code += `webserver.registerForwardButton(${funcName})\n`
   return code;
 };
 
 Blockly.Python['xrp_ws_back_button'] = function (block) {
   PY.definitions_['import_webserver'] = 'from XRPLib.webserver import Webserver';
   PY.definitions_[`webserver_setup`] = `webserver = Webserver.get_default_webserver()`;
-  var func = block.getFieldValue("NAME");
-  var code = `webserver.registerBackwardButton(${func})\n`
+  var func = Blockly.Python.statementToCode(block, 'func');
+  var funcName = getFuncName();
+  var code = `\ndef ${funcName}():\n${func}\n`
+  code += `webserver.registerBackwardButton(${funcName})\n`
   return code;
 };
 
 Blockly.Python['xrp_ws_left_button'] = function (block) {
   PY.definitions_['import_webserver'] = 'from XRPLib.webserver import Webserver';
   PY.definitions_[`webserver_setup`] = `webserver = Webserver.get_default_webserver()`;
-  var func = block.getFieldValue("NAME");
-  var code = `webserver.registerLeftButton(${func})\n`
+  var func = Blockly.Python.statementToCode(block, 'func');
+  var funcName = getFuncName();
+  var code = `\ndef ${funcName}():\n${func}\n`
+  code += `webserver.registerLeftButton(${funcName})\n`
   return code;
 };
 
 Blockly.Python['xrp_ws_right_button'] = function (block) {
   PY.definitions_['import_webserver'] = 'from XRPLib.webserver import Webserver';
   PY.definitions_[`webserver_setup`] = `webserver = Webserver.get_default_webserver()`;
-  var func = block.getFieldValue("NAME");
-  var code = `webserver.registerRightButton(${func})\n`
+  var func = Blockly.Python.statementToCode(block, 'func');
+  var funcName = getFuncName();
+  var code = `\ndef ${funcName}():\n${func}\n`
+  code += `webserver.registerRightButton(${funcName})\n`
   return code;
 };
 
 Blockly.Python['xrp_ws_stop_button'] = function (block) {
   PY.definitions_['import_webserver'] = 'from XRPLib.webserver import Webserver';
   PY.definitions_[`webserver_setup`] = `webserver = Webserver.get_default_webserver()`;
-  var func = block.getFieldValue("NAME");
-  var code = `webserver.registerStopButton(${func})\n`
+  var func = Blockly.Python.statementToCode(block, 'func');
+  var funcName = getFuncName();
+  var code = `\ndef ${funcName}():\n${func}\n`
+  code += `webserver.registerStopButton(${funcName})\n`
   return code;
 };
 
@@ -270,8 +293,10 @@ Blockly.Python['xrp_ws_add_button'] = function (block) {
   PY.definitions_['import_webserver'] = 'from XRPLib.webserver import Webserver';
   PY.definitions_[`webserver_setup`] = `webserver = Webserver.get_default_webserver()`;
   var name = block.getFieldValue("TEXT");
-  var func = block.getFieldValue("NAME");
-  var code = `webserver.add_button("${name}", ${func})\n`
+  var func = Blockly.Python.statementToCode(block, 'func');
+  var funcName = getFuncName();
+  var code = `\ndef ${funcName}():\n${func}\n`
+  code += `webserver.add_button("${name}", ${funcName})\n`
   return code;
 };
 
@@ -293,6 +318,8 @@ Blockly.Python['xrp_ws_start_server'] = function (block) {
   return code;
 };
 
+
+//Logic
 Blockly.Python['xrp_sleep'] = function (block) {
   PY.definitions_['import_time'] = 'import time';
   var number_time = block.getFieldValue('TIME');

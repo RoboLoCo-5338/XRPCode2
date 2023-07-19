@@ -393,8 +393,9 @@ Blockly.Blocks['xrp_wait_for_button_press'] = {
 Blockly.Blocks['xrp_ws_forward_button'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Forward Button  Function")
-      .appendField(new Blockly.FieldDropdown(generateFunctionNames), "NAME");
+      .appendField("Web Forward Button")
+    this.appendStatementInput('func')
+      .appendField('Function');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190);
@@ -406,8 +407,9 @@ Blockly.Blocks['xrp_ws_forward_button'] = {
 Blockly.Blocks['xrp_ws_back_button'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Back Button  Function")
-      .appendField(new Blockly.FieldDropdown(generateFunctionNames), "NAME");
+      .appendField("Web Back Button")
+    this.appendStatementInput('func')
+      .appendField('Function');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190);
@@ -419,9 +421,9 @@ Blockly.Blocks['xrp_ws_back_button'] = {
 Blockly.Blocks['xrp_ws_left_button'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Left Button  Function")
-      .appendField(new Blockly.FieldDropdown(generateFunctionNames), "NAME");
-    this.setPreviousStatement(true, null);
+      .appendField("Web Left Button")
+    this.appendStatementInput('func')
+      .appendField('Function');    this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190);
     this.setTooltip("");
@@ -432,9 +434,9 @@ Blockly.Blocks['xrp_ws_left_button'] = {
 Blockly.Blocks['xrp_ws_right_button'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Right Button  Function")
-      .appendField(new Blockly.FieldDropdown(generateFunctionNames), "NAME");
-    this.setPreviousStatement(true, null);
+      .appendField("Web Right Button")
+    this.appendStatementInput('func')
+      .appendField('Function');    this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190);
     this.setTooltip("");
@@ -445,9 +447,9 @@ Blockly.Blocks['xrp_ws_right_button'] = {
 Blockly.Blocks['xrp_ws_stop_button'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Stop Button  Function")
-      .appendField(new Blockly.FieldDropdown(generateFunctionNames), "NAME");
-    this.setPreviousStatement(true, null);
+      .appendField("Web Stop Button")
+    this.appendStatementInput('func')
+      .appendField('Function');    this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190);
     this.setTooltip("");
@@ -460,8 +462,8 @@ Blockly.Blocks['xrp_ws_add_button'] = {
     this.appendDummyInput()
       .appendField("Web Add Button  Name")
       .appendField( new Blockly.FieldTextInput("name"),"TEXT")
-      .appendField("Function")
-      .appendField(new Blockly.FieldDropdown(generateFunctionNames), "NAME");
+    this.appendStatementInput('func')
+      .appendField('Function');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190);
@@ -508,7 +510,7 @@ Blockly.Blocks['xrp_sleep'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("Sleep")
-      .appendField(new Blockly.FieldNumber(0, 0), "TIME");
+      .appendField(new Blockly.FieldNumber(0, 0.5), "TIME");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(200);
@@ -517,55 +519,6 @@ Blockly.Blocks['xrp_sleep'] = {
   }
 };
 
-var fake_funcs = null;  
-function generateFunctionNames() {
-
-  if(fake_funcs != null){
-    return fake_funcs;
-  }
-  // Get a list of all the function definition blocks.
-  var blocks = Blockly.getMainWorkspace().getAllBlocks();
-  var functionDefinitions = blocks.filter(block => block.type === 'procedures_defnoreturn');
-
-  // Generate the dropdown options.
-  var dropdownOptions = functionDefinitions.map(functionDef => {
-    var functionName = functionDef.getFieldValue('NAME');
-    return [functionName, functionName];
-  });
-
-  if(dropdownOptions.length == 0){
-    dropdownOptions = [["",""]];
-  }
-  return dropdownOptions;
-}
-
-/*
-  This is a fix for a problem with the way that workspaces are loaded. When working with a workspace that is doing webserver
-  many of the calls take a function as an input. We create a list of functions and allow the user to select one. But, when a saved
-  serialization is reloaded the functions available are only those that were loaded before the block that included the function.
-  If the function needed has not been loaded yet, then the list will not included it and the block will show a different selected
-  function. To solve this when the workspace is serialized it calls our saveFn and we save out the list. Then when we reload the 
-  workspace we can fake out the full list of functions during our loadFn. Since our IDE always saves the workspace to localstorage
-  whenever there is a change, we also reset the fake_funcs back to null and we are back to using live functions.
-*/
-Blockly.serialization.registry.register(
-  'ws_function_list',  // Name
-  {
-    save: saveFn,      // Save function
-    load: loadFn,      // Load function
-    clear: clearFn,    // Clear function
-    priority: 100,      // Priority
-  });
-
-function saveFn(ws){
-  fake_funcs = null;
-  return generateFunctionNames(); //save off the state off all the functions
-}
-function loadFn(state, ws){
-  fake_funcs = state;
-}
-function clearFn(){
-}
 
 
 

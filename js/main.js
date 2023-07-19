@@ -668,22 +668,26 @@ function registerFilesystem(_container, state){
         }
     }
     FS.onDownloadFiles = async (fullFilePaths) => {
-        for(var i=0; i<fullFilePaths.length; i++){
-            var startOfFileName = fullFilePaths[i].lastIndexOf('/');
-            var fileName = "";
-            if(startOfFileName != -1){
-                fileName = fullFilePaths[i].substring(startOfFileName+1, fullFilePaths[i].length);
-            }else{
-                fileName = fullFilePaths[i];
-            }
-
-            var fileContents = await REPL.getFileContents(fullFilePaths[i], true);
-
-            window.downloadFileBytes(fileContents, fileName);
-        }
+        await downloadFileFromPath(fullFilePaths);
     }
+
 }
 
+async function downloadFileFromPath(fullFilePaths){
+    for(var i=0; i<fullFilePaths.length; i++){
+        var startOfFileName = fullFilePaths[i].lastIndexOf('/');
+        var fileName = "";
+        if(startOfFileName != -1){
+            fileName = fullFilePaths[i].substring(startOfFileName+1, fullFilePaths[i].length);
+        }else{
+            fileName = fullFilePaths[i];
+        }
+
+        var fileContents = await REPL.getFileContents(fullFilePaths[i], true);
+
+        window.downloadFileBytes(fileContents, fileName);
+    }
+}
 
 /*
 document.getElementById("IDUpdateMicroPython").onclick = (event) => {
@@ -820,7 +824,8 @@ function registerEditor(_container, state){
             window.alertMessage("No XRP connected, did not save to device");
             return;
         }
-        
+
+        //handel any special hidden settings
         var data = editor.getValue();
         if(data.startsWith("#XRPSETTING")){
             var setting = data.split("#XRPSETTING")[1];
@@ -893,13 +898,15 @@ function registerEditor(_container, state){
             return;
         }
         if(REPL.BUSY) {
-            this.alertMessage("Another program is already running. Stop that program and then press RUN again.")
+            window.alertMessage("Another program is already running. Stop that program and then press RUN again.")
             return;
         }
         //check if power switch is on.
         if(! await REPL.isPowerSwitchOn()) {
-            await window.alertMessage("The power switch on the XRP is not on. Motors and servos will not work.<br>Turn on the switch and then press RUN again.")
-            return;
+            if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." + 
+                    "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")){
+                return;
+            }
         }
 
         //save all unsaved files
@@ -919,7 +926,7 @@ function registerEditor(_container, state){
             return;
         }
         if(REPL.BUSY) {
-            this.alertMessage("Another program is already running. Stop that program and then press convert again.")
+            window.alertMessage("Another program is already running. Stop that program and then press convert again.")
             return;
         }
             //move the file to trash
@@ -951,6 +958,11 @@ function registerEditor(_container, state){
                 ed.onSaveToThumby();
             }
             }
+    }
+
+    editor.onDownloadFile = async (fullFilePath) => {
+
+        await downloadFileFromPath([fullFilePath]);
     }
    
     EDITORS[editor.ID] = editor;

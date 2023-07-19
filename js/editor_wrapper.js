@@ -39,9 +39,9 @@ class EditorWrapper{
         this._container.element.appendChild(this.EDITOR_DIV);
 
         this.defaultCode =   "from XRPLib.defaults import *\n\n" +
-                            "# available variables frm defaults: left_motor, right_motor, drivetrain,\n" +
-                            "#      imu, rangefinder, reflectance, servo_one, boad, webserver\n" +
-                            "# Write your code Here\n";
+                             "# available variables frm defaults: left_motor, right_motor, drivetrain,\n" +
+                             "#      imu, rangefinder, reflectance, servo_one, boad, webserver\n" +
+                             "# Write your code Here\n";
 
         // If this is the first time loading the website (with the default
         // GoldenLayout setup), load a choice selector between MicroPython
@@ -128,6 +128,7 @@ class EditorWrapper{
         this.onEmulate = undefined;
         this.onOpen = undefined;
         this.onConvert = undefined;
+        this.onDownloadFile = undefined;
 
         // Make sure mouse down anywhere on panel focuses the panel
         // Mouse down is used so New Tab, Open Python, etc can allow the focus out.
@@ -337,7 +338,7 @@ class EditorWrapper{
         this.FILE_EXPORT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
         this.FILE_EXPORT_BUTTON.textContent = "Export to PC";
         this.FILE_EXPORT_BUTTON.title = "Export editor contents to file on PC";
-        this.FILE_EXPORT_BUTTON.onclick = () => {this.exportFileAs()}
+        this.FILE_EXPORT_BUTTON.onclick = () => {this.onDownloadFile(this.EDITOR_PATH)}
         listElem.appendChild(this.FILE_EXPORT_BUTTON);
         this.FILE_DROPDOWN_UL.appendChild(listElem);
 
@@ -451,6 +452,8 @@ class EditorWrapper{
         }else if(data != undefined){
             // Check if the decoded data contains binary replacement letters (could also check that most characters only equal ascii chars)
             var text = typeof data == "string" ? data : new TextDecoder().decode(new Uint8Array(data));
+            //We know there is data, so save it to the localstorage for this editor ID
+            localStorage.setItem("EditorValue"+this.ID, text);
             if(text && text.startsWith("{") && text.indexOf('{"blocks":{"') != -1){
                 console.log("INIT BLOCKLY VIEWER");
                 localStorage.setItem("isBlockly" + this.ID, true);
@@ -628,6 +631,7 @@ class EditorWrapper{
             document.getElementById("view-python-button").onclick = (ev) => {
                     this.opAce.destroy();
             };
+
             this.opAce = ace.edit("view-python-ace");
             this.opAce.session.setMode("ace/mode/python");
             this.opAce.setReadOnly(true);
@@ -1137,19 +1141,6 @@ class EditorWrapper{
 
         this.CURRENT_FILE_NAME = file.name;
 
-        // Detect and extract out zipped blocks files.
-        if(file.name.endsWith('.zip')){
-            const zip = new JSZip();
-            const zipped = await zip.loadAsync(data)
-            const blockName = file.name.replace(/\.zip$/, ".blocks");
-            if(zipped.file(blockName)){
-                const blocksData = await zipped.file(blockName).async("string");
-                if(blocksData.startsWith("{") && blocksData.indexOf('{"blocks":{"') != -1){
-                    data = blocksData;
-                    this.CURRENT_FILE_NAME = blockName;
-                }
-            }
-        }
         this.SAVED_TO_THUMBY = false;
         localStorage.setItem("EditorSavedToThumby" + this.ID, false); //We just imported from the PC, so not saved yet.
         
@@ -1224,66 +1215,6 @@ class EditorWrapper{
             //     });
             // };
         }
-    }
-
-
-    // Shows the file dialog and suggests current name
-    async exportFileAs(){
-        if(this.isBlockly){
-            var blocksName = "NewFile.blocks";
-            var pyName = "NewFile.py";
-            this.FILE_OPTIONS.suggestedName = "NewFile.zip"
-            if(this.EDITOR_PATH){
-                blocksName = this.EDITOR_PATH.split('/').reverse()[0];
-                pyName = blocksName.replace(/\.blocks$/, ".py");
-                this.FILE_OPTIONS.suggestedName = blocksName.replace(/\.blocks$/, ".zip");
-            }
-            const zip = new JSZip();
-            zip.file(blocksName, this.getBlockData());
-            zip.file(pyName, this.getValue());
-            zip.generateAsync({type:"blob"}).then(async (blob)=>{
-                fileHandle = await window.showSaveFilePicker(this.FILE_OPTIONS);
-                var writeStream = await fileHandle.createWritable();
-                await writeStream.write(blob);
-                writeStream.close();
-            })
-            return;
-        }
-
-        var fileHandle = undefined;
-        try{
-            if(this.EDITOR_PATH  == ""){
-                this.FILE_OPTIONS.suggestedName = "NewFile.py";
-            }else{
-                this.FILE_OPTIONS.suggestedName = this.EDITOR_PATH.split('/').at(-1);
-            }
-            fileHandle = await window.showSaveFilePicker(this.FILE_OPTIONS);            // Let the user pick location to save with dialog
-        }catch(err){                                                                    // If the user aborts, stop function execution, leave unsaved
-            this.FILE_OPTIONS.suggestedName = ".py";                                    // Reset this before stopping function
-            console.log(err);
-            return;                                                                     // Stop function
-        }
-
-        try{
-            var writeStream = await fileHandle.createWritable();                        // For writing to the file
-        }catch(err){
-            console.log(err);
-            return;                                                                     // If the user doesn't allow tab to save to opened file, don't edit file
-        }
-
-        var file = fileHandle.getFile();                                                // Get file from promise so that the name can be retrieved
-        var data = undefined;
-        if(!this.isEditorBinary()){
-            data = await this.ACE_EDITOR.getValue();
-            await writeStream.write(data);                                              // Write data if using an HTTPS connection
-            writeStream.close();                                                        // Save the data to the file now
-        }else{
-            this.getDBFile(async (fileDataBuffer) => {
-                await writeStream.write(fileDataBuffer);                                // Write data if using an HTTPS connection
-                writeStream.close();                                                    // Save the data to the file now
-            })
-        }
-
     }
 
     // Block data as a JSON string, or null

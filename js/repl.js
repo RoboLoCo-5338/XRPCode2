@@ -335,24 +335,7 @@ class ReplJS{
     
         this.BUSY = true;
 
-        window.setPercent(1, "Fetching filesystem...");
-
-        // Display connected message on Thumby screen
-        var messageBitmap = ".write_data(bytearray([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 32, 224, 32, 32, 0, 224, 0, 128, 128, 0, 0, 128, 0, 0, 0, 128, 0, 128, 128, 0, 128, 0, 0, 224, 0, 128, 128, 0, 0, 128, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 64, 64, 64, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 192, 0, 0, 15, 1, 0, 0, 15, 0, 7, 8, 8, 4, 15, 192, 79, 64, 67, 64, 15, 0, 15, 9, 8, 200, 7, 0, 1, 74, 10, 10, 7, 0, 192, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 16, 16, 16, 8, 0, 14, 17, 17, 17, 14, 0, 14, 17, 17, 18, 31, 0, 14, 21, 21, 21, 6, 0, 0, 0, 0, 0, 0, 0, 31, 18, 18, 18, 16, 0, 14, 17, 17, 18, 31, 0, 0, 17, 31, 16, 0, 0, 1, 15, 17, 16, 8, 0, 14, 17, 17, 17, 14, 0, 31, 2, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]))\n";
-        var messageCmd = 
-        "try:\n" +
-        "    import thumbyHardware\n" +
-        "    if (thumbyHardware.HWID>0):\n" +
-        "        from ssd1306 import SSD1306_SPI\n" +
-        "        from machine import Pin, SPI\n" +
-        "        SSD1306_SPI(72, 40, SPI(0, sck=Pin(18), mosi=Pin(19)), dc=Pin(17), res=Pin(20), cs=Pin(16))" + messageBitmap +
-        "    else:\n" +
-        "        from ssd1306 import SSD1306_I2C\n" +
-        "        from machine import Pin, I2C\n" +
-        "        SSD1306_I2C(72, 40, I2C(0, sda=Pin(16), scl=Pin(17), freq=1_000_000), res=Pin(18))" + messageBitmap +
-        "except:\n" +
-        "    pass\n";
-
+        //window.setPercent(1, "Fetching filesystem...");
 
         var getFilesystemCmd = 
         "import machine\n" +
@@ -384,11 +367,10 @@ class ReplJS{
 
         var sizeCmd = 
         "a = os.statvfs('/')\n" +
-        "print(a[0], a[2], a[3])\n" +
-        "#machine.freq(48000000)\n";     // Put it back at low power freq (for battery)
+        "print(a[0], a[2], a[3])\n";
 
 
-        window.setPercent(25, "Fetching filesystem...");
+        //window.setPercent(25, "Fetching filesystem...");
         var hiddenLines = await this.writeUtilityCmdRaw(getFilesystemCmd + sizeCmd, true, 1);
 
         // Make sure this wasn't executed when no Thumby was attached
@@ -396,15 +378,15 @@ class ReplJS{
             this.onFSData(hiddenLines[0].substring(2), hiddenLines[1].split(' '));
         }
 
-        window.setPercent(65, "Fetching filesystem...");
+        //window.setPercent(65, "Fetching filesystem...");
 
         // Get back into normal mode and omit the 3 lines from the normal message,
         // don't want to repeat (assumes already on a normal prompt)
         await this.getToNormal(3);
         this.BUSY = false;
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: out of getOnBoardFSTree");
-        window.setPercent(100);
-        window.resetPercentDelay();
+        //window.setPercent(100);
+        //window.resetPercentDelay();
     }
 
 
@@ -631,7 +613,7 @@ class ReplJS{
         await this.buildPath(pathToFile);
 
         this.BUSY = true;
-        if(usePercent) window.setPercent(1, "Uploading file...");
+        if(usePercent) window.setPercent(1, "Saving file...");
 
         if(usePercent) window.setPercent(2);
         // this.startReaduntil(">");
@@ -741,6 +723,7 @@ class ReplJS{
 
         // await this.haltUntilRead(1);
         await this.getToNormal(3);
+        if(usePercent) window.resetPercentDelay();
         this.BUSY = false;
     }
 
@@ -822,7 +805,7 @@ class ReplJS{
             //[TODO] Need to notifiy user
             return;
         }
-        window.setPercent(1, "Uploading files...");
+        window.setPercent(1, "Saving files...");
         let percent_per = 99 / fileHandles.length;
         let cur_percent = 1 + percent_per;
         
@@ -965,7 +948,7 @@ class ReplJS{
 
         await this.deleteFileOrDir("/lib/XRPLib");  //delete all the files first to avoid any confusion.
         for(let i=0; i<window.libraryList.length; i++){
-            window.setPercent(cur_percent);
+            window.setPercent(cur_percent, "Updating XRPLib...");
             //added a version number to ensure that the browser does not cache it.   
             await this.uploadFile("lib/XRPLib/" + window.libraryList[i], await window.downloadFile("lib/XRPLib/" + window.libraryList[i] + "?version=" + window.latestLibraryVersion[2]) , false);
             cur_percent += percent_per;
@@ -973,7 +956,7 @@ class ReplJS{
 
         await this.deleteFileOrDir("/lib/phew");  //delete all the files first to avoid any confusion.
         for(let i=0; i<window.phewList.length; i++){
-            window.setPercent(cur_percent);
+            window.setPercent(cur_percent, "Updating XRPLib...");
             //added a version number to ensure that the browser does not cache it.   
             await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i] + "?version=" + window.latestLibraryVersion[2]), false);
             cur_percent += percent_per;
@@ -1147,7 +1130,7 @@ class ReplJS{
             }).catch((err) => {
                 if(this.DEBUG_CONSOLE_ON) console.log("%cNot manually connected...", "color: yellow");
 
-                alert("Didn't see XRP?\n\nCheck the following:\n* XRP is on\n* MicroUSB cable is plugged into XRP and computer\n* MicroUSB cable has data lines (some cables only transfer power)");
+                //alert("Didn't see XRP?\n\nCheck the following:\n* XRP is on\n* MicroUSB cable is plugged into XRP and computer\n* MicroUSB cable has data lines (some cables only transfer power)");
             });
             this.MANNUALLY_CONNECTING = false;
             this.BUSY = false;
