@@ -3,9 +3,9 @@
 // the terminal look active. Only implements functions of
 // Xterm.js that are relevant to the Thumby Manager project
 
-
 class ActiveTerminal{
 
+ 
     // Define common objects used within this class right on object init
     // and open a terminal with addon to fit to parent HTML container
     constructor(_container, state){
@@ -23,7 +23,7 @@ class ActiveTerminal{
         this.FITADDON = new FitAddon.FitAddon();    // The Xterm fit addon object
         this.TERM.loadAddon(this.FITADDON);         // Load fit addon in Xterm.js
 
-        this.setDarkTheme();
+        //this.setDarkTheme();
 
         // Wait until all components have divs before fitting
         setTimeout(() => {

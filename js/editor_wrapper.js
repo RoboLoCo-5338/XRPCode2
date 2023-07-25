@@ -6,10 +6,6 @@
 class EditorWrapper{
     constructor(_container, state, EDITORS){
 
-        // indexDB used for storing binary data of binary files for persistance
-        this.BINARY_DATABASE_VERSION = 1;
-        this.DB = undefined;
-
         this.EDITORS = EDITORS;
         this._container = _container;
 
@@ -107,9 +103,6 @@ class EditorWrapper{
                     delete EDITORS[this.ID];
                     this.clearStorage();
 
-                    // Clear the binary file from database that this editor had a reference to
-                    if(this.isEditorBinary()) this.deleteDBFile();
-
                     console.log("Cleared info for Editor: " + this._container.title);
                     
                     
@@ -150,156 +143,7 @@ class EditorWrapper{
         this.state.id = this.ID;
         this._container.setState(this.state);
 
-        // Database used for getting files
-        this.DB = undefined;
     }
-
-
-    isEditorBinary(){
-        var isBinary = localStorage.getItem("isBinary" + this.ID);
-        if(isBinary != null){
-            if(isBinary == "true"){
-                return true;
-            }else{
-                return false;
-            }
-        }else{
-            return false;
-        }
-    }
-
-
-    initDB(successCallback){
-        // Open database for files and handle any errors
-        const request = indexedDB.open('BINARY_FILES', this.BINARY_DATABASE_VERSION);
-        request.onerror = (event) => {
-            console.error(`Database error: ${event.target.errorCode}`);
-        };
-
-        // Can only create object stores (buckets) and search terms (index) when new DB opened or version changes
-        request.onupgradeneeded = (event) => {
-            this.DB = event.target.result;
-            let store = this.DB.createObjectStore('BINARY_FILES_STORE', {
-                autoIncrement: true
-            });
-       
-            // Create an index (search term)
-            let index = store.createIndex('editorID', 'editorID', {
-                unique: false
-            });
-        };
-
-        request.onsuccess = (event) => {
-            this.DB = event.target.result;
-            console.log("Database accessed");
-            successCallback();
-        };
-    }
-
-    addDBFile(dataBuffer){
-        this.initDB(() => {
-            // Create a transaction with binary store in read only mode
-            const txn = this.DB.transaction('BINARY_FILES_STORE', 'readwrite');
-
-            // Get the store/bucket
-            const store = txn.objectStore('BINARY_FILES_STORE');
-
-            // Get the index/search term from the store/bucket
-            const index = store.index('editorID');
-
-            let query = index.getKey(this.ID);
-
-            var fileEntry = {editorID: this.ID,
-                             fileData: dataBuffer};
-
-            // Return the result object on success
-            query.onsuccess = (event) => {
-                console.log("Added file to DB");
-                store.put(fileEntry, query.result);
-            };
-
-            // Handle the error case
-            query.onerror = (event) => {
-                console.log("Added file to DB");
-                store.put(fileEntry);
-            }
-
-            // Close the database connection
-            txn.oncomplete = () => {
-                this.DB.close();
-            };
-        });
-    }
-
-
-
-    getDBFile(successCallback){
-        this.initDB(() => {
-            // Create a transaction with binary store in read only mode
-            const txn = this.DB.transaction('BINARY_FILES_STORE', 'readonly');
-
-            // Get the store/bucket
-            const store = txn.objectStore('BINARY_FILES_STORE');
-
-            // Get the index/search term from the store/bucket
-            const index = store.index('editorID');
-
-            // Use store to start a search/query for the entry with the current editor ID
-            let query = index.get(this.ID);
-
-            // Return the result object on success
-            query.onsuccess = (event) => {
-                console.log("File data retrieved from DB");
-                successCallback(new Uint8Array(query.result.fileData));
-            };
-
-            // Handle the error case
-            query.onerror = (event) => {
-                console.log(event.target.error);
-            }
-
-            // Close the database connection
-            txn.oncomplete = () => {
-                this.DB.close();
-            };
-        });
-    }
-
-
-
-    deleteDBFile(successCallback){
-        this.initDB(() => {
-            // Create a transaction with binary store in read only mode
-            const txn = this.DB.transaction('BINARY_FILES_STORE', 'readwrite');
-
-            // Get the store/bucket
-            const store = txn.objectStore('BINARY_FILES_STORE');
-
-            // Get the index/search term from the store/bucket
-            const index = store.index('editorID');
-
-            let query = index.getKey(this.ID);
-
-            // Return the result object on success
-            query.onsuccess = (event) => {
-                store.delete(query.result);
-                console.log("File deleted from DB");
-                if(successCallback != undefined) successCallback();
-            };
-
-            // Handle the error case
-            query.onerror = (event) => {
-                console.log(event.target.error);
-            }
-
-            // Close the database connection
-            txn.oncomplete = () => {
-                this.DB.close();
-            };
-        });
-    }
-
-
 
     initEditorPanelUI(data){
         // Remove all buttons from header toolbar, if they exist
@@ -315,7 +159,7 @@ class EditorWrapper{
         // Remove the editor now since it will need to be reassigned a new parent div
         if(this.ACE_EDITOR) this.ACE_EDITOR.destroy();
 
-        // Binary and code viewer always have file button and dropdown
+        // code viewer always have file button and dropdown
         this.FILE_BUTTON = document.createElement("button");
         this.FILE_BUTTON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.FILE_BUTTON.textContent = "File\u25BE";
@@ -342,15 +186,6 @@ class EditorWrapper{
         listElem.appendChild(this.FILE_EXPORT_BUTTON);
         this.FILE_DROPDOWN_UL.appendChild(listElem);
 
-        //listElem = document.createElement("li");
-        //this.FILE_IMPORT_BUTTON = document.createElement("button");
-        //this.FILE_IMPORT_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
-        //this.FILE_IMPORT_BUTTON.textContent = "Import from PC";
-        //this.FILE_IMPORT_BUTTON.title = "Import editor contents from file on PC";
-        //this.FILE_IMPORT_BUTTON.onclick = () => {this.openFile()}
-        //listElem.appendChild(this.FILE_IMPORT_BUTTON);
-        //this.FILE_DROPDOWN_UL.appendChild(listElem);
-
         listElem = document.createElement("li");
         listElem.classList = "uk-nav-divider";
         this.FILE_DROPDOWN_UL.appendChild(listElem);
@@ -372,82 +207,16 @@ class EditorWrapper{
         this.FILE_SAVEAS_BUTTON.onclick = () => {this.onSaveAsToThumby()};
         listElem.appendChild(this.FILE_SAVEAS_BUTTON);
         this.FILE_DROPDOWN_UL.appendChild(listElem);
-/*
-        listElem = document.createElement("li");
-        listElem.classList = "uk-nav-divider";
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
 
-        listElem = document.createElement("li");
-        this.FILE_SET_PATH_BUTTON = document.createElement("button");
-        this.FILE_SET_PATH_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
-        this.FILE_SET_PATH_BUTTON.textContent = "Set Path";
-        this.FILE_SET_PATH_BUTTON.title = "Set file path of XRP saving";
-        this.FILE_SET_PATH_BUTTON.onclick = () => {
-            var path = prompt("Please enter path for editor in absolute form (e.g. /Prog/MyProg/MyProg.py)", this.EDITOR_PATH);
-            if(path != null && path != ""){
-                if(path[0] != '/'){
-                    path = "/" + path;
-                }
-
-                if(this.isBlockly && !path.endsWith(".blocks")){
-                    path += ".blocks";
-                }
-
-                if(this.checkAllEditorsForPath(path) == false){
-                    this.setPath(path);
-                    this.setTitle("Editor" + this.ID + ' - ' + this.EDITOR_PATH);
-                }else{
-                    alert("Cannot use path, editor already open with path");
-                }
-            }
-        }
-        listElem.appendChild(this.FILE_SET_PATH_BUTTON);
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        listElem.classList = "uk-nav-divider";
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        this.FILE_TAB_BUTTON = document.createElement("button");
-        this.FILE_TAB_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
-        this.FILE_TAB_BUTTON.textContent = "New Tab";
-        this.FILE_TAB_BUTTON.title = "Open a new MicroPython code editor in a new tab.";
-        this.FILE_TAB_BUTTON.onclick = () => {
-            this._container.layoutManager.addComponent('Editor', {'value':''}, 'Editor');
-        }
-        listElem.appendChild(this.FILE_TAB_BUTTON);
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        this.FILE_BLOCKLY_BUTTON = document.createElement("button");
-        this.FILE_BLOCKLY_BUTTON.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
-        this.FILE_BLOCKLY_BUTTON.textContent = "New Blockly Tab";
-        this.FILE_BLOCKLY_BUTTON.title = "Open a new Blockly visual block editor in a new tab.";
-        this.FILE_BLOCKLY_BUTTON.onclick = () => {
-            this._container.layoutManager.addComponent('Editor',
-                {"isBlockly":true, "value":'{"blocks":{"blocks":[]}}'}, 'Editor');
-        }
-        listElem.appendChild(this.FILE_BLOCKLY_BUTTON);
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
-*/
-        var isBinary = localStorage.getItem("isBinary" + this.ID);
         var isBlockly = localStorage.getItem("isBlockly" + this.ID) || this.state.isBlockly;
 
         if(data == undefined && (isBlockly == "true" || isBlockly == true)) {
             console.log("INIT BLOCKLY VIEWER");
             localStorage.setItem("isBlockly" + this.ID, true);
-            localStorage.setItem("isBinary" + this.ID, false);
             this.turnIntoBlocklyViewer(data);
-        }else if(data == undefined && isBinary != null && isBinary == "true"){                                                        // If was binary viewer last time, should still be
-            console.log("INIT BINARY VIEWER");
-            localStorage.setItem("isBlockly" + this.ID, false);
-            localStorage.setItem("isBinary" + this.ID, true);
-            this.turnIntoBinaryViewer();
-        }else if((data == undefined && isBinary == null) || (data == undefined && isBinary != null && isBinary == "false")){    // No data and not binary, new editor with default code
+        }else if(data == undefined){    // No data new editor with default code
             console.log("INIT CODE VIEWER");
             localStorage.setItem("isBlockly" + this.ID, false);
-            localStorage.setItem("isBinary" + this.ID, false);
             this.turnIntoCodeViewer(data);
         }else if(data != undefined){
             // Check if the decoded data contains binary replacement letters (could also check that most characters only equal ascii chars)
@@ -457,130 +226,21 @@ class EditorWrapper{
             if(text && text.startsWith("{") && text.indexOf('{"blocks":{"') != -1){
                 console.log("INIT BLOCKLY VIEWER");
                 localStorage.setItem("isBlockly" + this.ID, true);
-                localStorage.setItem("isBinary" + this.ID, false);
                 if(this.SAVED_TO_THUMBY == undefined){
                     localStorage.setItem("EditorSavedToThumby" + this.ID, true); //it already had text so must be coming from the XRP so already saved
                     this.SAVED_TO_THUMBY = true;
                 }
-                
                 this.turnIntoBlocklyViewer(text);
-            }else if(text.indexOf("�") == -1 && text.indexOf("") == -1 && text.indexOf("") == -1 && text.indexOf("") == -1){
+            }else{
                 console.log("INIT CODE VIEWER");
                 localStorage.setItem("isBlockly" + this.ID, false);
-                localStorage.setItem("isBinary" + this.ID, false);
                 if(this.SAVED_TO_THUMBY == undefined){
                     localStorage.setItem("EditorSavedToThumby" + this.ID, true); //it already had text so must be coming from the XRP so already saved
                     this.SAVED_TO_THUMBY = true;
                 }
                 this.turnIntoCodeViewer(text);
-            }else{
-                console.log("INIT BINARY VIEWER");
-                localStorage.setItem("isBlockly" + this.ID, false);
-                localStorage.setItem("isBinary" + this.ID, true);
-                this.turnIntoBinaryViewer(data);
             }
         }
-
-
-
-        // Every editor has an emulation zone for emulate checkboxes
-        /*
-        this.EMULATION_ZONE = document.createElement("div");
-        this.EMULATION_ZONE.classList = "editor_emulation_zone";
-        this.HEADER_TOOLBAR_DIV.appendChild(this.EMULATION_ZONE);
-
-        this.EMULATION_ZONE_NAME = document.createElement("div");
-        this.EMULATION_ZONE_NAME.classList = "editor_emulation_zone_name";
-        this.EMULATION_ZONE_NAME.innerText = "EMULATION:"
-        this.EMULATION_ZONE.appendChild(this.EMULATION_ZONE_NAME);
-
-        this.EMULATION_ZONE_CHECKBOX_PARENT = document.createElement("div");
-        this.EMULATION_ZONE_CHECKBOX_PARENT.classList = "editor_emulation_zone_checkbox_parent";
-        this.EMULATION_ZONE.appendChild(this.EMULATION_ZONE_CHECKBOX_PARENT);
-
-        this.NORMAL_EMU_CHECKBOX = document.createElement("input");
-        this.NORMAL_EMU_CHECKBOX.classList = "uk-checkbox editor_emulate_checkbox";
-        this.NORMAL_EMU_CHECKBOX.type = "checkbox";
-        this.NORMAL_EMU_CHECKBOX.title = "Designate as file to be emulated";
-        this.NORMAL_EMU_CHECKBOX.onchange = (event) => {
-            //  Check that the editor has some kind of path set
-            if(this.EDITOR_PATH == undefined || this.EDITOR_PATH == ""){
-                alert("Please give this editor a path (FILE -> SET PATH)");
-                this.NORMAL_EMU_CHECKBOX.checked = false;
-                return;
-            }
-
-            if(this.NORMAL_EMU_CHECKBOX.checked){
-                this.MAIN_EMU_CHECKBOX.checked = false;
-                localStorage.setItem("EditorEMUCheck" + this.ID, 0);
-            }else{
-                this.MAIN_EMU_CHECKBOX.checked = false;
-                localStorage.removeItem("EditorEMUCheck" + this.ID)
-            }
-        }
-        this.EMULATION_ZONE_CHECKBOX_PARENT.appendChild(this.NORMAL_EMU_CHECKBOX);
-
-        this.MAIN_EMU_CHECKBOX = document.createElement("input");
-        this.MAIN_EMU_CHECKBOX.classList = "uk-checkbox editor_emulate_checkbox";
-        this.MAIN_EMU_CHECKBOX.style.borderColor = "red";
-        this.MAIN_EMU_CHECKBOX.type = "checkbox";
-        this.MAIN_EMU_CHECKBOX.title = "Designate as main file to be emulated (everything will start from this script)";
-        this.MAIN_EMU_CHECKBOX.onchange = (event) => {
-            //  Check that the editor has some kind of path set
-            if(this.EDITOR_PATH == undefined || this.EDITOR_PATH == ""){
-                alert("Please give this editor a path (FILE -> SET PATH)");
-                this.MAIN_EMU_CHECKBOX.checked = false;
-                return;
-            }
-
-            if(this.MAIN_EMU_CHECKBOX.checked){
-                this.NORMAL_EMU_CHECKBOX.checked = true;
-
-                // Go through all other editors and turn off their main check since this one is checked now, switch them to normal
-                for (const [editorID, editorWrapper] of Object.entries(this.EDITORS)) {
-                    if(editorID != this.ID){
-                        // If this editor was checked as main, switch to normal
-                        if(editorWrapper.MAIN_EMU_CHECKBOX.checked){
-                            editorWrapper.NORMAL_EMU_CHECKBOX.checked = true;
-                            localStorage.setItem("EditorEMUCheck" + editorWrapper.ID, 0);   // Check changed, set
-                        }else if(editorWrapper.NORMAL_EMU_CHECKBOX.checked == false){
-                            localStorage.removeItem("EditorEMUCheck" + editorWrapper.ID);   // Neither are checked now, remove
-                        }
-                        editorWrapper.MAIN_EMU_CHECKBOX.checked = false;
-                    }
-                }
-
-                localStorage.setItem("EditorEMUCheck" + this.ID, 1);
-            }else{
-                localStorage.removeItem("EditorEMUCheck" + this.ID)
-            }
-        }
-        this.EMULATION_ZONE_CHECKBOX_PARENT.appendChild(this.MAIN_EMU_CHECKBOX);
-
-
-        // Games opened from the arcade get pre-checked for emulation
-        if(this.state.mainChecked != undefined && this.state.mainChecked == true){
-            this.MAIN_EMU_CHECKBOX.checked = true;
-            this.NORMAL_EMU_CHECKBOX.checked = true;
-            localStorage.setItem("EditorEMUCheck" + this.ID, 1);
-        }else if(this.state.normalChecked != undefined && this.state.normalChecked == true){
-            this.MAIN_EMU_CHECKBOX.checked = false;
-            this.NORMAL_EMU_CHECKBOX.checked = true;
-            localStorage.setItem("EditorEMUCheck" + this.ID, 0);
-        }
-
-
-        var check = localStorage.getItem("EditorEMUCheck" + this.ID);
-        if(check != null){
-            if(check == '1'){
-                this.MAIN_EMU_CHECKBOX.checked = true;
-                this.NORMAL_EMU_CHECKBOX.checked = true;
-            }else if(check == '0'){
-                this.NORMAL_EMU_CHECKBOX.checked = true;
-            }
-        }
-
-        */
 
         // Figure out if editor should take on the last saved title, passed title, or default title
         var lastEditorTitle = localStorage.getItem("EditorTitle" + this.ID);
@@ -909,35 +569,6 @@ class EditorWrapper{
         });
     }
 
-
-
-    turnIntoBinaryViewer(data){
-        if(this.ACE_EDITOR) this.ACE_EDITOR.destroy();
-
-        // Set some persistent values for this editor
-        localStorage.removeItem("EditorValue" + this.ID);
-
-        // Remove this since only needed for editor
-        window.removeEventListener("resize", this.windowResizeListener);
-
-        // Make the editor look different
-        this.EDITOR_DIV.innerHTML = "Binary File";
-        this.EDITOR_DIV.style.display = "flex";
-        this.EDITOR_DIV.style.justifyContent = "center";
-        this.EDITOR_DIV.style.alignItems = "center";
-        this.EDITOR_DIV.style.backgroundColor = "#121212";
-        this.EDITOR_DIV.style.color = "white";
-        this.EDITOR_DIV.style.fontFamily = "Monaco, Menlo, \"Ubuntu Mono\", Consolas, source-code-pro, monospace";
-        this.EDITOR_DIV.style.fontSize = "15px";
-
-        // Save any passed data to DB (if undefined, then this.ID correlates to data saved in DB already)
-        if(data != undefined){
-            this.addDBFile(data);
-        }
-    }
-
-
-
     checkAllEditorsForPath(path){
         for(const [editorID, editorWrapper] of Object.entries(this.EDITORS)){
             if(editorWrapper.EDITOR_PATH != undefined
@@ -1069,7 +700,6 @@ class EditorWrapper{
         localStorage.removeItem("EditorPath" + this.ID);
         localStorage.removeItem("EditorFontSize" + this.ID);
         localStorage.removeItem("EditorSavedToThumby" + this.ID);
-        localStorage.removeItem("isBinary" + this.ID);
         localStorage.removeItem("isBlockly" + this.ID);
     }
 
@@ -1150,71 +780,6 @@ class EditorWrapper{
         this.setTitle("Editor" + this.ID + ' - ' + this.EDITOR_PATH);
 
         return file.name;
-    }
-
-
-    addFileToDB(data){
-        // Need to save the binary data, if defined
-        if(data != undefined){
-            // const request = indexedDB.open('BINARY_FILES', this.BINARY_DATABASE_VERSION);
-
-            // // Print error to console if it happens
-            // request.onerror = (event) => {
-            //     console.error(`Database error: ${event.target.errorCode}`);
-            // };
-
-            // // Print success to console if it happens
-            // request.onsuccess = (event) => {
-            //     console.log("DB successfully accessed");
-            //     this.DB = event.target.result
-
-            //     // Create a new transaction based on the files database
-            //     const transaction = this.DB.transaction('BINARY_FILES_DB', 'readwrite');
-
-            //     // Get the binary files object store
-            //     const store = transaction.objectStore('BINARY_FILES_DB');
-
-            //     var fileEntry = {editorID: this.ID,
-            //                      fileData: data};
-
-            //     let query = store.put(fileEntry);
-
-            //     // Handle success case
-            //     query.onsuccess = function (event) {
-            //         console.log("File saved to database");
-            //     };
-
-            //     // Handle the error case
-            //     query.onerror = function (event) {
-            //         console.log(event.target.errorCode);
-            //     }
-
-            //     // close the database once the transaction completes
-            //     transaction.oncomplete = () => {
-            //         this.DB.close();
-            //     };
-
-
-
-
-
-            // };
-
-            // // Create the object store (bucket) and indexes (search term/key) on first database creation or higher version
-            // request.onupgradeneeded = (event) => {
-            //     this.DB = event.target.result;
-
-            //     // Create the object store (bucket) with auto-increment id (key)
-            //     let store = this.DB.createObjectStore('BINARY_FILES_DB', {
-            //         autoIncrement: true
-            //     });
-
-            //     // Create an index (search term) based on the editor ID property (unique str)
-            //     let index = store.createIndex('editorID', 'editorID', {
-            //         unique: true
-            //     });
-            // };
-        }
     }
 
     // Block data as a JSON string, or null

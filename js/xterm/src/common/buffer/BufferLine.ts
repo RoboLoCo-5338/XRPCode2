@@ -5,7 +5,7 @@
 
 import { CharData, IBufferLine, ICellData, IAttributeData, IExtendedAttrs } from 'common/Types';
 import { stringFromCodePoint } from 'common/input/TextDecoder';
-import { CHAR_DATA_CHAR_INDEX, CHAR_DATA_WIDTH_INDEX, CHAR_DATA_ATTR_INDEX, NULL_CELL_CHAR, NULL_CELL_WIDTH, NULL_CELL_CODE, WHITESPACE_CELL_CHAR, Content, BgFlags } from 'common/buffer/Constants';
+import { CHAR_DATA_CHAR_INDEX, CHAR_DATA_WIDTH_INDEX, CHAR_DATA_ATTR_INDEX, NULL_CELL_CHAR, NULL_CELL_WIDTH, NULL_CELL_CODE, WHITESPACE_CELL_CHAR, Content, BgFlags, FgFlags } from 'common/buffer/Constants';
 import { CellData } from 'common/buffer/CellData';
 import { AttributeData, ExtendedAttrs } from 'common/buffer/AttributeData';
 
@@ -37,6 +37,12 @@ const enum Cell {
 
 export const DEFAULT_ATTR_DATA = Object.freeze(new AttributeData());
 
+// Work variables to avoid garbage collection
+let $startIndex = 0;
+
+/** Factor when to cleanup underlying array buffer after shrinking. */
+const CLEANUP_THRESHOLD = 2;
+
 /**
  * Typed array based bufferline implementation.
  *
@@ -55,7 +61,7 @@ export const DEFAULT_ATTR_DATA = Object.freeze(new AttributeData());
 export class BufferLine implements IBufferLine {
   protected _data: Uint32Array;
   protected _combined: {[index: number]: string} = {};
-  protected _extendedAttrs: {[index: number]: ExtendedAttrs} = {};
+  protected _extendedAttrs: {[index: number]: IExtendedAttrs | undefined} = {};
   public length: number;
 
   constructor(cols: number, fillCellData?: ICellData, public isWrapped: boolean = false) {
@@ -127,7 +133,7 @@ export class BufferLine implements IBufferLine {
    * Test whether contains any chars.
    * Basically an empty has no content, but other cells might differ in FG/BG
    * from real empty cells.
-   * */
+   */
   public hasContent(index: number): number {
     return this._data[index * CELL_SIZE + Cell.CONTENT] & Content.HAS_CONTENT_MASK;
   }
@@ -163,20 +169,25 @@ export class BufferLine implements IBufferLine {
     return '';
   }
 
+  /** Get state of protected flag. */
+  public isProtected(index: number): number {
+    return this._data[index * CELL_SIZE + Cell.BG] & BgFlags.PROTECTED;
+  }
+
   /**
    * Load data at `index` into `cell`. This is used to access cells in a way that's more friendly
    * to GC as it significantly reduced the amount of new objects/references needed.
    */
   public loadCell(index: number, cell: ICellData): ICellData {
-    const startIndex = index * CELL_SIZE;
-    cell.content = this._data[startIndex + Cell.CONTENT];
-    cell.fg = this._data[startIndex + Cell.FG];
-    cell.bg = this._data[startIndex + Cell.BG];
+    $startIndex = index * CELL_SIZE;
+    cell.content = this._data[$startIndex + Cell.CONTENT];
+    cell.fg = this._data[$startIndex + Cell.FG];
+    cell.bg = this._data[$startIndex + Cell.BG];
     if (cell.content & Content.IS_COMBINED_MASK) {
       cell.combinedData = this._combined[index];
     }
     if (cell.bg & BgFlags.HAS_EXTENDED) {
-      cell.extended = this._extendedAttrs[index];
+      cell.extended = this._extendedAttrs[index]!;
     }
     return cell;
   }
@@ -293,7 +304,24 @@ export class BufferLine implements IBufferLine {
     }
   }
 
-  public replaceCells(start: number, end: number, fillCellData: ICellData, eraseAttr?: IAttributeData): void {
+  public replaceCells(start: number, end: number, fillCellData: ICellData, eraseAttr?: IAttributeData, respectProtect: boolean = false): void {
+    // full branching on respectProtect==true, hopefully getting fast JIT for standard case
+    if (respectProtect) {
+      if (start && this.getWidth(start - 1) === 2 && !this.isProtected(start - 1)) {
+        this.setCellFromCodePoint(start - 1, 0, 1, eraseAttr?.fg || 0, eraseAttr?.bg || 0, eraseAttr?.extended || new ExtendedAttrs());
+      }
+      if (end < this.length && this.getWidth(end - 1) === 2 && !this.isProtected(end)) {
+        this.setCellFromCodePoint(end, 0, 1, eraseAttr?.fg || 0, eraseAttr?.bg || 0, eraseAttr?.extended || new ExtendedAttrs());
+      }
+      while (start < end  && start < this.length) {
+        if (!this.isProtected(start)) {
+          this.setCell(start, fillCellData);
+        }
+        start++;
+      }
+      return;
+    }
+
     // handle fullwidth at start: reset cell one to the left if start is second cell of a wide char
     if (start && this.getWidth(start - 1) === 2) {
       this.setCellFromCodePoint(start - 1, 0, 1, eraseAttr?.fg || 0, eraseAttr?.bg || 0, eraseAttr?.extended || new ExtendedAttrs());
@@ -308,46 +336,82 @@ export class BufferLine implements IBufferLine {
     }
   }
 
-  public resize(cols: number, fillCellData: ICellData): void {
+  /**
+   * Resize BufferLine to `cols` filling excess cells with `fillCellData`.
+   * The underlying array buffer will not change if there is still enough space
+   * to hold the new buffer line data.
+   * Returns a boolean indicating, whether a `cleanupMemory` call would free
+   * excess memory (true after shrinking > CLEANUP_THRESHOLD).
+   */
+  public resize(cols: number, fillCellData: ICellData): boolean {
     if (cols === this.length) {
-      return;
+      return this._data.length * 4 * CLEANUP_THRESHOLD < this._data.buffer.byteLength;
     }
+    const uint32Cells = cols * CELL_SIZE;
     if (cols > this.length) {
-      const data = new Uint32Array(cols * CELL_SIZE);
-      if (this.length) {
-        if (cols * CELL_SIZE < this._data.length) {
-          data.set(this._data.subarray(0, cols * CELL_SIZE));
-        } else {
-          data.set(this._data);
-        }
+      if (this._data.buffer.byteLength >= uint32Cells * 4) {
+        // optimization: avoid alloc and data copy if buffer has enough room
+        this._data = new Uint32Array(this._data.buffer, 0, uint32Cells);
+      } else {
+        // slow path: new alloc and full data copy
+        const data = new Uint32Array(uint32Cells);
+        data.set(this._data);
+        this._data = data;
       }
-      this._data = data;
       for (let i = this.length; i < cols; ++i) {
         this.setCell(i, fillCellData);
       }
     } else {
-      if (cols) {
-        const data = new Uint32Array(cols * CELL_SIZE);
-        data.set(this._data.subarray(0, cols * CELL_SIZE));
-        this._data = data;
-        // Remove any cut off combined data, FIXME: repeat this for extended attrs
-        const keys = Object.keys(this._combined);
-        for (let i = 0; i < keys.length; i++) {
-          const key = parseInt(keys[i], 10);
-          if (key >= cols) {
-            delete this._combined[key];
-          }
+      // optimization: just shrink the view on existing buffer
+      this._data = this._data.subarray(0, uint32Cells);
+      // Remove any cut off combined data
+      const keys = Object.keys(this._combined);
+      for (let i = 0; i < keys.length; i++) {
+        const key = parseInt(keys[i], 10);
+        if (key >= cols) {
+          delete this._combined[key];
         }
-      } else {
-        this._data = new Uint32Array(0);
-        this._combined = {};
+      }
+      // remove any cut off extended attributes
+      const extKeys = Object.keys(this._extendedAttrs);
+      for (let i = 0; i < extKeys.length; i++) {
+        const key = parseInt(extKeys[i], 10);
+        if (key >= cols) {
+          delete this._extendedAttrs[key];
+        }
       }
     }
     this.length = cols;
+    return uint32Cells * 4 * CLEANUP_THRESHOLD < this._data.buffer.byteLength;
+  }
+
+  /**
+   * Cleanup underlying array buffer.
+   * A cleanup will be triggered if the array buffer exceeds the actual used
+   * memory by a factor of CLEANUP_THRESHOLD.
+   * Returns 0 or 1 indicating whether a cleanup happened.
+   */
+  public cleanupMemory(): number {
+    if (this._data.length * 4 * CLEANUP_THRESHOLD < this._data.buffer.byteLength) {
+      const data = new Uint32Array(this._data.length);
+      data.set(this._data);
+      this._data = data;
+      return 1;
+    }
+    return 0;
   }
 
   /** fill a line with fillCharData */
-  public fill(fillCellData: ICellData): void {
+  public fill(fillCellData: ICellData, respectProtect: boolean = false): void {
+    // full branching on respectProtect==true, hopefully getting fast JIT for standard case
+    if (respectProtect) {
+      for (let i = 0; i < this.length; ++i) {
+        if (!this.isProtected(i)) {
+          this.setCell(i, fillCellData);
+        }
+      }
+      return;
+    }
     this._combined = {};
     this._extendedAttrs = {};
     for (let i = 0; i < this.length; ++i) {
@@ -406,11 +470,17 @@ export class BufferLine implements IBufferLine {
         for (let i = 0; i < CELL_SIZE; i++) {
           this._data[(destCol + cell) * CELL_SIZE + i] = srcData[(srcCol + cell) * CELL_SIZE + i];
         }
+        if (srcData[(srcCol + cell) * CELL_SIZE + Cell.BG] & BgFlags.HAS_EXTENDED) {
+          this._extendedAttrs[destCol + cell] = src._extendedAttrs[srcCol + cell];
+        }
       }
     } else {
       for (let cell = 0; cell < length; cell++) {
         for (let i = 0; i < CELL_SIZE; i++) {
           this._data[(destCol + cell) * CELL_SIZE + i] = srcData[(srcCol + cell) * CELL_SIZE + i];
+        }
+        if (srcData[(srcCol + cell) * CELL_SIZE + Cell.BG] & BgFlags.HAS_EXTENDED) {
+          this._extendedAttrs[destCol + cell] = src._extendedAttrs[srcCol + cell];
         }
       }
     }

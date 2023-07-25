@@ -616,7 +616,6 @@ class ReplJS{
         if(usePercent) window.setPercent(1, "Saving file...");
 
         if(usePercent) window.setPercent(2);
-        // this.startReaduntil(">");
 
         // Convert strings to binary
         var bytes = undefined;
@@ -629,7 +628,7 @@ class ReplJS{
             bytes = fileContents;
         }
 
-
+        //[TODO] - This should be just the lenght of what is available. Not just 2MB
         if(bytes.length >= 2000000){
             alert("This file is at least 2MB, too large, not uploading");
             return;
@@ -950,7 +949,7 @@ class ReplJS{
         for(let i=0; i<window.libraryList.length; i++){
             window.setPercent(cur_percent, "Updating XRPLib...");
             //added a version number to ensure that the browser does not cache it.   
-            await this.uploadFile("lib/XRPLib/" + window.libraryList[i], await window.downloadFile("lib/XRPLib/" + window.libraryList[i] + "?version=" + window.latestLibraryVersion[2]) , false);
+            await this.uploadFile("lib/XRPLib/" + window.libraryList[i], await window.downloadFile("lib/XRPLib/" + window.libraryList[i] + "?version=" + window.latestLibraryVersion[2]));
             cur_percent += percent_per;
         }
 
@@ -958,7 +957,7 @@ class ReplJS{
         for(let i=0; i<window.phewList.length; i++){
             window.setPercent(cur_percent, "Updating XRPLib...");
             //added a version number to ensure that the browser does not cache it.   
-            await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i] + "?version=" + window.latestLibraryVersion[2]), false);
+            await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i] + "?version=" + window.latestLibraryVersion[2]));
             cur_percent += percent_per;
         }
 

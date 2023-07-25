@@ -4,6 +4,7 @@
  */
 
 import { Terminal, ITerminalAddon } from 'xterm';
+import { IRenderDimensions } from 'browser/renderer/shared/Types';
 
 interface ITerminalDimensions {
   /**
@@ -33,7 +34,7 @@ export class FitAddon implements ITerminalAddon {
 
   public fit(): void {
     const dims = this.proposeDimensions();
-    if (!dims || !this._terminal) {
+    if (!dims || !this._terminal || isNaN(dims.cols) || isNaN(dims.rows)) {
       return;
     }
 
@@ -58,10 +59,14 @@ export class FitAddon implements ITerminalAddon {
 
     // TODO: Remove reliance on private API
     const core = (this._terminal as any)._core;
+    const dims: IRenderDimensions = core._renderService.dimensions;
 
-    if (core._renderService.dimensions.actualCellWidth === 0 || core._renderService.dimensions.actualCellHeight === 0) {
+    if (dims.css.cell.width === 0 || dims.css.cell.height === 0) {
       return undefined;
     }
+
+    const scrollbarWidth = this._terminal.options.scrollback === 0 ?
+      0 : core.viewport.scrollBarWidth;
 
     const parentElementStyle = window.getComputedStyle(this._terminal.element.parentElement);
     const parentElementHeight = parseInt(parentElementStyle.getPropertyValue('height'));
@@ -76,10 +81,10 @@ export class FitAddon implements ITerminalAddon {
     const elementPaddingVer = elementPadding.top + elementPadding.bottom;
     const elementPaddingHor = elementPadding.right + elementPadding.left;
     const availableHeight = parentElementHeight - elementPaddingVer;
-    const availableWidth = parentElementWidth - elementPaddingHor - core.viewport.scrollBarWidth;
+    const availableWidth = parentElementWidth - elementPaddingHor - scrollbarWidth;
     const geometry = {
-      cols: Math.max(MINIMUM_COLS, Math.floor(availableWidth / core._renderService.dimensions.actualCellWidth)),
-      rows: Math.max(MINIMUM_ROWS, Math.floor(availableHeight / core._renderService.dimensions.actualCellHeight))
+      cols: Math.max(MINIMUM_COLS, Math.floor(availableWidth / dims.css.cell.width)),
+      rows: Math.max(MINIMUM_ROWS, Math.floor(availableHeight / dims.css.cell.height))
     };
     return geometry;
   }
