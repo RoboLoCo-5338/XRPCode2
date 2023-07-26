@@ -20,7 +20,6 @@ class Webserver:
         """
 
         gc.threshold(50000) # garbage collection
-        self.DOMAIN = "remote.xrp"
         self.logged_data = {}
         self.buttons = {"forwardButton":    lambda: logging.debug("Button not initialized"),
                         "backButton":   lambda: logging.debug("Button not initialized"),
@@ -31,26 +30,52 @@ class Webserver:
         self.FUNCTION_SUFFIX = "endfunction"
         self.display_arrows = False
 
-    def start_server(self, robot_number:int):
+    def start_network(self, robot_id:int):
         """
-        Start the webserver. The network password is "remote.xrp"
-
-        :param robot_number: The number of the robot, used to generate the access point name
-        :type robot_number: int
+        Open an access point from the XRP board to be used as a captive host. The network password is "remote.xrp"
         """
-        self.access_point = access_point(f"XRP_{robot_number}", "remote.xrp")
+        self.access_point = access_point(f"XRP_{robot_id}", "remote.xrp")
         self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
+
+    def connect_to_network(self, ssid:str, password:str, timeout = 10):
+        """
+        Connect to a wifi network with the given ssid and password. 
+        If the connection fails, the board will disconnect from the network and return.
+        """
+        self.wlan = network.WLAN(network.STA_IF)
+        self.wlan.active(True) # configure board to connect to wifi
+        self.wlan.connect(ssid,password)
+        start_time = time.time()
+        while not self.wlan.isconnected():
+            print("Connecting to network, may take a second")
+            if time.time() > start_time+timeout:
+                print("Failed to connect to network, please try again")
+                self.wlan.disconnect()
+                return False
+            time.sleep(0.25)
+        self.ip = self.wlan.ifconfig()[0]
+
+    def start_server(self):
+        """
+        Begin the webserver in either access point or bridge mode. The IP is printed to the console.
+
+        Preconditions: Either start_network or connect_to_network must be called before this method.
+        """
         logging.info(f"Starting DNS Server at {self.ip}")
         dns.run_catchall(self.ip)
+        self.DOMAIN = self.ip
+        logging.disable_logging_types(logging.LOG_INFO)
         server.run()
-        logging.info("Webserver Started")
 
     def _index_page(self, request):
         # Render index page and respond to form requests
         if request.method == 'GET':
             return self._generateHTML()
         if request.method == 'POST':
-            text = list(request.form.keys())[0]
+            if str(list(request.form.values())[0]).count(" ") == 0:
+                text = str(list(request.form.keys())[0])
+            else:
+                text = str(list(request.form.values())[0])
             self._handleUserFunctionRequest(text)
             return self._generateHTML()
 
@@ -141,12 +166,12 @@ class Webserver:
         try:
             user_function = self.buttons[text]
             if user_function is None:
-                print("User function "+text+" not found")
+                logging.warning("User function "+text+" not found")
                 return False
             user_function()
             return True
         except:
-            print("User function "+text+" caused an exception")
+            logging.error("User function "+text+" caused an exception")
             return False
 
     def _generateHTML(self):

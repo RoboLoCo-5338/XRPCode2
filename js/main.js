@@ -46,7 +46,7 @@ var onExportToEditor = (bytes) => {
 const showChangelogVersion = 2;
 
 // This should match what is in /lib/XRPLib/version.py as '__version__'
-window.latestLibraryVersion = [0,9,5];
+window.latestLibraryVersion = [0,9,6];
 
 // This should match what is on the actual Thumby firmware found through import sys and sys.implementation
 window.latestMicroPythonVersion = [1, 20, 0];
@@ -278,6 +278,7 @@ function registerFilesystem(_container, state){
                 && editor.EDITOR_PATH == filePath){
                 editor._container.parent.focus();
                 //[TODO] If file open and no changes, just switch to that window, If open and changes, ask if OK to overwrite changes?
+                //       But what if they are using a new XRP with the same file name?
                 window.alertMessage("This file is already open in Editor" + id + "! Please close it first");
                 return;
             }

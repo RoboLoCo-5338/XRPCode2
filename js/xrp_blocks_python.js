@@ -314,7 +314,7 @@ Blockly.Python['xrp_ws_start_server'] = function (block) {
   PY.definitions_['import_webserver'] = 'from XRPLib.webserver import Webserver';
   PY.definitions_[`webserver_setup`] = `webserver = Webserver.get_default_webserver()`;
   var id = Blockly.Python.valueToCode(block, 'id', Blockly.Python.ORDER_ATOMIC);
-  var code = `webserver.start_server(${id})\n`
+  var code = `webserver.start_network(${id})\nwebserver.start_server()\n`
   return code;
 };
 

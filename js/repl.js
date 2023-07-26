@@ -15,7 +15,7 @@ class ReplJS{
         this.THUMBY_SEND_BLOCK_SIZE = 255;  // How many bytes to send to Thumby at a time when uploading a file to it
 
         // Set true so most terminal output gets passed to javascript terminal
-        this.DEBUG_CONSOLE_ON = false;
+        this.DEBUG_CONSOLE_ON = true;
 
         this.COLLECT_RAW_DATA = false;
         this.COLLECTED_RAW_DATA = [];
@@ -1007,17 +1007,63 @@ class ReplJS{
         this.BUSY = false;
     }
 
+    async stopTheRobot(){
+        //This is a complicated task since the different conditions. The Micropython could be in one of 2 states
+        //  1 - Sitting at the REPL prompt ready to go
+        //  2 - Running a program
+        //
+        //    If running a program then we need to send a ctrl-c to stop the program.
+        //    This brings up 2 conditions:
+        //       1 - The ctrl-c stopped the program and we are back at the prompt
+        //       2 - It took the ctrl-c but since the program was in a different thread (timers are the most likely) it didn't stop the program
+        //          For this one we need to try a few more times in hopes the program will be in a state we can interrupt. If not ask the user to hit
+        //             the reset button.
+
+        
+        this.startReaduntil(">>>");
+        await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);
+        var result = await this.haltUntilRead(2, 5); //this should be fast 
+
+        if (result == undefined){
+
+            this.startReaduntil("KeyboardInterrupt:");
+            await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);  // ctrl-C to interrupt any running program
+            result = await this.haltUntilRead(1, 20); 
+            if(result == undefined){
+                return false;
+            }            
+            //try multiple times to get to the prompt
+            var gotToPrompt = false;
+            for(let i=0;i<5;i++){
+                this.startReaduntil(">>>");
+                await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);
+                result = await this.haltUntilRead(2, 5); //this should be fast 
+                if(result != undefined){
+                    gotToPrompt = true;
+                    break;
+                }
+                window.sleep(5);
+            }
+            if(!gotToPrompt){
+                await window.alertMessage("Please press the reset button on your XRP and then click on OK")
+            }
+        }
+        return true;
+    }
+
+
     async checkIfMP(){
-        //throw a couple of ctrl-Cs at it in case a program is running
-        await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT + this.CTRL_CMD_KINTERRUPT);  // ctrl-C twice: interrupt any running program
-        // do a softreset, but time out if no response
-        this.startReaduntil("MPY: soft reboot");
-        await this.writeToDevice(this.CTRL_CMD_SOFTRESET);
-        let result = await this.haltUntilRead(3, 50);  //FCG - is this the right amount of delay to always work?
-        if(result == undefined){
+       
+        if(! await this.stopTheRobot()){
             this.HAS_MICROPYTHON = false;
             return false;
         }
+                
+        // do a softreset, but time out if no response
+        this.startReaduntil("MPY: soft reboot");
+        await this.writeToDevice(this.CTRL_CMD_SOFTRESET);
+        await this.haltUntilRead(3, 20);  //FCG - is this the right amount of delay to always work?
+       
         this.HAS_MICROPYTHON = true;
         return true;
     }
@@ -1142,7 +1188,7 @@ class ReplJS{
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: in stop");
         
         if(this.BUSY){
-            await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT + this.CTRL_CMD_KINTERRUPT);  // ctrl-C twice: interrupt any running program
+            await this.stopTheRobot();
             this.STOP = true;
             return
         }
