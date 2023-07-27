@@ -250,7 +250,7 @@ var blocklyToolbox = {
             "contents": [
                 {
                     "kind": "BLOCK",
-                    "blockxml": "<block type=\"xrp_sleep\">\n                <field name=\"TIME\">0</field>\n              </block>",
+                    "blockxml": "<block type=\"xrp_sleep\">\n                <field name=\"TIME\">0.5</field>\n              </block>",
                     "type": "xrp_sleep"
                 },
                 {

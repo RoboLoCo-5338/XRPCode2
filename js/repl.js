@@ -405,8 +405,9 @@ class ReplJS{
         // but is needed to only grab the FS lines/data
         this.startReaduntil(">");
         await this.writeToDevice(lines + "\x04");
+        this.SPECIAL_FORCE_OUTPUT_FLAG = true;  //you see the OK, but also get any fast output
         await this.waitUntilOK();
-        this.SPECIAL_FORCE_OUTPUT_FLAG = true;
+        //this.SPECIAL_FORCE_OUTPUT_FLAG = true;
         await this.haltUntilRead(1);
 
         // Get back into normal mode and omit the 3 lines from the normal message,
@@ -423,6 +424,7 @@ class ReplJS{
 
         // if they pushed the stop button while lines was executing
         if(this.STOP) { 
+            this.SPECIAL_FORCE_OUTPUT_FLAG = false;
             var cmd = "import XRPLib.resetbot\n"
             await this.writeUtilityCmdRaw(cmd, true, 1);
             await this.getToNormal();
@@ -792,11 +794,17 @@ class ReplJS{
     }
 
     async updateMainFile(fileToEx){
-        var value = "with open('"+fileToEx+"', mode='r') as exfile:\n" +
-                    "    code = exfile.read()\n"+
-                    "exec(code)";
+        var value = "try:\n" +
+                    "   with open('"+fileToEx+"', mode='r') as exfile:\n" +
+                    "       code = exfile.read()\n"+
+                    "   exec(code)\n" +
+                    "except Exception as e:\n" + 
+                    "   print(e)\n"+
+                    "finally:\n"+
+                    "   import XRPLib.resetbot";
         await this.uploadFile("//main.py", value, true, false);
         window.resetPercentDelay();
+        return value;
     }
 
     async uploadFiles(path, fileHandles){
