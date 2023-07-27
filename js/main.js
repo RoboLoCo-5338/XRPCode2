@@ -419,22 +419,27 @@ function registerEditor(_container, state){
         }
         // Not sure that this code will ever happen.
         if(editor.EDITOR_PATH == undefined || editor.EDITOR_PATH == ""){
-            console.log('Pick a folder');
-            var path = await DIR.getPathFromUser(SAVEAS_ELEMENT);
-            if(path != undefined){
-                // Make sure no editors with this file path already exist
-                for (const [id, editor] of Object.entries(EDITORS)) {
-                    if(editor.EDITOR_PATH == path){
-                        editor._container.parent.focus();
-                        this.alertMessage("This file is already open in Editor" + id + "! Please close it first");
-                        return;
+            if(editor.EDITOR_TITLE == "Choose Mode"){
+                //pass
+            }
+            else{
+                console.log('Pick a folder');
+                var path = await DIR.getPathFromUser(SAVEAS_ELEMENT);
+                if(path != undefined){
+                    // Make sure no editors with this file path already exist
+                    for (const [id, editor] of Object.entries(EDITORS)) {
+                        if(editor.EDITOR_PATH == path){
+                            editor._container.parent.focus();
+                            this.alertMessage("This file is already open in Editor" + id + "! Please close it first");
+                            return;
+                        }
                     }
-                }
 
-                editor.setPath(path);
-                editor.setSaved();
-                editor.updateTitleSaved();
-                editor.onSaveToThumby();
+                    editor.setPath(path);
+                    editor.setSaved();
+                    editor.updateTitleSaved();
+                    editor.onSaveToThumby();
+                }
             }
         }else{
             //check if name is untitled
