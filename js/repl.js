@@ -442,9 +442,6 @@ class ReplJS{
         // if they pushed the stop button while lines was executing
         if(this.STOP) { 
             this.SPECIAL_FORCE_OUTPUT_FLAG = false;
-            var cmd = "import XRPLib.resetbot\n"
-            await this.writeUtilityCmdRaw(cmd, true, 1);
-            await this.getToNormal();
             this.STOP = false
         }
 

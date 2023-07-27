@@ -529,7 +529,7 @@ function registerEditor(_container, state){
             }
         }
         // update the main file so if they unplug the robot and turn it on it will execute this program.
-        await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
+        lines = await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
         ATERM.TERM.scrollToBottom();
         await REPL.executeLines(lines);
     }
