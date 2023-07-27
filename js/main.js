@@ -44,17 +44,17 @@ var onExportToEditor = (bytes) => {
 // Show pop-up containing IDE changelog every time showChangelogVersion is increased
 // Update version string in index.html and play.html as well to match
 const showChangelogVersion = 2;
-
+let response = await fetch("/lib/package.json");
+response = await response.text();
+let jresp = JSON.parse(response);
+let v = jresp.version
 // This should match what is in /lib/XRPLib/version.py as '__version__'
-window.latestLibraryVersion = [0,9,6];
+window.latestLibraryVersion = v.split(".");
 
 // This should match what is on the actual XRP 
 window.latestMicroPythonVersion = [1, 20, 0];
 
-//list of the library files to update
-window.libraryList = ["board.py","controller.py","defaults.py","differential_drive.py","encoded_motor.py","encoder.py","imu.py","motor.py","motor_group.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","timeout.py","version.py","webserver.py"]
 window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
-//[TODO] Add the example list
 
 window.SHOWMAIN = false;
 

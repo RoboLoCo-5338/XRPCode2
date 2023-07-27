@@ -14,7 +14,7 @@ def log_imu_heading():
 
 def log_encoder_position():
     while True:
-        print(drivetrain.left_motor.get_position(), drivetrain.right_motor.get_position())
+        print(left_motor.get_position(), right_motor.get_position())
         time.sleep(0.1)
 
 def benchmark_encoder_isr():
@@ -56,16 +56,21 @@ def test_set_effort():
     drivetrain.stop()
 
 def test_led():
-    led.blink(5)
+    board.led_blink(5)
     time.sleep(3)
-    led.off()
+    board.led_off()
 
 def test_button():
-    button.set_callback(trigger=Pin.IRQ_RISING, callback=lambda p: led.change_state())
+    board.set_button_callback(trigger=Pin.IRQ_RISING, callback=lambda p: board.led.toggle())
 
 def test_rangefinder():
-    while True:
-        print(f"{rangefinder.distance()}")
-        time.sleep(0.25)
+    while not board.is_button_pressed():
+        print(f"{rangefinder.distance()}, {rangefinder.distance()}")
+        time.sleep(0.5)
+
+def encoder_test():
+    while not board.is_button_pressed():
+        print(f"Left: {left_motor.get_position()}\tRight:{right_motor.get_position()}")
+        time.sleep(0.1)
 
 test_rangefinder()

@@ -949,17 +949,29 @@ class ReplJS{
         if(!answer){
             return; //they pressed CANCEL
         }
+        let response = await fetch("/lib/package.json");
+        response = await response.text();
+        let jresp = JSON.parse(response);
+        var urls = jresp.urls;
         window.setPercent(1, "Updating XRPLib...");
-        let percent_per = 99 / (window.libraryList.length + window.phewList.length);
+        let percent_per = Math.round(99 / (urls.length + window.phewList.length));
         let cur_percent = 1 + percent_per;
 
         await this.deleteFileOrDir("/lib/XRPLib");  //delete all the files first to avoid any confusion.
-        for(let i=0; i<window.libraryList.length; i++){
+        for(let i=0; i<urls.length; i++){
             window.setPercent(cur_percent, "Updating XRPLib...");
-            //added a version number to ensure that the browser does not cache it.   
-            await this.uploadFile("lib/XRPLib/" + window.libraryList[i], await window.downloadFile("lib/XRPLib/" + window.libraryList[i] + "?version=" + window.latestLibraryVersion[2]));
+            //added a version number to ensure that the browser does not cache it.
+            let next = urls[i];
+            var parts = next[0];
+            parts = parts.replace("XRPLib", "lib/XRPLib");   
+            await this.uploadFile(parts, await window.downloadFile(parts.replace("XRPExamples", "lib/Examples") + "?version=" + window.latestLibraryVersion[2]));
             cur_percent += percent_per;
         }
+
+        //create a version.py file that has the version in it for future checks
+        await this.uploadFile("lib/XRPLib/version.py", "__version__ = '" + window.latestLibraryVersion[0] + "." + window.latestLibraryVersion[1] + "." + window.latestLibraryVersion[2] + "'\n" );
+        cur_percent += percent_per;
+
 
         await this.deleteFileOrDir("/lib/phew");  //delete all the files first to avoid any confusion.
         for(let i=0; i<window.phewList.length; i++){
