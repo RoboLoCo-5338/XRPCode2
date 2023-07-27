@@ -373,7 +373,7 @@ class ReplJS{
         //window.setPercent(25, "Fetching filesystem...");
         var hiddenLines = await this.writeUtilityCmdRaw(getFilesystemCmd + sizeCmd, true, 1);
 
-        // Make sure this wasn't executed when no Thumby was attached
+        // Make sure this wasn't executed when no XRP was attached
         if(hiddenLines != undefined){
             this.onFSData(hiddenLines[0].substring(2), hiddenLines[1].split(' '));
         }

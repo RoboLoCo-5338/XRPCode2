@@ -48,13 +48,15 @@ const showChangelogVersion = 2;
 // This should match what is in /lib/XRPLib/version.py as '__version__'
 window.latestLibraryVersion = [0,9,6];
 
-// This should match what is on the actual Thumby firmware found through import sys and sys.implementation
+// This should match what is on the actual XRP 
 window.latestMicroPythonVersion = [1, 20, 0];
 
 //list of the library files to update
 window.libraryList = ["board.py","controller.py","defaults.py","differential_drive.py","encoded_motor.py","encoder.py","imu.py","motor.py","motor_group.py","pid.py","rangefinder.py","reflectance.py","resetbot.py","servo.py","timeout.py","version.py","webserver.py"]
 window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
 //[TODO] Add the example list
+
+window.SHOWMAIN = false;
 
 if(localStorage.getItem(showChangelogVersion) == null){
 
@@ -415,21 +417,6 @@ function registerEditor(_container, state){
             window.alertMessage("No XRP connected, did not save to device");
             return;
         }
-
-        //handel any special hidden settings
-        var data = editor.getValue();
-        if(data.startsWith("#XRPSETTING")){
-            var setting = data.split("#XRPSETTING")[1];
-            setting = setting.trimEnd();
-            switch(setting){
-                case "-localstorage":
-                    localStorage.clear();
-                    break;
-                default:
-                    break;
-            }
-            return;
-        }
         // Not sure that this code will ever happen.
         if(editor.EDITOR_PATH == undefined || editor.EDITOR_PATH == ""){
             console.log('Pick a folder');
@@ -478,6 +465,10 @@ function registerEditor(_container, state){
         console.log('Pick a folder');
         var path = await DIR.getPathFromUser(SAVEAS_ELEMENT, false, editor.EDITOR_TITLE.split('/').at(-1));
         if(path != undefined){
+            if(path == "/main.py" && window.SHOWMAIN == false){
+                window.alertMessage("You can not save a file named 'main.py'<br>Please save again and select a different name");
+                return;
+            }
             editor.setPath(path);
             editor.setSaved();
             editor.updateTitleSaved();
@@ -493,6 +484,31 @@ function registerEditor(_container, state){
             window.alertMessage("Another program is already running. Stop that program and then press RUN again.")
             return;
         }
+
+        //handel any special hidden settings
+        var data = editor.getValue();
+        if(data.startsWith("#XRPSETTING")){
+            var setting = data.split("#XRPSETTING")[1];
+            setting = setting.trimEnd();
+            switch(setting){
+                case "-localstorage":
+                    localStorage.clear();
+                    break;
+                case "+main":
+                    window.SHOWMAIN = true;
+                    FS.onRefresh();
+                    break;
+                case "-main":
+                    window.SHOWMAIN = false;
+                    FS.onRefresh();
+                    break;
+                default:
+                    break;
+            }
+            return;
+        }
+
+
         //check if power switch is on.
         if(! await REPL.isPowerSwitchOn()) {
             if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." + 

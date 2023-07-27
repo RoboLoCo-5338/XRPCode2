@@ -211,17 +211,6 @@ class FILESYSTEM{
         }
     }
 
-/*
-    removeUpdate(){
-        this.FS_UPDATE_LIBS_BTN.classList = "uk-button uk-button-primary uk-button-small uk-width-1-1";
-    }
-
-
-    showUpdate(){
-        this.FS_UPDATE_LIBS_BTN.classList = "uk-button uk-button-danger uk-button-small uk-width-1-1";
-    }
-*/
-
     async downloadSelected(selectedNode, isDir, fullPath){
         // If directory, find all child nodes and download them, otherwise download single file
         if(isDir){
@@ -338,56 +327,62 @@ class FILESYSTEM{
         for(var nodeKey in fsNode){
             if(!isNaN(nodeKey)){                                                                // Check if number (false means number inside string)
                 var fileOrDir = Object.keys(fsNode[nodeKey])[0];                                // Get string key that's either FILE or DIR
-                if(fileOrDir == "F"){                                                           // Found file, just add name to tree
-                    var newFileTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir]);             // Make child node
+                if(fileOrDir == "F"){        
+                    if(fsNode[nodeKey][fileOrDir] == "main.py" && window.SHOWMAIN == false){
+                        // pass
 
-                    // Assign event so that left clicked nodes can be opened in webpage
-                    newFileTreeNode.on("dblclick", (event, node) => {
-                        console.log("File left clicked");
-                
-                        var currentNode = node;
-                        var path = "";
-                        while(currentNode != undefined){
-                            // Although we represent the filesystem with '\', RP2040 MicroPython wants '/' in paths
-                            path = "/" + currentNode.toString() + path;
-                            currentNode = currentNode.parent;
-                        }
-                
-                        // Full path to root after this (removes three back slashes)
-                        path = "/" + path.substring(3);
-                        this.onOpen(path);
-                    });
+                    }
+                    else{                                                   // Found file, just add name to tree
+                        var newFileTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir]);             // Make child node
 
-                    // Assign event so that right clicked nodes bring up a menu
-                    // to rename, copy, cut, paste, open, or delete file on-board
-                    // the RP2040
-                    newFileTreeNode.on("contextmenu", (event, node) => {
-                        console.log("File/Dir right clicked");
+                        // Assign event so that left clicked nodes can be opened in webpage
+                        newFileTreeNode.on("dblclick", (event, node) => {
+                            console.log("File left clicked");
+                    
+                            var currentNode = node;
+                            var path = "";
+                            while(currentNode != undefined){
+                                // Although we represent the filesystem with '\', RP2040 MicroPython wants '/' in paths
+                                path = "/" + currentNode.toString() + path;
+                                currentNode = currentNode.parent;
+                            }
+                    
+                            // Full path to root after this (removes three back slashes)
+                            path = "/" + path.substring(3);
+                            this.onOpen(path);
+                        });
 
-                        // Show menu for renaming, moving, deleting files and move to cursor.
-                        this.FS_DROPDOWN_DIV.style.display = "block";
-                        this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
+                        // Assign event so that right clicked nodes bring up a menu
+                        // to rename, copy, cut, paste, open, or delete file on-board
+                        // the RP2040
+                        newFileTreeNode.on("contextmenu", (event, node) => {
+                            console.log("File/Dir right clicked");
 
-                        let top = (event.clientY - this.FS_DROPDOWN_DIV.clientHeight + 3);
-                        if(top < 0){
-                            top = 0;
-                        }
-                        this.FS_DROPDOWN_DIV.style.top = top + 'px';
+                            // Show menu for renaming, moving, deleting files and move to cursor.
+                            this.FS_DROPDOWN_DIV.style.display = "block";
+                            this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
 
-                        var selectedNodes = this.FS_TREE.getSelectedNodes();
+                            let top = (event.clientY - this.FS_DROPDOWN_DIV.clientHeight + 3);
+                            if(top < 0){
+                                top = 0;
+                            }
+                            this.FS_DROPDOWN_DIV.style.top = top + 'px';
 
-                        // Unselect all nodes so next time multiple are not selected
-                        for(var i=0; i<selectedNodes.length; i++){
-                            selectedNodes[i].setSelected(false);
-                        }
+                            var selectedNodes = this.FS_TREE.getSelectedNodes();
 
-                        node.setSelected(true);
-                        return false;
-                    }, false);
+                            // Unselect all nodes so next time multiple are not selected
+                            for(var i=0; i<selectedNodes.length; i++){
+                                selectedNodes[i].setSelected(false);
+                            }
 
-                    newFileTreeNode.setEnabled(this.STATE);
+                            node.setSelected(true);
+                            return false;
+                        }, false);
 
-                    treeNode.addChild(newFileTreeNode);                                         // Add file name as child node
+                        newFileTreeNode.setEnabled(this.STATE);
+
+                        treeNode.addChild(newFileTreeNode);
+                    }                                                                           // Add file name as child node
                 }else if(fileOrDir == "D"){                                                     // Found dir, add name to tree and make recursive call
                     var dirTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir],{expanded:false});                 // Make FS tree node for dir
 
@@ -547,40 +542,4 @@ class FILESYSTEM{
         return path;
     }
 
-
-    // // Starts copy by saving node to copy in module (undefined otherwise)
-    // startCopy(){
-    //     this.COPYING_NODE = this.FS_TREE.getSelectedNodes()[0];
-    //     console.log("Copy started");
-    // }
-
-    
-    // // Ends copy by returning the parent of the last startCopy node (paste button on file menu)
-    // endCopy(){
-    //     if(this.COPYING_NODE != undefined){
-    //         // Get node (file or DIR) that the file should be pasted relative to.
-    //         // If it is a file, get the parent and figure out a path to paste to
-    //         var pastingNode = this.FS_TREE.getSelectedNodes()[0];
-
-    //         // Path to dir where files/dir should be pasted on-board RP2040
-    //         // EX: livesInRoot\ChildDir\
-    //         //     Now files/dirs can be copied/cut to 'ChildDir'
-    //         var pastePath = "";
-
-    //         // Figure out the path to paste dir/files under on-board
-    //         // the RP2040 using webpage filesystem view as mirror ref
-    //         if(pastingNode.isLeaf()){   // If true, pasting to file, find path to parent
-    //             pastePath = this.getNodePath(pastingNode.parent);
-    //         }else{                      // Must have been a dir, just get the path of current node
-    //             pastePath = this.getNodePath(pastingNode);
-    //         }
-
-    //         console.log(pastePath);
-
-    //         // console.log(this.getNodePath(this.COPYING_NODE.parent));
-    //         this.unselectAllNodes();
-    //         this.COPYING_NODE = undefined;
-    //     }
-    //     console.log("Copy Ended");
-    // }
 }

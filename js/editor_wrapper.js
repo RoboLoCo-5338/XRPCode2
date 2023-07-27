@@ -365,7 +365,6 @@ class EditorWrapper{
                     }else{
                         this.setTitle("*Editor" + this.ID);
                     }
-                    //[TODO] - determine when a file is being opened so it doesn't do this every refresh of the browser.
                     
                     this.SAVED_TO_THUMBY = false;
                     localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
