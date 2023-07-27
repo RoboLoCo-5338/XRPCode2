@@ -49,6 +49,7 @@ class ReplJS{
         this.CTRL_CMD_PASTEMODE = "\x05";
 
         this.SPECIAL_FORCE_OUTPUT_FLAG = false;
+        this.CATCH_OK = false;
 
         // Use to disable auto connect if manual connecting in progress
         this.MANNUALLY_CONNECTING = false;
@@ -171,6 +172,7 @@ class ReplJS{
 
                     // Output the rest of the lines that should not be hidden
                     // Should find a way to do this without adding newlines again
+                    
                     for(var j=i+omitOffset; j<tempLines.length; j++){
                         if(j != tempLines.length-1){
                             this.onData(tempLines[j] + "\r\n");
@@ -217,9 +219,23 @@ class ReplJS{
                         if(this.READ_UNTIL_STRING == ""){
                             this.onData(this.TEXT_DECODER.decode(value));
                         }else{
+                            // There are two things going on here.
+                            //     1 - When we are running a program, we want all incoming lines to be pushed to the terminal
+                            //     2 - Except the very first 'OK'. There are timing issues and this was the best place to catch it. 
+                            //            This makes the user output look a lot nicer with out the 'OK' showing up.
                             if(this.SPECIAL_FORCE_OUTPUT_FLAG){
-                                this.onData(this.TEXT_DECODER.decode(value));
+                                if (this.CATCH_OK){                                    
+                                    let v = this.TEXT_DECODER.decode(value)
+                                    if(v.includes("OK")){
+                                        this.CATCH_OK = false;
+                                    }else{
+                                        this.onData(this.TEXT_DECODER.decode(value));
+                                    }                                    
+                                }else{
+                                    this.onData(this.TEXT_DECODER.decode(value));
+                                }
                             }
+
                             this.COLLECTED_DATA += this.TEXT_DECODER.decode(value);
 
                             // If raw flag set true, collect raw data for now
@@ -403,11 +419,12 @@ class ReplJS{
 
         // Not really needed for hiding output to terminal since raw does not echo
         // but is needed to only grab the FS lines/data
+        
         this.startReaduntil(">");
         await this.writeToDevice(lines + "\x04");
         this.SPECIAL_FORCE_OUTPUT_FLAG = true;  //you see the OK, but also get any fast output
+        this.CATCH_OK = true;
         await this.waitUntilOK();
-        //this.SPECIAL_FORCE_OUTPUT_FLAG = true;
         await this.haltUntilRead(1);
 
         // Get back into normal mode and omit the 3 lines from the normal message,
@@ -1041,20 +1058,21 @@ class ReplJS{
 
         
         this.startReaduntil(">>>");
-        await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);
-        var result = await this.haltUntilRead(2, 5); //this should be fast 
+        await this.writeToDevice("\r"); //do a linefeed and see if the REPL responds
+        var result = await this.haltUntilRead(1, 5); //this should be fast 
 
         if (result == undefined){
 
             this.startReaduntil("KeyboardInterrupt:");
             await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);  // ctrl-C to interrupt any running program
-            result = await this.haltUntilRead(1, 20); 
+            result = await this.haltUntilRead(1, 40); 
             if(result == undefined){
                 return false;
             }            
             //try multiple times to get to the prompt
             var gotToPrompt = false;
             for(let i=0;i<5;i++){
+                window.sleep(50); //give time. If there is a finally statement executing it may take a bit.
                 this.startReaduntil(">>>");
                 await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);
                 result = await this.haltUntilRead(2, 5); //this should be fast 
@@ -1062,7 +1080,6 @@ class ReplJS{
                     gotToPrompt = true;
                     break;
                 }
-                window.sleep(5);
             }
             if(!gotToPrompt){
                 await window.alertMessage("Please press the reset button on your XRP and then click on OK")
@@ -1208,11 +1225,12 @@ class ReplJS{
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: in stop");
         
         if(this.BUSY){
-            await this.stopTheRobot();
+            await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);  // ctrl-C to interrupt any running program
             this.STOP = true;
             return
         }
 
+        await this.stopTheRobot();  //make sure the robot is really stopped
         // otherwise just invoke resetbot to stop all motors
         var cmd = "import XRPLib.resetbot\n"
         await this.writeUtilityCmdRaw(cmd, true, 1);
