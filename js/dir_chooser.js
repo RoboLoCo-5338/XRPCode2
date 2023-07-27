@@ -126,6 +126,9 @@ class DIRCHOOSER{
 
 
     updateFinalPath(){
+        if (this.LAST_SELECTED_PATH == "/"){
+            this.LAST_SELECTED_PATH = "";
+        }
         this.DIR_CHOOSER_FOOTER_OUTPUT.value = "FINAL PATH: " + this.LAST_SELECTED_PATH + "/" + this.DIR_CHOOSER_FOOTER_INPUT.value;
     }
 
