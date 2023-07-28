@@ -820,6 +820,7 @@ class EditorWrapper{
         // Init the ace editor
         this.ACE_EDITOR = ace.edit(this.EDITOR_DIV);
         this.ACE_EDITOR.session.setMode("ace/mode/python");
+        this.ACE_EDITOR.setKeyboardHandler("ace/keyboard/vscode");
 
         var lastTheme = localStorage.getItem("lastTheme");
         const darkEditorTheme = localStorage.getItem("darkEditorTheme")
