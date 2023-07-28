@@ -1069,7 +1069,7 @@ class ReplJS{
             //try multiple times to get to the prompt
             var gotToPrompt = false;
             for(let i=0;i<5;i++){
-                window.sleep(50); //give time. If there is a finally statement executing it may take a bit.
+                window.sleep(10); //give time. If there is a finally statement executing it may take a bit.
                 this.startReaduntil(">>>");
                 await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);
                 result = await this.haltUntilRead(2, 5); //this should be fast 
