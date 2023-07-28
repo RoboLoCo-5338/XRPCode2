@@ -1,0 +1,37 @@
+.header {
+    background-color: #2980b9;
+    min-height: 45px;
+    /* min-width: 100%; */
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    color: white;
+    z-index: 1000;
+    margin: 0%;
+  }
+  .header_logo_space {
+    background-color: #2980b9;
+    height: 100%;
+    display: inline-block;
+    align-items: center;
+    justify-content: center;
+    object-fit: fill;
+  }
+  .header_button_space {
+    background-color: #2980b9;
+    color: white;
+    width: 100%;
+    height: 100%;
+  }
+  .header_link_space {
+    width: 20%;
+    background-color: #2980b9;
+    color: white;
+  }
+  .bg-transparent {
+    background-color: transparent;
+  }
+  .xrp_logo {
+    height: 100%;
+    width: 100%;
+  }

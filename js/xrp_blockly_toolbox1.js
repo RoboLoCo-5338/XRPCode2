@@ -1,87 +1,49 @@
-var blocklyToolbox = {
-    "contents": [
+
+    var blocklyToolbox = {"contents": [
         {
             "kind": "CATEGORY",
-            "name": "Individual Motors",
-            "colour": "#a55b65", // crimson red
             "contents": [
                 {
                     "kind": "BLOCK",
-                    "type": "xrp_motor_effort",
-                    "inputs":{
-                        "effort": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}}
-                    },
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_motor_speed",
-                    "inputs":{
-                        "speed": {"shadow": {"type": "math_number", "fields": {"NUM": "60"}}}
-                    },
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_motor_direction",
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_motor_get_speed",
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_motor_get_position",
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_motor_get_count",
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_motor_reset_position",
-                },
-            ]
-        },
-        {
-            "kind": "CATEGORY",
-            "name": "DriveTrain",
-            "colour": "#a5675b", // rust orange
-            "contents": [
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_straight_effort",
                     "inputs":{
                         "dist": {"shadow": {"type": "math_number", "fields": {"NUM": "150"}}},
-                        "effort": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}}
                     },
+                    "blockxml": "<block type=\"xrp_straight_effort\">\n                <value name=\"dist\">\n                  <shadow type=\"math_number\">\n                    <field name=\"NUM\">150</field>\n                  </shadow>\n                </value>\n                <value name=\"effort\">\n                  <shadow type=\"math_number\">\n                    <field name=\"NUM\">0.5</field>\n                  </shadow>\n                </value>\n              </block>",
+                    "type": "xrp_straight_effort"
                 },
                 {
                     "kind": "BLOCK",
-                    "type": "xrp_turn_effort",
-                    "inputs":{
-                        "degrees": {"shadow": {"type": "math_number", "fields": {"NUM": "90"}}},
-                        "effort": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}}
-                    },
+                    "blockxml": "<block type=\"xrp_turn_effort\">\n                <value name=\"angle\">\n                  <shadow type=\"math_number\">\n                    <field name=\"NUM\">90</field>\n                  </shadow>\n                </value>\n                <value name=\"effort\">\n                  <shadow type=\"math_number\">\n                    <field name=\"NUM\">0.5</field>\n                  </shadow>\n                </value>\n              </block>",
+                    "type": "xrp_turn_effort"
                 },
                 {
                     "kind": "BLOCK",
-                    "type": "xrp_seteffort",
-                    "inputs":{
-                        "LEFT": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}},
-                        "RIGHT": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}}
-                    },
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_speed",
-                    "inputs":{
-                        "LEFT": {"shadow": {"type": "math_number", "fields": {"NUM": "60"}}},
-                        "RIGHT": {"shadow": {"type": "math_number", "fields": {"NUM": "60"}}}
-                    },
+                    "blockxml": "<block type=\"xrp_seteffort\">\n                <value name=\"LEFT\">\n                  <shadow type=\"math_number\">\n                    <field name=\"NUM\">0</field>\n                  </shadow>\n                </value>\n                <value name=\"RIGHT\">\n                  <shadow type=\"math_number\">\n                    <field name=\"NUM\">0</field>\n                  </shadow>\n                </value>\n              </block>",
+                    "type": "xrp_seteffort"
                 },
                 {
                     "kind": "BLOCK",
                     "type": "xrp_stop_motors"
-                },
+                }
+            ],
+            "name": "DriveTrain",
+            "colour": "#a5675b", // rust orange
+        },
+        {
+            "kind": "CATEGORY",
+            "contents": [
+                {
+                    "kind": "BLOCK",
+                    "blockxml": "<block type=\"xrp_servo_deg\">\n                <value name=\"degrees\">\n                  <shadow type=\"math_number\">\n                    <field name=\"NUM\">90</field>\n                  </shadow>\n                </value>\n              </block>",
+                    "type": "xrp_servo_deg"
+                }
+            ],
+            "name": "Servos",
+            "colour": "#a55ba5", // purple/pink
+        },
+        {
+            "kind": "CATEGORY",
+            "contents": [
                 {
                     "kind": "BLOCK",
                     "type": "xrp_resetencoders"
@@ -94,93 +56,36 @@ var blocklyToolbox = {
                     "kind": "BLOCK",
                     "type": "xrp_getrightencoder"
                 },
-            ]
-        },
-        {
-            "kind": "CATEGORY",
-            "name": "Servos",
-            "colour": "#a55ba5", // purple/pink
-            "contents": [
                 {
                     "kind": "BLOCK",
-                    "type": "xrp_servo_deg",
-                    "inputs":{
-                        "degrees": {"shadow": {"type": "math_number", "fields": {"NUM": "90"}}}
-                    },
+                    "type": "xrp_getsonardist"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_l_refl"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_r_refl"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_yaw"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_roll"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_pitch"
                 }
-            ]
-        },
-        {
-            "kind": "CATEGORY",
+            ],
             "name": "Sensors",
-            "colour": "#80a55b", // LIGHT GREEN
-            "contents": [
-                {
-                "kind": "CATEGORY",
-                "name": "Distance",
-                "colour": "#80a55b",
-                "contents": [
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_getsonardist"
-                    },
-                ]},
-                {
-                    "kind": "CATEGORY",
-                    "name": "Reflectance",
-                    "colour": "#80a55b",
-                    "contents": [
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_l_refl"
-                    },
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_r_refl"
-                    },
-                ]},
-                {
-                    "kind": "CATEGORY",
-                    "name": "Gyro",
-                    "colour": "#80a55b",
-                    "contents": [
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_yaw"
-                    },
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_roll"
-                    },
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_pitch"
-                    }
-                ]},
-                {
-                    "kind": "CATEGORY",
-                    "name": "Accelerometer",
-                    "colour": "#80a55b",
-                    "contents": [
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_acc_x"
-                    },
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_acc_y"
-                    },
-                    {
-                        "kind": "BLOCK",
-                        "type": "xrp_acc_z"
-                    }
-                ]},
-            ]
+            "colour": "#7080a55bDB70", // LIGHT GREEN
         },
         {
             "kind": "CATEGORY",
-            "name": "Control Board",
-            "colour": "#5ba580", // cool green
             "contents": [
                 {
                     "kind": "BLOCK",
@@ -193,64 +98,17 @@ var blocklyToolbox = {
                 {
                     "kind": "BLOCK",
                     "type": "xrp_button_pressed"
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_wait_for_button_press"
                 }
-            ]
+            ],
+            "name": "Control Board",
+            "colour": "#5ba580", // GREEN
         },
         {
             "kind": "CATEGORY",
-            "name": "Web Server",
-            "colour": "#5b99a5", // turquoise
             "contents": [
                 {
                     "kind": "BLOCK",
-                    "type": "xrp_ws_forward_button"
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_ws_back_button"
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_ws_left_button"
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_ws_right_button"
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_ws_stop_button"
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_ws_add_button"
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_ws_log_data",
-                    "inputs":{
-                        "log_name": {"shadow": {"type": "text", "field": {"text": "label"}}}
-                    },
-                },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_ws_start_server",
-                    "inputs":{
-                        "id": {"shadow": {"type": "math_number", "fields": {"NUM": "1"}}}
-                    },
-                },
-            ]
-        },
-         {
-            "kind": "CATEGORY",
-            "contents": [
-                {
-                    "kind": "BLOCK",
-                    "blockxml": "<block type=\"xrp_sleep\">\n                <field name=\"TIME\">0.5</field>\n              </block>",
+                    "blockxml": "<block type=\"xrp_sleep\">\n                <field name=\"TIME\">0</field>\n              </block>",
                     "type": "xrp_sleep"
                 },
                 {
@@ -391,11 +249,6 @@ var blocklyToolbox = {
             "contents": [
                 {
                     "kind": "BLOCK",
-                    "blockxml": "<block type=\"text_print\">\n                <value name=\"TEXT\">\n                  <shadow type=\"text\">\n                    <field name=\"TEXT\">abc</field>\n                  </shadow>\n                </value>\n              </block>",
-                    "type": "text_print"
-                },
-                {
-                    "kind": "BLOCK",
                     "blockxml": "<block type=\"text\">\n                <field name=\"TEXT\"></field>\n              </block>",
                     "type": "text"
                 },
@@ -446,12 +299,17 @@ var blocklyToolbox = {
                 },
                 {
                     "kind": "BLOCK",
+                    "blockxml": "<block type=\"text_print\">\n                <value name=\"TEXT\">\n                  <shadow type=\"text\">\n                    <field name=\"TEXT\">abc</field>\n                  </shadow>\n                </value>\n              </block>",
+                    "type": "text_print"
+                },
+                {
+                    "kind": "BLOCK",
                     "blockxml": "<block type=\"text_prompt_ext\">\n                <mutation type=\"TEXT\"></mutation>\n                <field name=\"TYPE\">TEXT</field>\n                <value name=\"TEXT\">\n                  <shadow type=\"text\">\n                    <field name=\"TEXT\">abc</field>\n                  </shadow>\n                </value>\n              </block>",
                     "type": "text_prompt_ext"
                 }
             ],
             "name": "Text",
-            "colour": "#5ba58c" // seafoam green
+            "colour": "#5ba58c" // sea foam green
         },
         {
             "kind": "CATEGORY",
@@ -517,7 +375,7 @@ var blocklyToolbox = {
         {
             "kind": "CATEGORY",
             "name": "Variables",
-            "colour": "#a55b80", // fuschia
+            "colour": "#a55b80", // dark pink
             "custom": "VARIABLE"
         },
         {

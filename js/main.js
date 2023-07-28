@@ -51,7 +51,7 @@ let v = jresp.version
 // This should match what is in /lib/XRPLib/version.py as '__version__'
 window.latestLibraryVersion = v.split(".");
 
-// This should match what is on the actual XRP 
+// This should match what is on the actual XRP
 window.latestMicroPythonVersion = [1, 20, 0];
 
 window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
@@ -171,10 +171,10 @@ var defaultConfig = {
                     }],
                     height: 20
                 }]
-            }],    
+            }],
         }],
     }],
-}; 
+};
 
 
 document.getElementById("IDStopBTN").onclick = (event) =>{
@@ -231,9 +231,9 @@ var FS = undefined;
 function registerFilesystem(_container, state){
     FS = new FILESYSTEM(_container, state);
 
-    DIR.onRename = (path) => REPL.renameFile(path, prompt("Type a new name:", path.substring(path.lastIndexOf("/")+1)));
+    DIR.onRename = (path) => REPL.renameFile(path, prompt("Type a new name: ", path.substring(path.lastIndexOf("/")+1)));
     DIR.onNewFolder = async (fileOrDir, path) => {
-        var newFolderName = prompt("Enter the new folder name:", "NewFolder");
+        var newFolderName = prompt("Enter the new folder name: ", "NewFolder");
         if(newFolderName != null){
             if(fileOrDir == 1){ // Dir
                 await REPL.buildPath(path + "/" + newFolderName);
@@ -245,7 +245,7 @@ function registerFilesystem(_container, state){
     }
 
     FS.onDelete = (path) => REPL.deleteFileOrDir(path);
-    FS.onRename = (path) => REPL.renameFile(path, prompt("Type a new name:", path.substring(path.lastIndexOf("/")+1)));
+    FS.onRename = (path) => REPL.renameFile(path, prompt("Type a new name: ", path.substring(path.lastIndexOf("/")+1)));
     FS.onFormat = () => REPL.format();
     FS.onUpdate = () => REPL.update();
     FS.onUploadFiles = async () => {
@@ -260,7 +260,7 @@ function registerFilesystem(_container, state){
                 }
             }
         }else{
-            window.alertMessage("XRP not connected, can't upload files");
+            window.alertMessage("No XRP is connected. Files can not be uploaded. Double-check that the XRP is connected before attempting to upload a file.");
         }
     }
     FS.onRefresh = async () => {
@@ -270,7 +270,7 @@ function registerFilesystem(_container, state){
             window.setPercent(99.8);
             window.resetPercentDelay();
         }else{
-            window.alertMessage("XRP not connected");
+            window.alertMessage("No XRP is connected.");
         }
     }
     FS.onOpen = async (filePath) => {
@@ -388,8 +388,8 @@ function registerShell(_container, state){
     REPL.showMicropythonUpdate = async () => {
         if(!REPL.HAS_MICROPYTHON){
             let answer = await confirmMessage("We have detected there is no MicroPython on your XRP.<br>" +
-                    "If you think this is incorrect press CANCEL<br>" +
-                    "if correct please press the reset button while holding down the BOOTSEL button.<br>Then click OK to continue");
+                    "If you think this is incorrect please press CANCEL.<br>" +
+                    "If this is correct, please press the reset button while holding down the BOOTSEL button.<br>Then click OK to continue.");
             if(!answer){
                 return;
             }
@@ -397,11 +397,11 @@ function registerShell(_container, state){
 
         let answer = await confirmMessage("The MicroPython on your XRP needs to be updated. The new version is " + window.latestMicroPythonVersion[0] + "." + window.latestMicroPythonVersion[1] + "." + window.latestMicroPythonVersion[2] +"<br>Would you like to update now?");
         if(answer){
-            await alertMessage("When the <b>Select Folder</b> window comes up select the <b>RPI-RP2</b> drive when it appears.<br>Next click on 'Edit Files'<br>Then wait for the XRP to connect, it may take a few seconds");
+            await alertMessage("When the <b>Select Folder</b> window comes up, select the <b>RPI-RP2</b> drive when it appears.<br>Next, click on 'Edit Files' and wait for the XRP to connect.<br> This process may take a few seconds.");
             REPL.updateMicroPython();
         }
 
-        
+
     };
 }
 
@@ -414,7 +414,7 @@ function registerEditor(_container, state){
     editor.onSaveToThumby = async () => {
         // Warn user when trying to save and no Thumby is connected
         if(REPL.DISCONNECT == true){
-            window.alertMessage("No XRP connected, did not save to device");
+            window.alertMessage("No XRP is connected. Any changes made were not saved. Double-check that the XRP is connected before attempting to save the program.");
             return;
         }
         // Not sure that this code will ever happen.
@@ -482,11 +482,11 @@ function registerEditor(_container, state){
     }
     editor.onFastExecute = async (lines) => {
         if(REPL.DISCONNECT == true){
-            window.alertMessage("Can not run program no XRP connected");
+            window.alertMessage("No XRP is connected. Double-check that the XRP is connected before attempting to run the program.");
             return;
         }
         if(REPL.BUSY) {
-            window.alertMessage("Another program is already running. Stop that program and then press RUN again.")
+            window.alertMessage("Another program is already running. Stop that program first and then press RUN again.");
             return;
         }
 
@@ -516,7 +516,7 @@ function registerEditor(_container, state){
 
         //check if power switch is on.
         if(! await REPL.isPowerSwitchOn()) {
-            if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." + 
+            if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
                     "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")){
                 return;
             }
@@ -535,11 +535,11 @@ function registerEditor(_container, state){
     }
     editor.onConvert = async (oldPath, data, ID) => {
         if(REPL.DISCONNECT == true){
-            window.alertMessage("Can not convert program no XRP connected");
+            window.alertMessage("This program can not be converted because no XRP is connected. Double-check that the XRP is connected before attempting to convert the program.");
             return;
         }
         if(REPL.BUSY) {
-            window.alertMessage("Another program is already running. Stop that program and then press convert again.")
+            window.alertMessage("Another program is already running. Stop that program first before attempting to convert your program.");
             return;
         }
             //move the file to trash
@@ -549,7 +549,7 @@ function registerEditor(_container, state){
         await REPL.renameFile(oldPath, "/trash" + oldPath);
 
         //close the window
-        var ed = EDITORS[ID]
+        var ed = EDITORS[ID];
         ed.clearStorage();
         ed._container.close();
         delete EDITORS[ID];
@@ -577,7 +577,7 @@ function registerEditor(_container, state){
 
         await downloadFileFromPath([fullFilePath]);
     }
-   
+
     EDITORS[editor.ID] = editor;
 }
 
@@ -644,7 +644,7 @@ function getTimestamp() {
 
 async function alertMessage(message){
     await UIkit.modal.alert(message).then(function () {
-        console.log('Alert closed.')
+        console.log('Alert closed.');
     });
 }
 window.alertMessage = alertMessage;
@@ -663,14 +663,14 @@ window.confirmMessage = confirmMessage;
 
 async function downloadFile(filePath) {
     let response = await fetch(filePath);
-        
+
     if(response.status != 200) {
         throw new Error("Server Error");
     }
-        
+
     // read response stream as text
     return await response.text();
-   
+
 }
 window.downloadFile = downloadFile;
 
@@ -694,7 +694,7 @@ window.downloadFileBytes = downloadFileBytes;
 async function sleep(tenms){
 
     var tenmsCount = 0;
-    
+
     while (true) {
         tenmsCount = tenmsCount + 1;
         if(tenmsCount >= tenms){

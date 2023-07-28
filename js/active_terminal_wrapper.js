@@ -16,7 +16,7 @@ class ActiveTerminal{
         this.SHELL_DIV.classList = "shell";
         this._container.element.appendChild(this.SHELL_DIV);
 
-        // The lib/xterm.js file rendererType was hard forced 
+        // The lib/xterm.js file rendererType was hard forced
         // to be 'dom' instead of canvas for compatibility reasons
         this.TERM = new Terminal();                 // The Xterm.js object
         this.TERM.open(this.SHELL_DIV);             // Hook Xterm.js onto HTML object 'terminal'
@@ -65,7 +65,7 @@ class ActiveTerminal{
         // Functions defined outside this module but used inside
         this.onType = undefined;
 
-        this.writeln("XRP Bot Development Enviroment");
+        this.writeln("XRP Bot Development Environment");
         this.writeln("Waiting for connection... (click 'Connect XRP')");
 
         this.AUTO_RESIZING = true;
@@ -118,7 +118,7 @@ class ActiveTerminal{
         if (this.TERM._initialized) {
             return;
         }
-        
+
         this.TERM._initialized = true;
 
         // Setup special character callback
