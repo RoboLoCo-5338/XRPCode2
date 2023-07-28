@@ -1,4 +1,10 @@
 
+/*
+    This file creates each Block item for Blockly.
+    You can set and update the colors here based off the HUE value.
+    You can also set tooltips and help Urls.
+    Helpful Resource --> https://developers.google.com/blockly/guides/configure/web/appearance/themes
+*/
 
 // Individual Motors
 Blockly.Blocks['xrp_motor_effort'] = {
@@ -6,13 +12,13 @@ Blockly.Blocks['xrp_motor_effort'] = {
     this.appendDummyInput()
       .appendField("Motor:")
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
-      .appendField("effort:")
-      this.appendValueInput("effort")
-        .setCheck("Number")
-    this.setInputsInline(true)
+      .appendField("effort:");
+    this.appendValueInput("effort")
+      .setCheck("Number");
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);  
-    this.setColour(0);
+    this.setNextStatement(true, null);
+    this.setColour(352); // crimson
     this.setTooltip("Set the effort for the selected motor");
     this.setHelpUrl("");
   }
@@ -23,27 +29,14 @@ Blockly.Blocks['xrp_motor_speed'] = {
     this.appendDummyInput()
       .appendField("Motor")
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
-      .appendField("Speed")
-      this.appendValueInput("speed")
-        .setCheck("Number")
-    this.setInputsInline(true)  
+      .appendField("Speed");
+    this.appendValueInput("speed")
+      .setCheck("Number");
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);  
-    this.setColour(0);
+    this.setNextStatement(true, null);
+    this.setColour(352); // crimson
     this.setTooltip("Set the speed in RPM for the selected motor");
-    this.setHelpUrl("");
-  }
-};
-
-Blockly.Blocks['xrp_motor_get_speed'] = {
-  init: function () {
-    this.appendDummyInput()
-      .appendField("Motor:")
-      .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
-      .appendField("Speed")
-    this.setOutput(true, null);
-    this.setColour(0);
-    this.setTooltip("Get the speed of the selected motor");
     this.setHelpUrl("");
   }
 };
@@ -56,9 +49,22 @@ Blockly.Blocks['xrp_motor_direction'] = {
       .appendField("direction:")
       .appendField(new Blockly.FieldDropdown([["Reverse", "True"], ["Forward", "False"]]), "DIRECTION");
     this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);  
-    this.setColour(0);
+    this.setNextStatement(true, null);
+    this.setColour(352); // crimson
     this.setTooltip("Set the default direction of the selected motor");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_motor_get_speed'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Motor:")
+      .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
+      .appendField("Speed");
+    this.setOutput(true, null);
+    this.setColour(352); // crimson
+    this.setTooltip("Get the speed of the selected motor");
     this.setHelpUrl("");
   }
 };
@@ -68,9 +74,9 @@ Blockly.Blocks['xrp_motor_get_position'] = {
     this.appendDummyInput()
       .appendField("Motor:")
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
-      .appendField("Position")
+      .appendField("Position");
     this.setOutput(true, null);
-    this.setColour(0);
+    this.setColour(352); // crimson
     this.setTooltip("Get the position (number of revolutions) of the selected motor since the last reset");
     this.setHelpUrl("");
   }
@@ -81,9 +87,9 @@ Blockly.Blocks['xrp_motor_get_count'] = {
     this.appendDummyInput()
       .appendField("Motor:")
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
-      .appendField("Encoder count")
+      .appendField("Encoder count");
     this.setOutput(true, null);
-    this.setColour(0);
+    this.setColour(352); // crimson
     this.setTooltip("Get the number of encoder count of the selected motor since the last reset");
     this.setHelpUrl("");
   }
@@ -96,8 +102,8 @@ Blockly.Blocks['xrp_motor_reset_position'] = {
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
       .appendField("Reset Encoder")
     this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);  
-    this.setColour(0);
+    this.setNextStatement(true, null);
+    this.setColour(352); // crimson
     this.setTooltip("Reset the position and count for the selected motor");
     this.setHelpUrl("");
   }
@@ -115,7 +121,7 @@ Blockly.Blocks['xrp_straight_effort'] = {
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(0);
+    this.setColour(10); // orange
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -132,26 +138,26 @@ Blockly.Blocks['xrp_turn_effort'] = {
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(0);
+    this.setColour(10); // orange
     this.setTooltip("");
     this.setHelpUrl("");
   }
 };
 
 Blockly.Blocks['xrp_seteffort'] = {
-  init: function() {
+  init: function () {
     this.appendDummyInput()
-        .appendField("Set Effort");
+      .appendField("Set Effort");
     this.appendValueInput("LEFT")
-        .setCheck("Number")
-        .appendField("Left");
+      .setCheck("Number")
+      .appendField("Left");
     this.appendValueInput("RIGHT")
-        .setCheck("Number")
-        .appendField("Right");
+      .setCheck("Number")
+      .appendField("Right");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(0);
+    this.setColour(10); // orange
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -169,23 +175,23 @@ Blockly.Blocks['xrp_speed'] = {
       .appendField("Right");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);  
-    this.setColour(0);
+    this.setNextStatement(true, null);
+    this.setColour(10); // orange
     this.setTooltip("Set the speed in RPM for the motors");
     this.setHelpUrl("");
   }
 };
 
 Blockly.Blocks['xrp_stop_motors'] = {
-  init: function() {
+  init: function () {
     this.appendDummyInput()
-        .appendField("Stop Motors");
+      .appendField("Stop Motors");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(0);
- this.setTooltip("");
- this.setHelpUrl("");
+    this.setColour(10); // orange
+    this.setTooltip("");
+    this.setHelpUrl("");
   }
 };
 
@@ -193,9 +199,9 @@ Blockly.Blocks['xrp_resetencoders'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("Reset Encoders");
-      this.setPreviousStatement(true, null);
-      this.setNextStatement(true, null);
-      this.setColour(0);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(10); // orange
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -206,7 +212,7 @@ Blockly.Blocks['xrp_getleftencoder'] = {
     this.appendDummyInput()
       .appendField("Left Encoder");
     this.setOutput(true, null);
-    this.setColour(0);
+    this.setColour(10); // orange
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -217,7 +223,7 @@ Blockly.Blocks['xrp_getrightencoder'] = {
     this.appendDummyInput()
       .appendField("Right Encoder");
     this.setOutput(true, null);
-    this.setColour(0);
+    this.setColour(10); // orange
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -232,31 +238,31 @@ Blockly.Blocks['xrp_servo_deg'] = {
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(0);
+    this.setColour(300); // light purple
     this.setTooltip("");
     this.setHelpUrl("");
   }
 };
 
-// Sonar
+// Sensors - Sonar
 Blockly.Blocks['xrp_getsonardist'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("Sonar Distance");
     this.setOutput(true, null);
-    this.setColour(60);
+    this.setColour(90); // soft green
     this.setTooltip("");
     this.setHelpUrl("");
   }
 };
 
-//reflectance
+//Sensors - Reflectance
 Blockly.Blocks['xrp_l_refl'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("Left Reflectance");
     this.setOutput(true, null);
-    this.setColour(60);
+    this.setColour(90); // soft green
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -267,19 +273,19 @@ Blockly.Blocks['xrp_r_refl'] = {
     this.appendDummyInput()
       .appendField("Right Reflectance");
     this.setOutput(true, null);
-    this.setColour(60);
+    this.setColour(90); // soft green
     this.setTooltip("");
     this.setHelpUrl("");
   }
 };
 
-//Gyro
+//Sensors - Gyro
 Blockly.Blocks['xrp_yaw'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("Yaw");
     this.setOutput(true, null);
-    this.setColour(60);
+    this.setColour(90); // soft green
     this.setTooltip("");
     this.setHelpUrl("The amount the robot has turned left or right from center");
   }
@@ -290,7 +296,7 @@ Blockly.Blocks['xrp_roll'] = {
     this.appendDummyInput()
       .appendField("Roll");
     this.setOutput(true, null);
-    this.setColour(60);
+    this.setColour(90); // soft green
     this.setTooltip("The amount of tipping to the left or right");
     this.setHelpUrl("");
   }
@@ -301,19 +307,19 @@ Blockly.Blocks['xrp_pitch'] = {
     this.appendDummyInput()
       .appendField("Pitch");
     this.setOutput(true, null);
-    this.setColour(60);
+    this.setColour(90); // soft green
     this.setTooltip("");
     this.setHelpUrl("The amount the front of the robot is tilting up or down");
   }
 };
 
-//Accelerometer 
+//Sensors - Accelerometer
 Blockly.Blocks['xrp_acc_x'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("acc_x");
     this.setOutput(true, null);
-    this.setColour(60);
+    this.setColour(90); // soft green
     this.setTooltip("");
     this.setHelpUrl("The acceleration in the X direction");
   }
@@ -324,7 +330,7 @@ Blockly.Blocks['xrp_acc_y'] = {
     this.appendDummyInput()
       .appendField("acc_y");
     this.setOutput(true, null);
-    this.setColour(60);
+    this.setColour(90); // soft green
     this.setTooltip("");
     this.setHelpUrl("The acceleration in the Y direction");
   }
@@ -335,7 +341,7 @@ Blockly.Blocks['xrp_acc_z'] = {
     this.appendDummyInput()
       .appendField("acc_z");
     this.setOutput(true, null);
-    this.setColour(60);
+    this.setColour(90); // soft green
     this.setTooltip("");
     this.setHelpUrl("The acceleration in the Z direction");
   }
@@ -348,7 +354,7 @@ Blockly.Blocks['xrp_led_on'] = {
       .appendField("LED on");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(190);
+    this.setColour(150); // darker teal
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -360,30 +366,32 @@ Blockly.Blocks['xrp_led_off'] = {
       .appendField("LED off");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(190);
+    this.setColour(150); // darker teal
     this.setTooltip("");
     this.setHelpUrl("");
   }
 };
 
+// "User Button"
 Blockly.Blocks['xrp_button_pressed'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("User Button");
     this.setOutput(true, null);
-    this.setColour(190);
+    this.setColour(150); // darker teal
     this.setTooltip("");
     this.setHelpUrl("");
   }
 };
 
+// "Wait for Button Press"
 Blockly.Blocks['xrp_wait_for_button_press'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("Wait for Button Press");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(190);
+    this.setColour(150); // darker teal
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -398,7 +406,7 @@ Blockly.Blocks['xrp_ws_forward_button'] = {
       .appendField('Function');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(190);
+    this.setColour(190); // turquoise
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -412,7 +420,7 @@ Blockly.Blocks['xrp_ws_back_button'] = {
       .appendField('Function');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(190);
+    this.setColour(190); // turquoise
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -423,9 +431,9 @@ Blockly.Blocks['xrp_ws_left_button'] = {
     this.appendDummyInput()
       .appendField("Web Left Button")
     this.appendStatementInput('func')
-      .appendField('Function');    this.setPreviousStatement(true, null);
+      .appendField('Function'); this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(190);
+    this.setColour(190); // turquoise
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -436,9 +444,9 @@ Blockly.Blocks['xrp_ws_right_button'] = {
     this.appendDummyInput()
       .appendField("Web Right Button")
     this.appendStatementInput('func')
-      .appendField('Function');    this.setPreviousStatement(true, null);
+      .appendField('Function'); this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(190);
+    this.setColour(190); // turquoise
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -449,9 +457,9 @@ Blockly.Blocks['xrp_ws_stop_button'] = {
     this.appendDummyInput()
       .appendField("Web Stop Button")
     this.appendStatementInput('func')
-      .appendField('Function');    this.setPreviousStatement(true, null);
+      .appendField('Function'); this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(190);
+    this.setColour(190); // turquoise
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -461,12 +469,12 @@ Blockly.Blocks['xrp_ws_add_button'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("Web Add Button  Name")
-      .appendField( new Blockly.FieldTextInput("name"),"TEXT")
+      .appendField(new Blockly.FieldTextInput("name"), "TEXT")
     this.appendStatementInput('func')
       .appendField('Function');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(190);
+    this.setColour(190); // turquoise
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -484,7 +492,7 @@ Blockly.Blocks['xrp_ws_log_data'] = {
     this.setInputsInline(false);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(190);
+    this.setColour(190); // turquoise
     this.setTooltip("");
     this.setHelpUrl("");
   }
@@ -495,17 +503,17 @@ Blockly.Blocks['xrp_ws_start_server'] = {
     this.appendDummyInput()
       .appendField("Start Web Server ID");
     this.appendValueInput("id")
-      .setCheck("Number")
-    this.setInputsInline(true)
+      .setCheck("Number");
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(190);
+    this.setColour(190); // turquoise
     this.setTooltip("");
     this.setHelpUrl("");
   }
 };
 
-//Logic
+// Logic
 Blockly.Blocks['xrp_sleep'] = {
   init: function () {
     this.appendDummyInput()
@@ -513,12 +521,17 @@ Blockly.Blocks['xrp_sleep'] = {
       .appendField(new Blockly.FieldNumber(0.5,0), "TIME");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setColour(200);
+    this.setColour(200); // slate blue
     this.setTooltip("");
     this.setHelpUrl("");
   }
 };
 
-
-
-
+// OTHER BLOCK COLORS - These colors can be found in the xrp_blockly_toolbox1.js file
+// BLOCK TYPE --> COLOR
+// Loops --> grass green
+// Math --> indigo
+// Text --> sea foam green
+// Lists --> eggplant purple
+// Variables --> grey
+// Functions --> medium purple
