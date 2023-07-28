@@ -9,17 +9,17 @@
 
         <link rel="stylesheet" href="uikit-3.16.22/css/uikit.css?version=2" />
 
-
         <link rel="stylesheet" href="js/xterm/css/xterm.css?version=2"/>
+
         <link rel="stylesheet" href="golden-layout/css/goldenlayout-base.css?version=2">
         <link rel="stylesheet" href="golden-layout/css/themes/goldenlayout-dark-theme.css?version=2">
 
-        <link rel="stylesheet" href="css/dark/main-dark.css?version=2">
-        <link rel="stylesheet" href="css/dark/fs-dark.css?version=2">
-        <link rel="stylesheet" href="css/dark/dir_chooser-dark.css?version=2">
-        <link rel="stylesheet" href="css/dark/shell-dark.css?version=2">
-        <link rel="stylesheet" href="css/dark/editor-dark.css?version=2">
-        <link rel="stylesheet" href="css/dark/changelog-dark.css?version=2">
+        <link rel="stylesheet" href="css/light/main-light.css?version=2">
+        <link rel="stylesheet" href="css/light/fs-light.css?version=2">
+        <link rel="stylesheet" href="css/light/dir_chooser-light.css?version=2">
+        <link rel="stylesheet" href="css/light/shell-light.css?version=2">
+        <link rel="stylesheet" href="css/light/editor-light.css?version=2">
+        <link rel="stylesheet" href="css/light/changelog-light.css?version=2">
 
         <link rel="stylesheet" href="js/treejs/treejs.css?version=2" />
 
@@ -27,47 +27,88 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
         <link rel="icon" type="image/png" href="favicon.png">
+
+        <link rel="stylesheet" href="css/custom/custom-styling.css?">
     </head>
 
     <body>
-        
+
         <div id="IDChangelog" class="changelog">
-            <button id="IDChnagelogExitBtn" class="changelog_exit_btn" uk-icon="icon: close"></button>
+            <button id="IDChangelogExitBtn" class="changelog_exit_btn" uk-icon="icon: close"></button>
             <div id="IDChangelogText" class="changelog_text"></div>
         </div>
 
         <div id="IDSaveAs"></div>
 
         <div id="IDPageWrapper" class="page_wrapper">
-            <div id="IDPageHeader" class="header">
+            <div id="IDPageHeader" class="header uk-text-center uk-width-1-1 uk-height-1-1">
 
-                <div class="header_logo_space">
-                    <img id="logo" src="css/XRP_Logo.svg" width="100" height="" alt="XRP Logo" uk-img>
+                <div class="header_logo_space uk-height-1-1 uk-width-1-3">
+                    <img id="logo" class="xrp_logo" src="css/XRP_Logo.svg" alt="XRP Logo" uk-img>
                 </div>
 
-                <div class="header_button_space">
-                    <div class="uk-button-group uk-width-1-1 uk-height-1-1">
-                        <!-- <button class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap">Project:</button> -->
-                        <!-- The button toggling the dropdown -->
-                        <!-- <button class="uk-button uk-button-secondary uk-width-small" type="button">&#9662</button> -->
-                        <div uk-dropdown="mode: click; boundary: ! .uk-button-group; boundary-align: true;"></div>
+                <div class="header_button_space uk-margin-medium-left uk-height-1-1 uk-width-1-3">
+                    <div class="uk-button-group uk-height-1-1">
 
-                        <button id="IDConnectThumbyBTN" title="Connect XRP to page manually, or automatically if connected before" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap" uk-icon="shrink">Connect XRP</button>
-                        <!-- <button id="IDDisconnectThumbyBTN" title="Disconnect XRP from page" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap" uk-icon="expand">Disconnect XRP</button>
-                        -->
-                        <button title="Adds a code editor panel" id="IDAddEditorBTN" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap uk-text-left" uk-icon="file-edit">New File</button>
-                        <button id="IDStopBTN" title="Stop XRP" class="uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-small uk-text-nowrap">STOP &#x23f9</button>
+                        <button
+                            id="IDConnectThumbyBTN"
+                            title="Connect XRP to page manually, or automatically if connected before"
+                            alt="Connect XRP button"
+                            class="uk-button uk-text-small uk-width-1-4 uk-height-1-1 uk-text-nowrap"
+                            uk-icon="shrink"
+                            dir="rtl">
+                            Connect XRP
+                        </button>
+
+                        <button
+                            title="Adds a code editor panel"
+                            alt="Add a new file button"
+                            id="IDAddEditorBTN"
+                            class="uk-button uk-text-small uk-width-1-4 uk-margin-medium-left uk-height-1-1 uk-text-nowrap"
+                            uk-icon="file-edit" dir="rtl">
+                            New File
+                        </button>
+
+                        <button
+                            title="Opens link in new tab"
+                            alt="Link to open Tutorials"
+                            onclick="window.open('https://introduction-to-robotics.readthedocs.io/en/latest/index.html', '_blank');"
+                            class="uk-button uk-text-small uk-width-1-4 uk-margin-medium-left uk-height-1-1 uk-text-nowrap"
+                            uk-icon="info" dir="rtl">
+                            User Guide
+                        </button>
+
+                        <button
+                            title="Opens link in new tab"
+                            alt="Link to open XRP API homepage"
+                            onclick="window.open('https://open-stem.github.io/XRP_MicroPython/', '_blank');"
+                            class="uk-button uk-text-small uk-width-1-4 uk-margin-medium-left uk-height-1-1 uk-text-nowrap"
+                            uk-icon="home" dir="rtl">
+                            XRP API
+                        </button>
                     </div>
                 </div>
 
-                <div class="header_link_space">
-                    <div class="uk-button-group uk-width-1-1 uk-height-1-1">
-                        <button title="Opens link in new tab" onclick="window.open('https://xrpusersguide.readthedocs.io/en/latest/course/introduction.html', '_blank');" class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link">User Guide</button>
-                        <button title="Opens link in new tab" onclick="window.open('https://open-stem.github.io/XRP_MicroPython/', '_blank');" class="uk-button-default uk-link-text uk-width-1-1 uk-height-1-1 button_link">XRP API</button>
-                    </div>
+                <div class="header_link_space uk-height-1-1 uk-width-1-3">
+                    <button
+                        id="IDStopBTN"
+                        title="Stop XRP"
+                        class="uk-button uk-button-danger uk-align-right uk-height-1-1 uk-text-small uk-text-nowrap">
+                        STOP &#x23f9
+                    </button>
                 </div>
+
+                <!-- <div class="header_link_space uk-height-1-1 uk-width-1-3 uk-align-right">
+                    <button
+                        id="IDStopBTN"
+                        title="Stop XRP"
+                        class="uk-button uk-button-danger uk-align-right uk-height-1-1 uk-text-small uk-text-nowrap">
+                        STOP &#x23f9
+                    </button>
+                </div> -->
 
             </div>
+
             <div id="IDLayoutContainer" class="layout_container"></div>
         </div>
 
@@ -79,21 +120,20 @@
         <div id="view-python-code" uk-modal>
           <div class="uk-modal-dialog uk-modal-body">
               <button id="view-python-button"  class="uk-modal-close-default" type="button" uk-close></button>
-              <div id="view-python-ace" style="height: 300px; width: 100%; "></div>
+              <div id="view-python-ace" style="height: 500px; width: 100%; "></div>
           </div>
         </div>
 
-       
 
         <!-- https://stackoverflow.com/questions/61286599/how-to-force-browser-to-load-new-content -->
-        
+
         <script src="uikit-3.16.22/js/uikit.min.js"></script>
         <script src="uikit-3.16.22/js/uikit-icons.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.3/dist/js/uikit-icons.min.js"></script>
 
         <script src="js/blockly-10.0.0/blockly.min.js"></script>
         <script src="js/blockly-10.0.0/python_compressed.js"></script>
-       
+
         <script src="js/treejs/tree.js?version=2"></script>
 
         <script src="js/xterm/lib/xterm.js?version=2_1"></script>
@@ -105,7 +145,7 @@
         <script src="js/xrp_blocks.js"></script>
         <script src="js/xrp_blocks_python.js"></script>
         <script src="js/xrp_blockly_toolbox.js"></script>
-        
+
         <script src="js/editor_wrapper.js?version=2"></script>
         <script src="js/filesystem_wrapper.js?version=2"></script>
         <script src="js/dir_chooser.js?version=2"></script>
