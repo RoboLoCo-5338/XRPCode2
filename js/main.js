@@ -63,17 +63,9 @@ if(localStorage.getItem(showChangelogVersion) == null){
     console.log("Updates to IDE! Showing changelog...");    // Show message in console
     localStorage.removeItem(showChangelogVersion-1);        // Remove flag from last version
 
-    fetch("CHANGELOG.txt").then(async (response) => {
-        await response.text().then((text) => {
-            var listener = window.addEventListener("keydown", (event) => {
-                document.getElementById("IDChangelog").style.display = "none";
-                window.removeEventListener("keydown", listener);
-            });
-            document.getElementById("IDChnagelogExitBtn").onclick = (event) => {
-                document.getElementById("IDChangelog").style.display = "none";
-            }
-            document.getElementById("IDChangelog").style.display = "flex";
-            document.getElementById("IDChangelogText").innerText = text;
+    fetch("CHANGELOG.txt?version=" + showChangelogVersion).then(async (response) => {
+        await response.text().then(async (text) => {
+            await dialogMessage(marked.parse(text));
         });
     });
 
@@ -245,6 +237,8 @@ function registerFilesystem(_container, state){
     }
 
     FS.onDelete = (path) => REPL.deleteFileOrDir(path);
+
+    //[TODO] - Don't let them pick main.py if it is not turned on
     FS.onRename = (path) => REPL.renameFile(path, prompt("Type a new name: ", path.substring(path.lastIndexOf("/")+1)));
     FS.onFormat = () => REPL.format();
     FS.onUpdate = () => REPL.update();
@@ -507,6 +501,13 @@ function registerEditor(_container, state){
                     window.SHOWMAIN = false;
                     FS.onRefresh();
                     break;
+                case "+changelog":
+                    fetch("CHANGELOG.txt?version=" + Math.floor(Math.random() * (100 - 1) + 1)).then(async (response) => {
+                        await response.text().then(async (text) => {
+                            await dialogMessage(marked.parse(text));
+                        });
+                    });
+                    break;
                 default:
                     break;
             }
@@ -660,6 +661,27 @@ async function confirmMessage(message){
     return CONFIRM;
 }
 window.confirmMessage = confirmMessage;
+
+async function dialogMessage(message){
+    
+    let elm = document.createElement("div");
+    elm.setAttribute("uk-modal","");
+    let elm2 = document.createElement("div");
+    elm2.classList = "uk-modal-dialog uk-margin-auto-vertical";
+    elm.appendChild(elm2);
+
+    let elm3 = document.createElement("button");
+    elm3.classList = "uk-modal-close-default";
+    elm3.setAttribute("uk-close","");
+    elm2.appendChild(elm3);
+
+    elm3 = document.createElement("div");
+    elm3.classList = "uk-modal-body";
+    elm3.setAttribute("uk-overflow-auto","");
+    elm3.innerHTML = marked.parse(message);
+    elm2.appendChild(elm3);
+    await UIkit.modal(elm).show();
+}
 
 async function downloadFile(filePath) {
     let response = await fetch(filePath);

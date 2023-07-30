@@ -239,9 +239,7 @@ var blocklyToolbox = {
                 {
                     "kind": "BLOCK",
                     "type": "xrp_ws_start_server",
-                    "inputs":{
-                        "id": {"shadow": {"type": "math_number", "fields": {"NUM": "1"}}}
-                    },
+                    "blockxml": "<block type=\"xrp_ws_start_server\"><value name=\"server_ssid\">\n<shadow type=\"text\">\n<field name=\"TEXT\">xrp_1</field>\n</shadow>\n</value>\n      <value name=\"server_pwd\">\n<shadow type=\"text\">\n<field name=\"TEXT\"></field>\n</shadow>\n</value>\n</block>",
                 },
             ]
         },

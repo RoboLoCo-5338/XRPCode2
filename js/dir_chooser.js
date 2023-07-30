@@ -72,17 +72,12 @@ class DIRCHOOSER{
         this.FS_DROPDOWN_DIV.appendChild(this.FS_DROPDOWN_UL);
 
         var li = document.createElement("li");
-        this.FS_DROPDOWN_RENAME_BTN = document.createElement("button");
-        this.FS_DROPDOWN_RENAME_BTN.classList = "uk-button uk-button-secondary uk-width-1-1";
-        this.FS_DROPDOWN_RENAME_BTN.onclick = () => {this.onRename(this.getSelectedNodePath())};
-        this.FS_DROPDOWN_RENAME_BTN.innerText = "Rename";
-        li.appendChild(this.FS_DROPDOWN_RENAME_BTN);
-        this.FS_DROPDOWN_UL.appendChild(li);
-
-        li = document.createElement("li");
         this.FS_DROPDOWN_NEWFOLDER_BTN = document.createElement("button");
         this.FS_DROPDOWN_NEWFOLDER_BTN.classList = "uk-button uk-button-secondary uk-width-1-1";
-        this.FS_DROPDOWN_NEWFOLDER_BTN.onclick = () => {this.onNewFolder(this.getSelectedNodeFileOrDir(), this.getSelectedNodePath())};
+        this.FS_DROPDOWN_NEWFOLDER_BTN.onclick = () => {
+            this.LAST_SELECTED_PATH = "/" + this.getNodePath(this.DIR_LAST_NODE);
+            this.updateFinalPath();
+            this.onNewFolder(this.getSelectedNodeFileOrDir(), this.getSelectedNodePath())};
         this.FS_DROPDOWN_NEWFOLDER_BTN.innerText = "New Folder";
         li.appendChild(this.FS_DROPDOWN_NEWFOLDER_BTN);
         this.FS_DROPDOWN_UL.appendChild(li);
@@ -105,6 +100,7 @@ class DIRCHOOSER{
 
         this.WAITING_FOR_USER = false;
         this.LAST_SELECTED_PATH = "";
+        this.DIR_LAST_NODE = null;
     }
 
     // Resets some text so that prompts user to save file
@@ -115,15 +111,6 @@ class DIRCHOOSER{
 
         this.DIR_CHOOSER_FOOTER_INPUT.placeholder = "File name";
     }
-
-    // setToProjectMode(){
-    //     this.DIR_CHOOSER_HEADER_DIV.innerText = "New Project: Choose directory and name";
-    //     this.DIR_CHOOSER_HEADER_DIV.classList.remove("uk-label-danger");
-    //     this.DIR_CHOOSER_HEADER_DIV.classList.add("uk-label-warning");
-
-    //     this.DIR_CHOOSER_FOOTER_INPUT.placeholder = "Project file name";
-    // }
-
 
     updateFinalPath(){
         if (this.LAST_SELECTED_PATH == "/"){
@@ -136,8 +123,13 @@ class DIRCHOOSER{
     async waitForUser(){
         this.WAITING_FOR_USER = 1;
         this.LAST_SELECTED_PATH = "";
-        //this.DIR_CHOOSER_FOOTER_OUTPUT.value = "FINAL PATH: "
-        //this.DIR_CHOOSER_FOOTER_INPUT.value = "";
+        if(this.DIR_CHOOSER_FOOTER_INPUT.value.indexOf(".") == -1){
+            var extension = "";
+        }
+        else{
+            extension = this.DIR_CHOOSER_FOOTER_INPUT.value.split(".").slice(-1)[0];  //get the current extension 
+        }
+        this.DIR_CHOOSER_FOOTER_INPUT.select();     //show the text as already selected to edit
         this.updateFinalPath();
 
         while (this.WAITING_FOR_USER == 1) {
@@ -146,13 +138,16 @@ class DIRCHOOSER{
         this.DIR_CHOOSER_DIV.style.display = "none";
         
         if(this.WAITING_FOR_USER == 0){
+            // if no extension, then give it the extension we came in with
+            // if there is an extension then just go with it.
+            if(this.DIR_CHOOSER_FOOTER_INPUT.value.indexOf(".") == -1 && extension != ""){
+                this.DIR_CHOOSER_FOOTER_INPUT.value += "." + extension;
+            }
             return this.LAST_SELECTED_PATH + "/" + this.DIR_CHOOSER_FOOTER_INPUT.value;
         }else{
             return undefined;
         }
     }
-
-
 
     async getPathFromUser(editorDiv, disableFileName = false, filename = ""){
         if(disableFileName){
@@ -179,8 +174,7 @@ class DIRCHOOSER{
                 return undefined;
             }
         }else{
-            console.log("No filesystem, XRP not connected");
-            window.alertMessage("No filesystem, XRP not connected");
+            window.alertMessage("No XRP is connected. Files can not be saved. Double-check that the XRP is connected before attempting to save a file.");
             return undefined;
         }
     }
@@ -212,6 +206,14 @@ class DIRCHOOSER{
             this.FS_TREE.expandAllNodes();
         });
 
+        treeNode.on("contextmenu", (event, node) => {
+            this.DIR_LAST_NODE = node;
+            this.FS_DROPDOWN_DIV.style.display = "block";
+            this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
+            this.FS_DROPDOWN_DIV.style.top  = (event.clientY - this.FS_DROPDOWN_DIV.clientHeight + 3) + 'px';
+            node.setSelected(true);
+            return false;
+        }, false);
 
         // Loop through keys of current item. Can be int or object/dict.
         // check if int keyed nodes are dict, if so, call this function on them
@@ -227,7 +229,6 @@ class DIRCHOOSER{
                         this.FS_TREE.expandAllNodes();
                         this.LAST_SELECTED_PATH = this.getNodePath(node);
                         this.updateFinalPath();
-                        console.log(this.LAST_SELECTED_PATH);
                     });
 
                     dirTreeNode.on("dblclick", (event, node) => {
@@ -235,14 +236,7 @@ class DIRCHOOSER{
                     });
 
                     dirTreeNode.on("contextmenu", (event, node) => {
-                        console.log("File/Dir right clicked");
-
-                        // Set this so new folders are created in the correct spot
-                        this.LAST_SELECTED_PATH = "/" + this.getNodePath(node);
-                        this.updateFinalPath();
-                        console.log(this.LAST_SELECTED_PATH);
-
-                        // Show menu for renaming, moving, deleting files and move to cursor.
+                        this.DIR_LAST_NODE = node;
                         this.FS_DROPDOWN_DIV.style.display = "block";
                         this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
                         this.FS_DROPDOWN_DIV.style.top  = (event.clientY - this.FS_DROPDOWN_DIV.clientHeight + 3) + 'px';

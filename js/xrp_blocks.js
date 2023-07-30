@@ -234,7 +234,7 @@ Blockly.Blocks['xrp_servo_deg'] = {
   init: function () {
     this.appendValueInput("degrees")
       .setCheck("Number")
-      .appendField('Set Servo1 \xB0:');
+      .appendField('Set Servo1 \xB0');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -501,9 +501,13 @@ Blockly.Blocks['xrp_ws_log_data'] = {
 Blockly.Blocks['xrp_ws_start_server'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Start Web Server ID");
-    this.appendValueInput("id")
-      .setCheck("Number");
+      .appendField("Start Web Server");
+    this.appendValueInput("server_ssid")
+      .appendField("Name")
+      .setCheck("String");
+    this.appendValueInput("server_pwd")
+      .appendField("Password")
+      .setCheck("String");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

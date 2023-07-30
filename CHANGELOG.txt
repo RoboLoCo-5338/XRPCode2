@@ -1,11 +1,52 @@
 
-Version 2.0
-Due to some of the changes to the Blockly old .blocks files may no longer work.
-   You can try loading your .blocks files. If a file will not load then right click on it
-   and delete the file. If it does load, then click on FILE and then SAVE TO XRP. This
-   will cause the file to be saved in the new format. If some of the blocks have "holes" in them,
-   you should delete that block and re-insert the block again.
+# Version 3
 
-Export to PC now works better for .blocks files.
+We have a lot of exciting updates in this version. 
+
+#### UI updates
+We are in the middle of the updates, but this release give you a flavor for the changes going on.
+
+#### How programs run
+* All programs are now run in a try, except, finally. This will allow the user to see any exceptions that might happen when there program is running.
+* The finally runs the `/lib/XRPLib/resetbot.py` This program resets the main parts of the robot:
+   * Motors
+   * Servos
+   * LED
+   * IMU 
+
+#### Fixed some CONNECT XRP problems
+* There were times when the XRP would not connect or would say you didn't have MicroPython loaded. 
+* STOP also would not always stop the program.
+
+#### vscode 
+vscode key bindings are now used when editing a MicroPython program
+
+#### SaveAs changes
+* The program name is now highlighted and ready to edit.
+* If you don't include an extension, then the extension the file name had originally will be used.
+
+#### example programs
+* When the new libraries install you will now see an `XRPExamples` directory with example programs in it.
+
+## Fixes to the XRPLib
+
+#### Rangefinder
+* Fixed a bug where programs that used the rangefinder and a sleep timer would hang.
+
+#### Webserver 
+* A user can now setup a `secrets.json` file to feed the parameters for the Network Name(SSID) and Password
+* Webserver log file is now called `webserverLog.txt` instead of log.txt
+* For the latest changes to the API click the XRP API button at the top of XRPCode.
+
+#### DifferentialDrive now has an `ArcadeDrive`
+
+#### 
+
+#### Improvements to the gyro accuracy
+
+#### Other general bug fixes
+
+
+
 
 
