@@ -1,5 +1,14 @@
 import { ComponentContainer, ComponentItemConfig, GoldenLayout, ItemType, LayoutManager, LayoutConfig } from "../golden-layout/bundle/esm/golden-layout.js";
 
+
+/*
+         VERSION NUMBERS
+*/
+
+const showChangelogVersion = 3;  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
+window.latestMicroPythonVersion = [1, 20, 0];
+
+
 const layoutSaveKey = "layout";
 
 var myLayout = new GoldenLayout(document.getElementById("IDLayoutContainer"));
@@ -43,7 +52,7 @@ var onExportToEditor = (bytes) => {
 
 // Show pop-up containing IDE changelog every time showChangelogVersion is increased
 // Update version string in index.html and play.html as well to match
-const showChangelogVersion = 2;
+
 let response = await fetch("/lib/package.json");
 response = await response.text();
 let jresp = JSON.parse(response);
@@ -51,8 +60,8 @@ let v = jresp.version
 // This should match what is in /lib/XRPLib/version.py as '__version__'
 window.latestLibraryVersion = v.split(".");
 
-// This should match what is on the actual XRP
-window.latestMicroPythonVersion = [1, 20, 0];
+
+
 
 window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
 

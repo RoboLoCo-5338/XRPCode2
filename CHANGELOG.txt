@@ -25,6 +25,12 @@ vscode key bindings are now used when editing a MicroPython program
 * The program name is now highlighted and ready to edit.
 * If you don't include an extension, then the extension the file name had originally will be used.
 
+#### STOPing programs
+* There is on occasion times when you will have to push the STOP button more than once to stop a program. It should be rare.
+
+#### Getting help
+* There are support forums now. To find them click on the USER GUIDE button and scroll to the bottom of the introduction page.
+
 #### example programs
 * When the new libraries install you will now see an `XRPExamples` directory with example programs in it.
 
