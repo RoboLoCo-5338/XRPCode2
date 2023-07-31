@@ -34,6 +34,7 @@ class EditorWrapper{
         this.EDITOR_DIV.classList.add("editor");
         this._container.element.appendChild(this.EDITOR_DIV);
 
+
         this.defaultCode =   "from XRPLib.defaults import *\n\n" +
                              "# available variables frm defaults: left_motor, right_motor, drivetrain,\n" +
                              "#      imu, rangefinder, reflectance, servo_one, boad, webserver\n" +
@@ -165,7 +166,7 @@ class EditorWrapper{
 
         // Binary and code viewer always have file button and dropdown
         this.FILE_BUTTON = document.createElement("button");
-        this.FILE_BUTTON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.FILE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.FILE_BUTTON.textContent = "File\u25BE";
         this.FILE_BUTTON.title = "File operations for PC and XRP";
         this.HEADER_TOOLBAR_DIV.appendChild(this.FILE_BUTTON);
@@ -289,7 +290,7 @@ class EditorWrapper{
         this.EDITOR_DIV.appendChild(this.BLOCKLY_DIV);
 
         this.OPEN_PYTHON = document.createElement("button");
-        this.OPEN_PYTHON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.OPEN_PYTHON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.OPEN_PYTHON.textContent = "View Python";
         this.OPEN_PYTHON.title = "View the python code generated from this Blockly";
         this.OPEN_PYTHON.onclick = (ev) => {
@@ -307,14 +308,14 @@ class EditorWrapper{
         this.HEADER_TOOLBAR_DIV.appendChild(this.OPEN_PYTHON);
 
         this.FAST_EXECUTE_BUTTON = document.createElement("button");
-        this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.FAST_EXECUTE_BUTTON.textContent = "Run \u23f5";
         this.FAST_EXECUTE_BUTTON.title = "Execute editor contents at root '/' of Thumby";
         this.FAST_EXECUTE_BUTTON.onclick = () => {this.onFastExecute(this.getValue())};
         this.HEADER_TOOLBAR_DIV.appendChild(this.FAST_EXECUTE_BUTTON);
 
         this.CONVERT_PYTHON = document.createElement("button");
-        this.CONVERT_PYTHON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.CONVERT_PYTHON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.CONVERT_PYTHON.textContent = "Convert To Python";
         this.CONVERT_PYTHON.title = "Convert this blocks program to a python program";
         this.CONVERT_PYTHON.onclick = async (ev) => {
@@ -415,7 +416,7 @@ class EditorWrapper{
         listElem.classList = "uk-nav-divider";
 
         this.VIEW_BUTTON = document.createElement("button");
-        this.VIEW_BUTTON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.VIEW_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.VIEW_BUTTON.textContent = "View\u25BE";
         this.VIEW_BUTTON.title = "View settings";
         this.HEADER_TOOLBAR_DIV.appendChild(this.VIEW_BUTTON);
@@ -458,6 +459,31 @@ class EditorWrapper{
         listElem.appendChild(this.VIEW_RESET_FONT_BUTTON);
         this.VIEW_DROPDOWN_UL.appendChild(listElem);
 
+        // buttons to toggle dark mode and light mode for future
+        // // SET EDITOR TO DARK MODE
+        // listElem = document.createElement("li");
+        // this.DARK_THEME_BUTTON = document.createElement("button");
+        // this.DARK_THEME_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        // this.DARK_THEME_BUTTON.textContent = "Set Dark Mode";
+        // this.DARK_THEME_BUTTON.title = "Set theme to dark mode";
+        // this.DARK_THEME_BUTTON.onclick = () => {
+        //     this.setThemeDark();
+        // };
+        // listElem.appendChild(this.DARK_THEME_BUTTON);
+        // this.VIEW_DROPDOWN_UL.appendChild(listElem);
+
+        // // SET EDITOR TO LIGHT MODE
+        // listElem = document.createElement("li");
+        // this.LIGHT_THEME_BUTTON = document.createElement("button");
+        // this.LIGHT_THEME_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        // this.LIGHT_THEME_BUTTON.textContent = "Set Light Mode";
+        // this.LIGHT_THEME_BUTTON.title = "Set theme to light mode";
+        // this.LIGHT_THEME_BUTTON.onclick = () => {
+        //     this.setThemeLight();
+        // };
+        // listElem.appendChild(this.LIGHT_THEME_BUTTON);
+        // this.VIEW_DROPDOWN_UL.appendChild(listElem);
+
         listElem = document.createElement("li");
         this.VIEW_AUTOCOMPLETE_BUTTON = document.createElement("button");
         this.VIEW_AUTOCOMPLETE_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
@@ -469,7 +495,7 @@ class EditorWrapper{
 
 
         this.FAST_EXECUTE_BUTTON = document.createElement("button");
-        this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-text-small uk-text-nowrap";
+        this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.FAST_EXECUTE_BUTTON.textContent = "Run \u23f5";
         this.FAST_EXECUTE_BUTTON.title = "Execute editor contents at root '/' of Thumby";
         this.FAST_EXECUTE_BUTTON.onclick = () => {this.onFastExecute(this.getValue())};
@@ -485,21 +511,30 @@ class EditorWrapper{
         this.ACE_EDITOR.setKeyboardHandler("ace/keyboard/vscode");
 
         var lastTheme = localStorage.getItem("lastTheme");
-        const darkEditorTheme = localStorage.getItem("darkEditorTheme")
-        const lightEditorTheme = localStorage.getItem("lightEditorTheme")
-        if(lastTheme != undefined && lastTheme != null && lastTheme == "light"){
-            if (!lightEditorTheme) {
-                this.setThemeLight();
-            } else {
-                this.setTheme(lightEditorTheme);
-            }
-        }else{
-            if (!darkEditorTheme){
-                this.setThemeDark();
-            } else {
-                this.setTheme(darkEditorTheme);
-            }
-        }
+        // const darkEditorTheme = localStorage.getItem("darkEditorTheme");
+        // const lightEditorTheme = localStorage.getItem("lightEditorTheme");
+
+        // initially sets the theme to light or dark mode
+        // we will automatically set this as dark mode for now
+        this.setThemeDark();
+        this.setDarkModeFileSystem();
+        // if (lastTheme != undefined && lastTheme != null && lastTheme === "light") {
+        //     this.setThemeLight();
+        //     this.setLightModeFileSystem();
+        //     // if (!lightEditorTheme) {
+        //     //     this.setThemeLight();
+        //     // } else {
+        //     //     this.setTheme(lightEditorTheme);
+        //     // }
+        // } else {
+        //     this.setThemeDark();
+        //     this.setDarkModeFileSystem();
+        //     // if (!darkEditorTheme){
+        //     //     this.setThemeDark();
+        //     // } else {
+        //     //     this.setTheme(darkEditorTheme);
+        //     // }
+        // }
 
         this.resize();
 
@@ -660,13 +695,15 @@ class EditorWrapper{
     }
 
 
-    setThemeLight(){
+    setThemeLight() {
+        localStorage.setItem("lastTheme", "light"); // set theme to light
         if(this.ACE_EDITOR){
             this.ACE_EDITOR.setTheme("ace/theme/chrome");
         }
     }
 
-    setThemeDark(){
+    setThemeDark() {
+        localStorage.setItem("lastTheme", "dark"); // set theme to dark
         if(this.ACE_EDITOR){
             this.ACE_EDITOR.setTheme("ace/theme/tomorrow_night_bright");
         }
@@ -845,5 +882,49 @@ class EditorWrapper{
         }else{
             return this.ACE_EDITOR.getSelectedText();
         }
+    }
+
+    // setting file system to dark mode
+    setDarkModeFileSystem() {
+
+        let darkMode1 = document.getElementById("goldenLight");
+        darkMode1.setAttribute("href", "golden-layout/css/themes/goldenlayout-dark-theme.css?version=2");
+
+        let darkMode2 = document.getElementById("mainLight");
+        darkMode2.setAttribute("href", "css/dark/main-dark.css?version=2");
+
+        let darkMode3 = document.getElementById("fsLight");
+        darkMode3.setAttribute("href", "css/dark/fs-dark.css?version=2");
+
+        let darkMode4 = document.getElementById("dirChooserLight");
+        darkMode4.setAttribute("href", "css/dark/dir_chooser-dark.css?version=2");
+
+        let darkMode5 = document.getElementById("shellLight");
+        darkMode5.setAttribute("href", "css/dark/shell-dark.css?version=2");
+
+        let darkMode6 = document.getElementById("editorLight");
+        darkMode6.setAttribute("href", "css/dark/editor-dark.css?version=2");
+    }
+
+    // setting file system to light mode
+    setLightModeFileSystem() {
+
+        let lightMode1 = document.getElementById("goldenDark");
+        lightMode1.setAttribute("href", "golden-layout/css/themes/goldenlayout-light-theme.css?version=2");
+
+        let lightMode2 = document.getElementById("mainDark");
+        lightMode2.setAttribute("href", "css/light/main-light.css?version=2");
+
+        let lightMode3 = document.getElementById("fsDark");
+        lightMode3.setAttribute("href", "css/light/fs-light.css?version=2");
+
+        let lightMode4 = document.getElementById("dirChooserDark");
+        lightMode4.setAttribute("href", "css/light/dir_chooser-light.css?version=2");
+
+        let lightMode5 = document.getElementById("shellDark");
+        lightMode5.setAttribute("href", "css/light/shell-light.css?version=2");
+
+        let lightMode6 = document.getElementById("editorDark");
+        lightMode6.setAttribute("href", "css/light/editor-light.css?version=2");
     }
 }
