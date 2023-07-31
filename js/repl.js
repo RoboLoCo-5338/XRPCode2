@@ -138,9 +138,7 @@ class ReplJS{
             }
 
             times = times + 1;
-            if(times >= 30){
-                this.writeToDevice('');
-                console.error("Had to use ugly hack for hanging raw prompt...");
+            if(times >= 20){
                 return;
             }
             await new Promise(resolve => setTimeout(resolve, 5));
@@ -1079,7 +1077,6 @@ class ReplJS{
             //try multiple times to get to the prompt
             var gotToPrompt = false;
             for(let i=0;i<20;i++){
-                window.sleep(0.20); //give time. If there is a finally statement executing it may take a bit.
                 this.startReaduntil(">>>");
                 await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);
                 result = await this.haltUntilRead(2, 5); //this should be fast 
@@ -1241,7 +1238,6 @@ class ReplJS{
             while (this.STOP) { 
                 await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);  // ctrl-C to interrupt any running program
                 count += 1;
-                console.log(count);
                 if (count > 20){
                     break;
                 }
