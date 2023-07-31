@@ -1,52 +1,66 @@
 
 # Version 3
 
-We have a lot of exciting updates in this version. 
+This version has a lot of exciting updates. 
 
 #### UI updates
-We are in the middle of the updates, but this release give you a flavor for the changes going on.
+In this update, you will see a number of changes that are part of
+a new visual style for the IDE. The new UI isn't complete, but you'll
+be able to see the direction that it is going.
 
 #### How programs run
-* All programs are now run in a try, except, finally. This will allow the user to see any exceptions that might happen when there program is running.
-* The finally runs the `/lib/XRPLib/resetbot.py` This program resets the main parts of the robot:
+* All programs are now run in a try, except, finally block. This will catch and display
+any exceptions that occur when the program is running.
+* The finally block runs the `/lib/XRPLib/resetbot.py` This program resets the
+main parts of the robot:
    * Motors
    * Servos
    * LED
    * IMU 
 
 #### Fixed some CONNECT XRP problems
-* There were times when the XRP would not connect or would say you didn't have MicroPython loaded. 
-* STOP also would not always stop the program.
+* Sometimes the XRP would not connect or would display an error
+indicating MicroPython is not loaded even though it was. 
+* STOP would not always stop the program.
 
 #### vscode 
 vscode key bindings are now used when editing a MicroPython program
 
-#### SaveAs changes
+#### "Save as" changes
 * The program name is now highlighted and ready to edit.
-* If you don't include an extension, then the extension the file name had originally will be used.
+* If you don't include an extension, then the original file extension
+will be used.
 
 #### STOPing programs
-* There is on occasion times when you will have to push the STOP button more than once to stop a program. It should be rare.
+* Occasionaly you might have to push the STOP button
+more than once to stop a program. It should be rare.
 
 #### Getting help
-* There are support forums now. To find them click on the USER GUIDE button and scroll to the bottom of the introduction page.
+* There are support forums now. To find them click on the USER GUIDE
+button and scroll to the bottom of the introduction page.
 
 #### example programs
-* When the new libraries install you will now see an `XRPExamples` directory with example programs in it.
+* When the new libraries install you will now see an `XRPExamples`
+directory with example programs in it.
 
 ## Fixes to the XRPLib
 
 #### Rangefinder
-* Fixed a bug where programs that used the rangefinder and a sleep timer would hang.
+* Fixed a bug where programs that used both the rangefinder and a sleep
+timer would hang.
 
 #### Webserver 
-* A user can now setup a `secrets.json` file to feed the parameters for the Network Name(SSID) and Password
-* Webserver log file is now called `webserverLog.txt` instead of log.txt
-* For the latest changes to the API click the XRP API button at the top of XRPCode.
+* A user can now setup a `secrets.json` file to feed the parameters for
+the Network Name(SSID) and Password
+* Webserver log file is now called `webserverLog.txt` instead
+of log.txt
+* For the latest changes to the API click the XRP API button at
+the top of XRPCode.
 
-#### DifferentialDrive now has an `ArcadeDrive`
-
-#### 
+#### DifferentialDrive now has an `arcade` function
+The arcade function can independently control the direction and
+speed of the robot. This is ideal for writing programs that use
+proportional control for driving and turning.
 
 #### Improvements to the gyro accuracy
 
