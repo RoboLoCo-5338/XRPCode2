@@ -27,7 +27,7 @@ class ReplJS{
 
         //They pressed the STOP button while a program was executing
         this.STOP = false;
-
+        
         // ### CALLBACKS ###
         // Functions defined outside this module but used inside
         this.onData = undefined;
@@ -443,6 +443,10 @@ class ReplJS{
         if(this.STOP) { 
             this.SPECIAL_FORCE_OUTPUT_FLAG = false;
             this.STOP = false
+            //We were hammering on ctrl-c up to get the program to stop (because timer routines don't stop). 
+            //Meaning finally did not run. We will run the resetbot routine
+            var cmd = "import XRPLib.resetbot\n"
+            await this.writeUtilityCmdRaw(cmd, true, 1);
         }
 
         this.BUSY = false;
@@ -1047,29 +1051,35 @@ class ReplJS{
         //  2 - Running a program
         //
         //    If running a program then we need to send a ctrl-c to stop the program.
-        //    This brings up 2 conditions:
+        //    This brings up 3 conditions:
         //       1 - The ctrl-c stopped the program and we are back at the prompt
-        //       2 - It took the ctrl-c but since the program was in a different thread (timers are the most likely) it didn't stop the program
+        //       2 - We were in RAW mode, so try going to NORMAL mode(get REPL output again), if we get a prompt then done
+        //       3 - It took the ctrl-c but since the program was in a different thread (timers are the most likely) it didn't stop the program
         //          For this one we need to try a few more times in hopes the program will be in a state we can interrupt. If not ask the user to hit
         //             the reset button.
 
         
         this.startReaduntil(">>>");
         await this.writeToDevice("\r"); //do a linefeed and see if the REPL responds
-        var result = await this.haltUntilRead(1, 5); //this should be fast 
+        var result = await this.haltUntilRead(1, 10); //this should be fast 
 
         if (result == undefined){
 
             this.startReaduntil("KeyboardInterrupt:");
             await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);  // ctrl-C to interrupt any running program
-            result = await this.haltUntilRead(1, 40); 
+            result = await this.haltUntilRead(1, 20); 
             if(result == undefined){
-                return false;
-            }            
+                this.startReaduntil(">>>");
+                await this.writeToDevice("\r" + this.CTRL_CMD_NORMALMODE);  // ctrl-C to interrupt any running program
+                result = await this.haltUntilRead(1, 20); 
+                if(result != undefined){
+                    return true;
+                }
+            }         
             //try multiple times to get to the prompt
             var gotToPrompt = false;
-            for(let i=0;i<5;i++){
-                window.sleep(10); //give time. If there is a finally statement executing it may take a bit.
+            for(let i=0;i<20;i++){
+                window.sleep(0.20); //give time. If there is a finally statement executing it may take a bit.
                 this.startReaduntil(">>>");
                 await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);
                 result = await this.haltUntilRead(2, 5); //this should be fast 
@@ -1220,15 +1230,27 @@ class ReplJS{
 
     async stop(){
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: in stop");
-        
         if(this.BUSY){
-            await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);  // ctrl-C to interrupt any running program
             this.STOP = true;
+            var count = 1;
+            /*
+                We are BUSY, this means that there is another thread that started the program. 
+                Because they could be in a timer we are going to hammer ctrl-c until we know they are out of the program.
+                The problem with this is that we will end up sending a ctrl-c during the finally that is running the resetbot.
+            */
+            while (this.STOP) { 
+                await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);  // ctrl-C to interrupt any running program
+                count += 1;
+                console.log(count);
+                if (count > 20){
+                    break;
+                }
+            }
             return
         }
 
         await this.stopTheRobot();  //make sure the robot is really stopped
-        // otherwise just invoke resetbot to stop all motors
+        // Then just invoke resetbot to stop all motors
         var cmd = "import XRPLib.resetbot\n"
         await this.writeUtilityCmdRaw(cmd, true, 1);
         await this.getToNormal(3);

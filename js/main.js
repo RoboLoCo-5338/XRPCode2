@@ -178,8 +178,15 @@ var defaultConfig = {
 };
 
 
-document.getElementById("IDStopBTN").onclick = (event) =>{
-    REPL.stop();
+document.getElementById("IDStopBTN").onclick = async (event) =>{
+    if(REPL.DISCONNECT == true){
+        window.alertMessage("No XRP is connected. Double-check that the XRP is connected before attempting to STOP a program.");
+        return;
+    }
+        document.getElementById("IDStopBTN").disabled = true;
+    await REPL.stop();
+    document.getElementById("IDStopBTN").disabled = false;
+
 }
 
 // Add editor panel to layout
