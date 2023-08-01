@@ -24,6 +24,7 @@ class ReplJS{
 
         // Used to stop interaction with the RP2040
         this.BUSY = false;
+        this.RUN_BUSY = false; //used to distinguish that we are in the RUN of a user program vs other BUSY.
 
         //They pressed the STOP button while a program was executing
         this.STOP = false;
@@ -410,6 +411,7 @@ class ReplJS{
         }
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: in executeLines");
         this.BUSY = true;
+        this.RUN_BUSY = true;
         this.forceTermNewline();
 
         // Get into raw mode
@@ -448,6 +450,7 @@ class ReplJS{
         }
 
         this.BUSY = false;
+        this.RUN_BUSY = false;
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: out of executeLines");
 
 
@@ -1227,8 +1230,12 @@ class ReplJS{
 
     async stop(){
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: in stop");
-        if(this.BUSY){
-            this.STOP = true;
+        
+        if(this.BUSY && this.RUN_BUSY == false){    //don't try and STOP if the code is BUSY but not from Running a user program. 
+            return;
+        }
+        if(this.RUN_BUSY){  //if the program is running do ctrl-c until we know it has stopped
+            this.STOP = true;  //let the executeLines code know when it stops, it stopped because the STOP button was pushed
             var count = 1;
             /*
                 We are BUSY, this means that there is another thread that started the program. 
@@ -1245,6 +1252,7 @@ class ReplJS{
             return
         }
 
+        //The user pushed STOP while things were idle. Lets make sure the robot is stopped and run restbot.
         await this.stopTheRobot();  //make sure the robot is really stopped
         // Then just invoke resetbot to stop all motors
         var cmd = "import XRPLib.resetbot\n"
