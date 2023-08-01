@@ -1,4 +1,4 @@
-import { ComponentContainer, ComponentItemConfig, GoldenLayout, ItemType, LayoutManager, LayoutConfig } from "../golden-layout/bundle/esm/golden-layout.js";
+import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-layout.js";
 
 
 /*
@@ -14,7 +14,7 @@ const layoutSaveKey = "layout";
 var myLayout = new GoldenLayout(document.getElementById("IDLayoutContainer"));
 
 var DIR = new DIRCHOOSER();
-var SAVEAS_ELEMENT = document.getElementById("IDSaveAs")  //element to use with the SaveAs dialog box.
+var SAVEAS_ELEMENT = document.getElementById("IDSaveAs");  //element to use with the SaveAs dialog box.
 
 var onExportToEditor = (bytes) => {
     var editorSpriteID = 0;
@@ -89,23 +89,26 @@ if(localStorage.getItem(showChangelogVersion) == null){
 //})
 
 var progressBarElem = document.getElementById("IDProgressBar");
+var progressBarText = document.getElementById("IDProgressBar_Text");
+document.getElementById("IdProgress_TitleText").innerText = 'Update in Progress...';
 var lastMessage = undefined;
 window.setPercent = (percent, message) => {
     progressBarElem.style.width = percent + "%";
 
-    if(message != undefined){
-        progressBarElem.innerText = message + " " + percent + "%";
+    if (message != undefined) {
+        progressBarText.innerText = message + " " + percent + "%";
         lastMessage = message;
-    }else{
-        progressBarElem.innerText = lastMessage + " " + Math.round(percent) + "%";
+    } else {
+        progressBarText.innerText = lastMessage + " " + Math.round(percent) + "%";
     }
-}
+};
+
 window.resetPercentDelay = () => {
     setTimeout(() => {
         progressBarElem.style.width = "0%";
-        progressBarElem.innerText = "";
+        progressBarText.innerText = "";
     }, 100);
-}
+};
 
 var defaultConfig = {
     header:{
@@ -194,7 +197,7 @@ document.getElementById("IDAddEditorBTN").onclick = (event) =>{
     var id1;
     for (const [id] of Object.entries(EDITORS)) {
         id1 = id;
-        break;    
+        break;
     }
 
     EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
@@ -428,7 +431,7 @@ function registerShell(_container, state){
             }
         }
 
-        let answer = await confirmMessage("The MicroPython on your XRP needs to be updated. The new version is " + window.latestMicroPythonVersion[0] + "." + window.latestMicroPythonVersion[1] + "." + window.latestMicroPythonVersion[2] +"<br>Would you like to update now?");
+        let answer = await confirmMessage("The MicroPython on your XRP needs to be updated. The new version is " + window.latestMicroPythonVersion[0] + "." + window.latestMicroPythonVersion[1] + "." + window.latestMicroPythonVersion[2] +"<br>Would you like to update now? If so, click OK to proceed with the update.");
         if(answer){
             await alertMessage("When the <b>Select Folder</b> window comes up, select the <b>RPI-RP2</b> drive when it appears.<br>Next, click on 'Edit Files' and wait for the XRP to connect.<br> This process may take a few seconds.");
             REPL.updateMicroPython();
@@ -481,7 +484,10 @@ function registerEditor(_container, state){
                 return;
             }
             console.log('Saved');
+
             editor.setSaved();
+            UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+            document.getElementById("IdProgress_TitleText").innerText = "Loading...";
             editor.updateTitleSaved();
 
             if(editor.isBlockly){
@@ -509,13 +515,19 @@ function registerEditor(_container, state){
             }
             editor.setPath(path);
             editor.setSaved();
+
+            UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+            document.getElementById("IdProgress_TitleText").innerText = "Loading...";
+
             editor.updateTitleSaved();
             await editor.onSaveToThumby();
         }
     }
     editor.onFastExecute = async (lines) => {
+
         if(REPL.DISCONNECT == true){
             window.alertMessage("No XRP is connected. Double-check that the XRP is connected before attempting to run the program.");
+            UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
             return;
         }
         var count = 0;
@@ -525,6 +537,7 @@ function registerEditor(_container, state){
         }
         if(REPL.BUSY) {
             window.alertMessage("Another program is already running. Stop that program first and then press RUN again.");
+            UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
             return;
         }
 
@@ -561,7 +574,8 @@ function registerEditor(_container, state){
         //check if power switch is on.
         if(! await REPL.isPowerSwitchOn()) {
             if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
-                    "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")){
+                "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")) {
+                UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
                 return;
             }
         }
@@ -575,11 +589,13 @@ function registerEditor(_container, state){
         for (const [id, editor] of Object.entries(EDITORS)) {
             if(!editor.SAVED_TO_THUMBY) {
                 await editor.onSaveToThumby();
+                UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
             }
         }
         // update the main file so if they unplug the robot and turn it on it will execute this program.
         lines = await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
         ATERM.TERM.scrollToBottom();
+        UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
         await REPL.executeLines(lines);
         editor.FAST_EXECUTE_BUTTON.disabled = false;
         removeFSOverlay();
@@ -589,6 +605,7 @@ function registerEditor(_container, state){
         }
 
     }
+
     editor.onConvert = async (oldPath, data, ID) => {
         if(REPL.DISCONNECT == true){
             window.alertMessage("This program can not be converted because no XRP is connected. Double-check that the XRP is connected before attempting to convert the program.");
@@ -720,7 +737,7 @@ async function confirmMessage(message){
 window.confirmMessage = confirmMessage;
 
 async function dialogMessage(message){
-    
+
     let elm = document.createElement("div");
     elm.setAttribute("uk-modal","");
     let elm2 = document.createElement("div");

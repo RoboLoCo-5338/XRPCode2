@@ -71,7 +71,7 @@
 
                         <button
                             title="Opens link in new tab"
-                            alt="Link to open User Gide"
+                            alt="Link to open User Guide"
                             onclick="window.open('https://xrpusersguide.readthedocs.io/en/latest/course/introduction.html', '_blank');"
                             class="uk-button uk-text-small uk-width-1-4 uk-margin-medium-left uk-height-1-1 uk-text-nowrap"
                             uk-icon="info" dir="rtl">
@@ -98,22 +98,17 @@
                     </button>
                 </div>
 
-                <!-- <div class="header_link_space uk-height-1-1 uk-width-1-3 uk-align-right">
-                    <button
-                        id="IDStopBTN"
-                        title="Stop XRP"
-                        class="uk-button uk-button-danger uk-align-right uk-height-1-1 uk-text-small uk-text-nowrap">
-                        STOP &#x23f9
-                    </button>
-                </div> -->
 
             </div>
 
             <div id="IDLayoutContainer" class="layout_container"></div>
         </div>
 
-        <div id="IDProgressBarParent" class="progress_bar_parent">
-            <div id="IDProgressBar" class="progress_bar">
+        <div id="IDProgressBarParent" uk-modal bg-close="false">
+            <div class="uk-modal-dialog uk-modal-body progress-bar-parent">
+                <h4 id="IdProgress_TitleText"></h4>
+                <div id="IDProgressBar" class="progress_bar"></div>
+                <div id="IDProgressBar_Text"></div>
             </div>
         </div>
 

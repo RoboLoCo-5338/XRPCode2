@@ -30,7 +30,7 @@ class ReplJS{
 
         //They pressed the STOP button while a program was executing
         this.STOP = false;
-        
+
         // ### CALLBACKS ###
         // Functions defined outside this module but used inside
         this.onData = undefined;
@@ -68,7 +68,7 @@ class ReplJS{
             return;
         }
 
-        
+
         // Attempt auto-connect when page validated device plugged in, do not start manual selection menu
         navigator.serial.addEventListener('connect', (e) => {
             if(this.MANNUALLY_CONNECTING  == false){
@@ -76,7 +76,7 @@ class ReplJS{
             }
         });
 
-        
+
         // Probably set flags/states when page validated device removed
         navigator.serial.addEventListener('disconnect', (e) => {
             var disconnectedPort = e.target;
@@ -177,7 +177,7 @@ class ReplJS{
 
                     // Output the rest of the lines that should not be hidden
                     // Should find a way to do this without adding newlines again
-                    
+
                     for(var j=i+omitOffset; j<tempLines.length; j++){
                         if(j != tempLines.length-1){
                             this.onData(tempLines[j] + "\r\n");
@@ -206,7 +206,7 @@ class ReplJS{
             if(!this.PORT.readable.locked){
                 this.READER = this.PORT.readable.getReader();
             }
-            
+
             try {
                 while (true) {
                     // https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader/read
@@ -226,16 +226,16 @@ class ReplJS{
                         }else{
                             // There are two things going on here.
                             //     1 - When we are running a program, we want all incoming lines to be pushed to the terminal
-                            //     2 - Except the very first 'OK'. There are timing issues and this was the best place to catch it. 
+                            //     2 - Except the very first 'OK'. There are timing issues and this was the best place to catch it.
                             //            This makes the user output look a lot nicer with out the 'OK' showing up.
                             if(this.SPECIAL_FORCE_OUTPUT_FLAG){
-                                if (this.CATCH_OK){                                    
+                                if (this.CATCH_OK){
                                     let v = this.TEXT_DECODER.decode(value)
                                     if(v.includes("OK")){
                                         this.CATCH_OK = false;
                                     }else{
                                         this.onData(this.TEXT_DECODER.decode(value));
-                                    }                                    
+                                    }
                                 }else{
                                     this.onData(this.TEXT_DECODER.decode(value));
                                 }
@@ -353,27 +353,27 @@ class ReplJS{
             return;
         }
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: in getOnBoardFSTree");
-    
+
         this.BUSY = true;
 
         //window.setPercent(1, "Fetching filesystem...");
 
-        var getFilesystemCmd = 
+        var getFilesystemCmd =
         "import machine\n" +
         "#machine.freq(250000000)\n" +   // Speed up the process
 
         "import os\n" +
         "import ujson\n" +
-        
+
         "def walk(top, structure, dir):\n" +
-        
+
         "    extend = \"\";\n" +
-        "    if top != \"\":\n" + 
+        "    if top != \"\":\n" +
         "        extend = extend + \"/\"\n" +
-                
+
         "    item_index = 0\n" +
         "    structure[dir] = {}\n" +
-            
+
         "    for dirent in os.listdir(top):\n" +                        // Loop through and create structure of on-board FS
         "        if(os.stat(top + extend + dirent)[0] == 32768):\n" +   // File
         "            structure[dir][item_index] = {\"F\": dirent}\n" +
@@ -386,7 +386,7 @@ class ReplJS{
         "struct = {}\n" +
         "print(ujson.dumps(walk(\"\", struct, \"\")))\n";
 
-        var sizeCmd = 
+        var sizeCmd =
         "a = os.statvfs('/')\n" +
         "print(a[0], a[2], a[3])\n";
 
@@ -417,7 +417,6 @@ class ReplJS{
         }
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: in executeLines");
         this.BUSY = true;
-        this.RUN_BUSY = true;
         this.forceTermNewline();
 
         // Get into raw mode
@@ -425,16 +424,16 @@ class ReplJS{
 
         // Not really needed for hiding output to terminal since raw does not echo
         // but is needed to only grab the FS lines/data
-        
+
         this.startReaduntil(">");
         await this.writeToDevice(lines + "\x04");
         this.SPECIAL_FORCE_OUTPUT_FLAG = true;  //you see the OK, but also get any fast output
         this.CATCH_OK = true;
         await this.waitUntilOK();
         var result = await this.haltUntilRead(1);
-       
+
         /*
-                This is where errors can be checked for that were returned incase we want to give a better explanation 
+                This is where errors can be checked for that were returned incase we want to give a better explanation
                 The error information is put into a global variable for end processing if needed.
         */
         if(result && result[0].includes("[Errno",0)){
@@ -457,10 +456,10 @@ class ReplJS{
         await this.haltUntilRead(3);
 
         // if they pushed the stop button while lines was executing
-        if(this.STOP) { 
+        if(this.STOP) {
             this.SPECIAL_FORCE_OUTPUT_FLAG = false;
             this.STOP = false
-            //We were hammering on ctrl-c up to get the program to stop (because timer routines don't stop). 
+            //We were hammering on ctrl-c up to get the program to stop (because timer routines don't stop).
             //Meaning finally did not run. We will run the resetbot routine
             var cmd = "import XRPLib.resetbot\n"
             await this.writeUtilityCmdRaw(cmd, true, 1);
@@ -542,7 +541,7 @@ class ReplJS{
                         "   print('no_rename_error')\n" +
                         "else:\n" +
                         "   print('rename_error')\n";
-            
+
             window.setPercent(2);
             await this.writeUtilityCmdRaw(cmd, true, 1);
             window.setPercent(55);
@@ -562,11 +561,11 @@ class ReplJS{
 
     async downloadFile(filePath) {
         let response = await fetch(filePath);
-            
+
         if(response.status != 200) {
             throw new Error("Server Error");
         }
-            
+
         // read response stream as text
         let text_data = await response.text();
 
@@ -730,7 +729,7 @@ class ReplJS{
         var bytesSent = 0;
         for(var b=0; b < numberOfChunks; b++){
             var writeDataCMD = bytes.slice(b*this.THUMBY_SEND_BLOCK_SIZE, (b+1)*this.THUMBY_SEND_BLOCK_SIZE);
-        
+
             bytesSent = bytesSent + writeDataCMD.length;
 
             if(bytesSent == bytes.length && writeDataCMD.length < this.THUMBY_SEND_BLOCK_SIZE){
@@ -773,7 +772,7 @@ class ReplJS{
 
         //await this.uploadFile("Games/SpaceDebris/SpaceDebris.py", await window.downloadFile("ThumbyGames/Games/SpaceDebris/SpaceDebris.py"), false);
         //window.setPercent(7.7);
-        
+
         window.resetPercentDelay();
     }
 
@@ -789,14 +788,14 @@ class ReplJS{
         var cmd =   "import os\n" +
                     "import sys\n" +
 
-                    "print(sys.implementation[1])\n" +                    
+                    "print(sys.implementation[1])\n" +
                     "try:\n" +
                     "    f = open(\"/lib/XRPLib/version.py\", \"r\")\n" +
                     "    while True:\n" +
                     "        line = f.readline()\n" +
                     "        if len(line) == 0:\n" +
                     "            print(\"ERROR EOF\")\n" +
-                    "            break\n" +                                                            
+                    "            break\n" +
                     "        if \"__version__ = \" in line:\n" +
                     "            print(line.split('\\\'')[1])\n" +
                     "            break\n" +
@@ -823,7 +822,7 @@ class ReplJS{
     async update(){
         //window.setPercent(1, "Updating Thumby...");
         //await this.uploadFile("lib/ssd1306.py", await window.downloadFile("ThumbyGames/lib/ssd1306.py"), false);
-        
+
         // Make sure to update the filesystem after modifying it
         await this.getOnBoardFSTree();
         window.resetPercentDelay();
@@ -834,7 +833,7 @@ class ReplJS{
                     "   with open('"+fileToEx+"', mode='r') as exfile:\n" +
                     "       code = exfile.read()\n"+
                     "   exec(code)\n" +
-                    "except Exception as e:\n" + 
+                    "except Exception as e:\n" +
                     "   print(e)\n"+
                     "finally:\n"+
                     "   import XRPLib.resetbot";
@@ -851,7 +850,7 @@ class ReplJS{
         window.setPercent(1, "Saving files...");
         let percent_per = 99 / fileHandles.length;
         let cur_percent = 1 + percent_per;
-        
+
         for(var i=0; i<fileHandles.length; i++){
             window.setPercent(cur_percent);
             cur_percent += percent_per;
@@ -946,7 +945,7 @@ class ReplJS{
         if(Number.isNaN(info[1]) || this.isVersionNewer(window.latestLibraryVersion, info[1])){
             await this.updateLibrary(info[1]);
         }
-        
+
         info[0]= info[0].replace(/[\(\)]/g, "").replace(/,\s/g, "."); //convert to a semantic version
         //if the microPython is out of date
         if(this.isVersionNewer(window.latestMicroPythonVersion, info[0])){
@@ -960,10 +959,10 @@ class ReplJS{
     isVersionNewer(v1, v2) {
         let v1parts = v1;
         let v2parts = v2.split('.').map(Number);
-    
+
         while (v1parts.length < v2parts.length) v1parts.push(0);
         while (v2parts.length < v1parts.length) v2parts.push(0);
-    
+
         for (let i = 0; i < v1parts.length; ++i) {
             if (v1parts[i] > v2parts[i]) {
                 return true;
@@ -980,11 +979,14 @@ class ReplJS{
         }
         let answer = await window.confirmMessage("The library files on the XRP are out of date.<br>" +
                 "The current version is " + curVer +
-                " The new version is version " + window.latestLibraryVersion[0] + "." + window.latestLibraryVersion[1] + "." + window.latestLibraryVersion[2] +"<br>" +
-                "press OK to update");
-        if(!answer){
+                " and the new version is version " + window.latestLibraryVersion[0] + "." + window.latestLibraryVersion[1] + "." + window.latestLibraryVersion[2] +"<br>" +
+                "Click OK to update the XRP to the latest version.");
+        if (!answer) {
             return; //they pressed CANCEL
         }
+
+        UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+
         let response = await fetch("/lib/package.json");
         response = await response.text();
         let jresp = JSON.parse(response);
@@ -999,7 +1001,7 @@ class ReplJS{
             //added a version number to ensure that the browser does not cache it.
             let next = urls[i];
             var parts = next[0];
-            parts = parts.replace("XRPLib", "lib/XRPLib");   
+            parts = parts.replace("XRPLib", "lib/XRPLib");
             await this.uploadFile(parts, await window.downloadFile(parts.replace("XRPExamples", "lib/Examples") + "?version=" + window.latestLibraryVersion[2]));
             cur_percent += percent_per;
         }
@@ -1012,16 +1014,20 @@ class ReplJS{
         await this.deleteFileOrDir("/lib/phew");  //delete all the files first to avoid any confusion.
         for(let i=0; i<window.phewList.length; i++){
             window.setPercent(cur_percent, "Updating XRPLib...");
-            //added a version number to ensure that the browser does not cache it.   
+            //added a version number to ensure that the browser does not cache it.
             await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i] + "?version=" + window.latestLibraryVersion[2]));
             cur_percent += percent_per;
         }
 
         window.resetPercentDelay();
         await this.getOnBoardFSTree();
+        UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
     }
 
-    async updateMicroPython(){
+    async updateMicroPython() {
+
+        UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+
         if(this.BUSY == true){
             return;
         }
@@ -1032,7 +1038,7 @@ class ReplJS{
         if(this.HAS_MICROPYTHON){
             let cmd = "import machine\n" +
                     "machine.bootloader()\n";
-            
+
             await this.getToRaw();
 
             this.startReaduntil("OK");
@@ -1046,7 +1052,9 @@ class ReplJS{
             writable = await fileHandle.createWritable();
         }catch(err){
             console.log(err);
-            alert("error updating MicroPython")
+            // alert("error updating MicroPython");
+            UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
+            UIKit.modal("Error updating MicroPython. Please try again.");
             return;                                                                     // If the user doesn't allow tab to save to opened file, don't edit file
         }
         window.setPercent(35);
@@ -1061,6 +1069,8 @@ class ReplJS{
         await writable.close();
 
         this.BUSY = false;
+
+        UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
     }
 
     async stopTheRobot(){
@@ -1076,30 +1086,30 @@ class ReplJS{
         //          For this one we need to try a few more times in hopes the program will be in a state we can interrupt. If not ask the user to hit
         //             the reset button.
 
-        
+
         this.startReaduntil(">>>");
         await this.writeToDevice("\r"); //do a linefeed and see if the REPL responds
-        var result = await this.haltUntilRead(1, 10); //this should be fast 
+        var result = await this.haltUntilRead(1, 10); //this should be fast
 
         if (result == undefined){
 
             this.startReaduntil("KeyboardInterrupt:");
             await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);  // ctrl-C to interrupt any running program
-            result = await this.haltUntilRead(1, 20); 
+            result = await this.haltUntilRead(1, 20);
             if(result == undefined){
                 this.startReaduntil(">>>");
                 await this.writeToDevice("\r" + this.CTRL_CMD_NORMALMODE);  // ctrl-C to interrupt any running program
-                result = await this.haltUntilRead(1, 20); 
+                result = await this.haltUntilRead(1, 20);
                 if(result != undefined){
                     return true;
                 }
-            }         
+            }
             //try multiple times to get to the prompt
             var gotToPrompt = false;
             for(let i=0;i<20;i++){
                 this.startReaduntil(">>>");
                 await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);
-                result = await this.haltUntilRead(2, 5); //this should be fast 
+                result = await this.haltUntilRead(2, 5); //this should be fast
                 if(result != undefined){
                     gotToPrompt = true;
                     break;
@@ -1114,17 +1124,17 @@ class ReplJS{
 
 
     async checkIfMP(){
-       
+
         if(! await this.stopTheRobot()){
             this.HAS_MICROPYTHON = false;
             return false;
         }
-                
+
         // do a softreset, but time out if no response
         this.startReaduntil("MPY: soft reboot");
         await this.writeToDevice(this.CTRL_CMD_SOFTRESET);
         await this.haltUntilRead(3, 20);  //FCG - is this the right amount of delay to always work?
-       
+
         this.HAS_MICROPYTHON = true;
         return true;
     }
@@ -1140,11 +1150,11 @@ class ReplJS{
                     await this.getToNormal();
                     await this.getOnBoardFSTree();
                     this.onConnect();
-                } 
+                }
 
                 this.BUSY = false;
                 await this.checkIfNeedUpdate();
-                                                 
+
             }catch(err){
                 if(err.name == "InvalidStateError"){
                     if(this.DEBUG_CONSOLE_ON) console.log("%cPort already open, everything good to go!", "color: lime");
@@ -1152,13 +1162,13 @@ class ReplJS{
                         this.onConnect();
                         this.BUSY = false;
                         await this.getToNormal();
-                    
+
                         await this.getOnBoardFSTree();
                     }
 
-                    this.BUSY = false; 
+                    this.BUSY = false;
                     await this.checkIfNeedUpdate();
-                    
+
                 }else if(err.name == "NetworkError"){
                     alert("Opening port failed, is another application accessing this device/port?");
                     if(this.DEBUG_CONSOLE_ON) console.log("%cOpening port failed, is another application accessing this device/port?", "color: red");
@@ -1209,14 +1219,14 @@ class ReplJS{
         return false;
     }
 
-    
+
     async connect(){
         if(this.BUSY == true){
             return;
         }
 
         var autoConnected = await this.tryAutoConnect();
-        
+
         const usbVendorId = this.USB_VENDOR_ID;
         const usbProductId = this.USB_PRODUCT_ID;
         const usbProductMacId = this.USB_PRODUCT_MAC_ID;
@@ -1247,19 +1257,19 @@ class ReplJS{
 
     async stop(){
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: in stop");
-        
-        if(this.BUSY && this.RUN_BUSY == false){    //don't try and STOP if the code is BUSY but not from Running a user program. 
+
+        if(this.BUSY && this.RUN_BUSY == false){    //don't try and STOP if the code is BUSY but not from Running a user program.
             return;
         }
         if(this.RUN_BUSY){  //if the program is running do ctrl-c until we know it has stopped
             this.STOP = true;  //let the executeLines code know when it stops, it stopped because the STOP button was pushed
             var count = 1;
             /*
-                We are BUSY, this means that there is another thread that started the program. 
+                We are BUSY, this means that there is another thread that started the program.
                 Because they could be in a timer we are going to hammer ctrl-c until we know they are out of the program.
                 The problem with this is that we will end up sending a ctrl-c during the finally that is running the resetbot.
             */
-            while (this.STOP) { 
+            while (this.STOP) {
                 await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);  // ctrl-C to interrupt any running program
                 count += 1;
                 if (count > 20){
