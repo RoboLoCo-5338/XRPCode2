@@ -95,20 +95,7 @@ class EditorWrapper{
                         return;
                     }
 
-                    // Remove this since only needed for editor
-                    window.removeEventListener("resize", this.windowResizeListener);
-
-                    if(Object.keys(this.EDITORS).length == 1){      //this is the last editor, so open the choose file
-                        this._container.parent.focus();
-                        document.getElementById("IDAddEditorBTN").click();
-                    }
-
-                    delete EDITORS[this.ID];
-                    this.clearStorage();
-
-                    console.log("Cleared info for Editor: " + this._container.title);
-
-                    this._container.close();
+                    this.closeThisEditor();
 
                 }
             }
@@ -146,7 +133,22 @@ class EditorWrapper{
 
     }
 
+    closeThisEditor(){
+        // Remove this since only needed for editor
+        window.removeEventListener("resize", this.windowResizeListener);
 
+        if(Object.keys(this.EDITORS).length == 1){      //this is the last editor, so open the choose file
+            this._container.parent.focus();
+            document.getElementById("IDAddEditorBTN").click();
+        }
+
+        delete this.EDITORS[this.ID];
+        this.clearStorage();
+
+        console.log("Cleared info for Editor: " + this._container.title);
+
+        this._container.close();
+    }
     initEditorPanelUI(data){
         // Remove all buttons from header toolbar, if they exist
         while(this.HEADER_TOOLBAR_DIV.children.length > 0){
@@ -318,7 +320,7 @@ class EditorWrapper{
         this.CONVERT_PYTHON.onclick = async (ev) => {
             //ask if OK to do
             //call onConvert in main.js
-            if(! await window.confirmMessage("This will convert your Blocks program to a Python program.<br> This change can NOT</b> be undone. Are you sure you want to continue?")){
+            if(! await window.confirmMessage("This will convert your Blocks program to a Python program.<br> Your Blocks program will be put in the trash<br>and a new python program will be created.<br>Are you sure you want to continue?")){
                 return;
             }
             this.onConvert(this.EDITOR_PATH, this.getValue(), this.ID);

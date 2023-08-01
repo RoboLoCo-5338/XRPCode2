@@ -567,6 +567,8 @@ function registerEditor(_container, state){
 
         //close the window
         var ed = EDITORS[ID];
+        ed.closeThisEditor();
+    /*
         ed.clearStorage();
         ed._container.close();
         delete EDITORS[ID];
@@ -576,7 +578,7 @@ function registerEditor(_container, state){
             break;
             }
         EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
-
+    */
         var newFile = oldPath.replace(".blocks", ".py");
         var state = {};
         state.value = data;
