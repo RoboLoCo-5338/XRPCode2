@@ -10,7 +10,6 @@ class FILESYSTEM{
         this.FS_ALL_DIV = document.createElement("div");
         this.FS_ALL_DIV.classList.add("fs");
 
-
         this.FS_STORAGE_BAR_PARENT_DIV = document.createElement("div");
         this.FS_STORAGE_BAR_PARENT_DIV.classList = "fs_storage_bar_parent";
         this.FS_ALL_DIV.appendChild(this.FS_STORAGE_BAR_PARENT_DIV);
@@ -35,13 +34,12 @@ class FILESYSTEM{
         this.FS_UPLOAD_BTN.title = "Uploads files to the XRP";
         this.FS_FOOTER_DIV.appendChild(this.FS_UPLOAD_BTN);
 
-
-        this.FS_REFRESH_BTN = document.createElement("button");
-        this.FS_REFRESH_BTN.classList = "uk-button uk-button-primary uk-button-small uk-width-1-1";
-        this.FS_REFRESH_BTN.onclick = () => {this.onRefresh()};
-        this.FS_REFRESH_BTN.textContent = "\u21bb";
-        this.FS_REFRESH_BTN.title = "Refresh filesystem";
-        this.FS_FOOTER_DIV.appendChild(this.FS_REFRESH_BTN);
+        // this.FS_REFRESH_BTN = document.createElement("button");
+        // this.FS_REFRESH_BTN.classList = "uk-button uk-button-primary uk-button-small uk-width-1-1";
+        // this.FS_REFRESH_BTN.onclick = () => {this.onRefresh()};
+        // this.FS_REFRESH_BTN.textContent = "\u21bb";
+        // this.FS_REFRESH_BTN.title = "Refresh filesystem";
+        // this.FS_FOOTER_DIV.appendChild(this.FS_REFRESH_BTN);
 
 
         this.FS_DROPDOWN_DIV = document.createElement("div");
@@ -143,13 +141,13 @@ class FILESYSTEM{
 
     disableButtons(){
         this.FS_UPLOAD_BTN.disabled = true;
-        this.FS_REFRESH_BTN.disabled = true;
+        // this.FS_REFRESH_BTN.disabled = true;
     }
 
 
     enableButtons(){
         this.FS_UPLOAD_BTN.disabled = false;
-        this.FS_REFRESH_BTN.disabled = false;
+        // this.FS_REFRESH_BTN.disabled = false;
     }
 
 
