@@ -247,7 +247,7 @@ class EditorWrapper{
                 this.turnIntoCodeViewer(text);
             }
         }
-        
+
         // Figure out if editor should take on the last saved title, passed title, or default title
         var lastEditorTitle = localStorage.getItem("EditorTitle" + this.ID);
         if(lastEditorTitle != null){
@@ -510,31 +510,27 @@ class EditorWrapper{
         this.ACE_EDITOR.session.setMode("ace/mode/python");
         this.ACE_EDITOR.setKeyboardHandler("ace/keyboard/vscode");
 
-        var lastTheme = localStorage.getItem("lastTheme");
+        // var lastTheme = localStorage.getItem("lastTheme");
         // const darkEditorTheme = localStorage.getItem("darkEditorTheme");
         // const lightEditorTheme = localStorage.getItem("lightEditorTheme");
 
-        // initially sets the theme to light or dark mode
-        // we will automatically set this as dark mode for now
-        this.setThemeDark();
-        this.setDarkModeFileSystem();
+        // initially sets the theme to light or dark mode based off localStorage setting
         // if (lastTheme != undefined && lastTheme != null && lastTheme === "light") {
-        //     this.setThemeLight();
-        //     this.setLightModeFileSystem();
         //     // if (!lightEditorTheme) {
         //     //     this.setThemeLight();
         //     // } else {
         //     //     this.setTheme(lightEditorTheme);
         //     // }
         // } else {
-        //     this.setThemeDark();
-        //     this.setDarkModeFileSystem();
         //     // if (!darkEditorTheme){
         //     //     this.setThemeDark();
         //     // } else {
         //     //     this.setTheme(darkEditorTheme);
         //     // }
         // }
+
+        // we will automatically set this as dark mode for now
+        this.setThemeDark();
 
         this.resize();
 
@@ -825,7 +821,7 @@ class EditorWrapper{
     }
 
 
-    
+
     // Block data as a JSON string, or null
     getBlockData(){
         if(!this.isBlockly){
@@ -884,47 +880,4 @@ class EditorWrapper{
         }
     }
 
-    // setting file system to dark mode
-    setDarkModeFileSystem() {
-
-        let darkMode1 = document.getElementById("goldenLight");
-        darkMode1.setAttribute("href", "golden-layout/css/themes/goldenlayout-dark-theme.css?version=2");
-
-        let darkMode2 = document.getElementById("mainLight");
-        darkMode2.setAttribute("href", "css/dark/main-dark.css?version=2");
-
-        let darkMode3 = document.getElementById("fsLight");
-        darkMode3.setAttribute("href", "css/dark/fs-dark.css?version=2");
-
-        let darkMode4 = document.getElementById("dirChooserLight");
-        darkMode4.setAttribute("href", "css/dark/dir_chooser-dark.css?version=2");
-
-        let darkMode5 = document.getElementById("shellLight");
-        darkMode5.setAttribute("href", "css/dark/shell-dark.css?version=2");
-
-        let darkMode6 = document.getElementById("editorLight");
-        darkMode6.setAttribute("href", "css/dark/editor-dark.css?version=2");
-    }
-
-    // setting file system to light mode
-    setLightModeFileSystem() {
-
-        let lightMode1 = document.getElementById("goldenDark");
-        lightMode1.setAttribute("href", "golden-layout/css/themes/goldenlayout-light-theme.css?version=2");
-
-        let lightMode2 = document.getElementById("mainDark");
-        lightMode2.setAttribute("href", "css/light/main-light.css?version=2");
-
-        let lightMode3 = document.getElementById("fsDark");
-        lightMode3.setAttribute("href", "css/light/fs-light.css?version=2");
-
-        let lightMode4 = document.getElementById("dirChooserDark");
-        lightMode4.setAttribute("href", "css/light/dir_chooser-light.css?version=2");
-
-        let lightMode5 = document.getElementById("shellDark");
-        lightMode5.setAttribute("href", "css/light/shell-light.css?version=2");
-
-        let lightMode6 = document.getElementById("editorDark");
-        lightMode6.setAttribute("href", "css/light/editor-light.css?version=2");
-    }
 }

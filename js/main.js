@@ -587,11 +587,15 @@ function registerEditor(_container, state){
 
         //save all unsaved files [TODO] Do we always save the current editors program?
         for (const [id, editor] of Object.entries(EDITORS)) {
-            if(!editor.SAVED_TO_THUMBY) {
-                await editor.onSaveToThumby();
+            if (!editor.SAVED_TO_THUMBY) {
                 UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
+                await editor.onSaveToThumby();
             }
         }
+
+        UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+        document.getElementById("IdProgress_TitleText").innerText = "Loading...";
+
         // update the main file so if they unplug the robot and turn it on it will execute this program.
         lines = await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
         ATERM.TERM.scrollToBottom();
