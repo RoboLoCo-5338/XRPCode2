@@ -273,7 +273,6 @@ class FILESYSTEM{
         // and use none int keyed node to fill it
 
         treeNode.on("contextmenu", (event, node) => {
-            console.log("File/Dir right clicked");
 
             // Show menu for renaming, moving, deleting files and move to cursor.
             if( node.toString() == "\\"){
@@ -334,9 +333,8 @@ class FILESYSTEM{
                         // to rename, copy, cut, paste, open, or delete file on-board
                         // the RP2040
                         newFileTreeNode.on("contextmenu", (event, node) => {
-                            console.log("File/Dir right clicked");
-
                             // Show menu for renaming, moving, deleting files and move to cursor.
+                            this.FS_DROPDOWN_UL.children[1].hidden = false; //for the root contextmenu this is disabled. Make sure it is enabled for files.
                             this.FS_DROPDOWN_DIV.style.display = "block";
                             this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
 

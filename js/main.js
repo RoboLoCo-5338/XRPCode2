@@ -191,12 +191,12 @@ document.getElementById("IDStopBTN").onclick = async (event) =>{
 
 // Add editor panel to layout
 document.getElementById("IDAddEditorBTN").onclick = (event) =>{
-    console.log("PAGE: +Editor");
     var id1;
     for (const [id] of Object.entries(EDITORS)) {
         id1 = id;
-        break;
-        }
+        break;    
+    }
+
     EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
     myLayout.addComponent('Editor', {"value":undefined, choose:true}, 'Editor');
 }
