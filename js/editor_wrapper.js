@@ -55,7 +55,7 @@ class EditorWrapper{
 
             var micropython_button = document.createElement("button");
             micropython_button.classList = "uk-button uk-button-secondary uk-width-1-2 uk-height-1-1 uk-text-small";
-            micropython_button.innerHTML = '<img src="css/micropython.png" class="uk-width-1-2"/><p>MICRO PYTHON</p><p>(text code editor)</p>';
+            micropython_button.innerHTML = '<img src="css/micropython.png" class="uk-width-1-2 micropython-width"/><p>MICRO PYTHON</p><p>(text code editor)</p>';
             micropython_button.title = "Load a MicroPython Editor for normal text-based coding.";
             this.EDITOR_DIV.appendChild(micropython_button);
 
