@@ -235,6 +235,27 @@ window.REPL = REPL;
 
 
 // Filesystem module
+
+// Add the overlay to the Filesystem container.
+function addFSOverlay() {
+    let overlay = document.createElement('div');
+    overlay.style.position = 'absolute';
+    overlay.style.top = 0;
+    overlay.style.right = 0;
+    overlay.style.bottom = 0;
+    overlay.style.left = 0;
+    overlay.style.background = 'rgba(255,255,255,0.5)';
+    overlay.id = 'overlay'; // Add an ID or class for later reference
+    FS._container._element.appendChild(overlay);
+}
+
+// Remove the overlay from the Filesystem container.
+function removeFSOverlay() {
+    let overlay = FS._container._element.querySelector('#overlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}
 var FS = undefined;
 function registerFilesystem(_container, state){
     FS = new FILESYSTEM(_container, state);
@@ -377,11 +398,13 @@ function registerShell(_container, state){
         //FS.removeUpdate();
 
         FS.disableButtons();
+        //[TODO] Changed connect button back to ready to connect status
     }
     REPL.onConnect = () => {
         ATERM.writeln('\x1b[1;32m' + "\n\rConnected" + '\x1b[1;0m');
-
         FS.enableButtons();
+        //[TODO] Changed connect button to connected status
+
     }
     REPL.onFSData = (jsonStrData, fsSizeData) => {
         FS.updateTree(jsonStrData);
@@ -495,15 +518,19 @@ function registerEditor(_container, state){
             window.alertMessage("No XRP is connected. Double-check that the XRP is connected before attempting to run the program.");
             return;
         }
+        var count = 0;
+        while(REPL.BUSY && REPL.RUN_BUSY == false && count < 20){ //if things are busy but not run_busy then let's wait for things to finish
+            await window.sleep(10) //we could hang here!!!!
+            count += 1;
+        }
         if(REPL.BUSY) {
             window.alertMessage("Another program is already running. Stop that program first and then press RUN again.");
             return;
         }
 
         //handel any special hidden settings
-        var data = editor.getValue();
-        if(data.startsWith("#XRPSETTING")){
-            var setting = data.split("#XRPSETTING")[1];
+        if(lines.startsWith("#XRPSETTING")){
+            var setting = lines.split("#XRPSETTING")[1];
             setting = setting.trimEnd();
             switch(setting){
                 case "-localstorage":
@@ -539,7 +566,12 @@ function registerEditor(_container, state){
             }
         }
 
-        //save all unsaved files
+        //Disable anything that can't be clicked on while the program is running
+
+        editor.FAST_EXECUTE_BUTTON.disabled = true;
+        addFSOverlay();
+
+        //save all unsaved files [TODO] Do we always save the current editors program?
         for (const [id, editor] of Object.entries(EDITORS)) {
             if(!editor.SAVED_TO_THUMBY) {
                 await editor.onSaveToThumby();
@@ -549,6 +581,9 @@ function registerEditor(_container, state){
         lines = await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
         ATERM.TERM.scrollToBottom();
         await REPL.executeLines(lines);
+        editor.FAST_EXECUTE_BUTTON.disabled = false;
+        removeFSOverlay();
+
     }
     editor.onConvert = async (oldPath, data, ID) => {
         if(REPL.DISCONNECT == true){

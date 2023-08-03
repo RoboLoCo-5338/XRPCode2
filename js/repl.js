@@ -92,6 +92,10 @@ class ReplJS{
         });
 
         document.getElementById("IDConnectThumbyBTN").addEventListener("click", (event) => {
+            if(REPL.DISCONNECT == false){
+                //Already connected
+                return;
+            }
             this.connect();
         })
 
@@ -1119,10 +1123,10 @@ class ReplJS{
                 this.WRITER = await this.PORT.writable.getWriter();     // Make a writer since this is the first time port opened
                 this.readLoop();                // Start read loop
                 if(await this.checkIfMP()){
-                    this.onConnect();
                     this.BUSY = false;
                     await this.getToNormal();
                     await this.getOnBoardFSTree();
+                    this.onConnect();
                 } 
 
                 this.BUSY = false;
