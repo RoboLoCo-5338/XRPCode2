@@ -13,6 +13,7 @@ const layoutSaveKey = "layout";
 
 var myLayout = new GoldenLayout(document.getElementById("IDLayoutContainer"));
 
+var closeProgressModal = false;
 var DIR = new DIRCHOOSER();
 var SAVEAS_ELEMENT = document.getElementById("IDSaveAs");  //element to use with the SaveAs dialog box.
 
@@ -461,7 +462,7 @@ function registerEditor(_container, state){
             else{
                 console.log('Pick a folder');
                 var path = await DIR.getPathFromUser(SAVEAS_ELEMENT);
-                if(path != undefined){
+                if (path != undefined) {
                     // Make sure no editors with this file path already exist
                     for (const [id, editor] of Object.entries(EDITORS)) {
                         if(editor.EDITOR_PATH == path){
@@ -470,14 +471,14 @@ function registerEditor(_container, state){
                             return;
                         }
                     }
-
                     editor.setPath(path);
                     editor.setSaved();
                     editor.updateTitleSaved();
                     editor.onSaveToThumby();
+                    closeProgressModal = true;
                 }
             }
-        }else{
+        } else{
             //check if name is untitled
             if(editor.EDITOR_TITLE.search("untitled") != -1){
                 await editor.onSaveAsToThumby();
@@ -486,9 +487,12 @@ function registerEditor(_container, state){
             console.log('Saved');
 
             editor.setSaved();
-            UIkit.modal(document.getElementById("IDProgressBarParent")).show();
-            document.getElementById("IdProgress_TitleText").innerText = "Loading...";
+
             editor.updateTitleSaved();
+
+            // show progress bar to show saving progress
+            UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+            document.getElementById("IdProgress_TitleText").innerText = "Saving...";
 
             if(editor.isBlockly){
                 var blockData = editor.getValue() + '\n\n\n## ' + getTimestamp() + '\n##XRPBLOCKS ' + editor.getBlockData();
@@ -503,6 +507,10 @@ function registerEditor(_container, state){
                     await REPL.getOnBoardFSTree();
                 }
             }
+
+            // close progress bar modal after done saving to XRP
+            UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
+
         }
     }
     editor.onSaveAsToThumby = async () => {
@@ -516,11 +524,15 @@ function registerEditor(_container, state){
             editor.setPath(path);
             editor.setSaved();
 
+            closeProgressModal = false;
             UIkit.modal(document.getElementById("IDProgressBarParent")).show();
             document.getElementById("IdProgress_TitleText").innerText = "Loading...";
 
             editor.updateTitleSaved();
             await editor.onSaveToThumby();
+        } else {
+            // user hit CANCEL on the save file modal
+            closeProgressModal = true;
         }
     }
     editor.onFastExecute = async (lines) => {
@@ -570,7 +582,6 @@ function registerEditor(_container, state){
             return;
         }
 
-
         //check if power switch is on.
         if(! await REPL.isPowerSwitchOn()) {
             if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
@@ -593,8 +604,13 @@ function registerEditor(_container, state){
             }
         }
 
-        UIkit.modal(document.getElementById("IDProgressBarParent")).show();
-        document.getElementById("IdProgress_TitleText").innerText = "Loading...";
+        // if user cancels from the Save File dialog, hide the IDProgressBarParent Modal
+        if (closeProgressModal == true) {
+            UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
+        } else {
+            UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+            document.getElementById("IdProgress_TitleText").innerText = "Loading...";
+        }
 
         // update the main file so if they unplug the robot and turn it on it will execute this program.
         lines = await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
