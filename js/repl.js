@@ -26,6 +26,8 @@ class ReplJS{
         this.BUSY = false;
         this.RUN_BUSY = false; //used to distinguish that we are in the RUN of a user program vs other BUSY.
 
+        this.RUN_ERROR = undefined; //The text of any returned error
+
         //They pressed the STOP button while a program was executing
         this.STOP = false;
         
@@ -429,7 +431,18 @@ class ReplJS{
         this.SPECIAL_FORCE_OUTPUT_FLAG = true;  //you see the OK, but also get any fast output
         this.CATCH_OK = true;
         await this.waitUntilOK();
-        await this.haltUntilRead(1);
+        var result = await this.haltUntilRead(1);
+       
+        /*
+                This is where errors can be checked for that were returned incase we want to give a better explanation 
+                The error information is put into a global variable for end processing if needed.
+        */
+        if(result && result[0].includes("[Errno",0)){
+            this.RUN_ERROR = result[0];
+        }
+        else {
+            this.RUN_ERROR = undefined;
+        }
 
         // Get back into normal mode and omit the 3 lines from the normal message,
         // don't want to repeat (assumes already on a normal prompt)

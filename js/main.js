@@ -584,6 +584,10 @@ function registerEditor(_container, state){
         editor.FAST_EXECUTE_BUTTON.disabled = false;
         removeFSOverlay();
 
+        if(REPL.RUN_ERROR && REPL.RUN_ERROR.includes("[Errno 2] ENOENT", 0)){
+            window.alertMessage("The program that you were trying to RUN has not been saved to this XRP.<br>To RUN this program save the file to XRP and click RUN again.")
+        }
+
     }
     editor.onConvert = async (oldPath, data, ID) => {
         if(REPL.DISCONNECT == true){
