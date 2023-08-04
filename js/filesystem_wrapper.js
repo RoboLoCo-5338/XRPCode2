@@ -10,7 +10,6 @@ class FILESYSTEM{
         this.FS_ALL_DIV = document.createElement("div");
         this.FS_ALL_DIV.classList.add("fs");
 
-
         this.FS_STORAGE_BAR_PARENT_DIV = document.createElement("div");
         this.FS_STORAGE_BAR_PARENT_DIV.classList = "fs_storage_bar_parent";
         this.FS_ALL_DIV.appendChild(this.FS_STORAGE_BAR_PARENT_DIV);
@@ -29,19 +28,18 @@ class FILESYSTEM{
         this.FS_ALL_DIV.appendChild(this.FS_FOOTER_DIV);
 
         this.FS_UPLOAD_BTN = document.createElement("button");
-        this.FS_UPLOAD_BTN.classList = "uk-button uk-button-secondary uk-button-small uk-width-1-1";
+        this.FS_UPLOAD_BTN.classList = "uk-button uk-button-primary uk-button-small uk-width-1-1";
         this.FS_UPLOAD_BTN.onclick = () => {this.onUploadFiles()};
         this.FS_UPLOAD_BTN.innerText = "UPLOAD FILES";
         this.FS_UPLOAD_BTN.title = "Uploads files to the XRP";
         this.FS_FOOTER_DIV.appendChild(this.FS_UPLOAD_BTN);
 
-
-        this.FS_REFRESH_BTN = document.createElement("button");
-        this.FS_REFRESH_BTN.classList = "uk-button uk-button-secondary uk-button-small uk-width-1-1";
-        this.FS_REFRESH_BTN.onclick = () => {this.onRefresh()};
-        this.FS_REFRESH_BTN.textContent = "\u21bb";
-        this.FS_REFRESH_BTN.title = "Refresh filesystem";
-        this.FS_FOOTER_DIV.appendChild(this.FS_REFRESH_BTN);
+        // this.FS_REFRESH_BTN = document.createElement("button");
+        // this.FS_REFRESH_BTN.classList = "uk-button uk-button-primary uk-button-small uk-width-1-1";
+        // this.FS_REFRESH_BTN.onclick = () => {this.onRefresh()};
+        // this.FS_REFRESH_BTN.textContent = "\u21bb";
+        // this.FS_REFRESH_BTN.title = "Refresh filesystem";
+        // this.FS_FOOTER_DIV.appendChild(this.FS_REFRESH_BTN);
 
 
         this.FS_DROPDOWN_DIV = document.createElement("div");
@@ -143,13 +141,13 @@ class FILESYSTEM{
 
     disableButtons(){
         this.FS_UPLOAD_BTN.disabled = true;
-        this.FS_REFRESH_BTN.disabled = true;
+        // this.FS_REFRESH_BTN.disabled = true;
     }
 
 
     enableButtons(){
         this.FS_UPLOAD_BTN.disabled = false;
-        this.FS_REFRESH_BTN.disabled = false;
+        // this.FS_REFRESH_BTN.disabled = false;
     }
 
 
@@ -179,7 +177,7 @@ class FILESYSTEM{
     // Recursively traverse the directory tree starting at the right-clicked dir and download all files
     async downloadChildren(parent){
         var childNodes = parent.getChildren();
-        
+
         for(var c=0; c<childNodes.length; c++){
             if(childNodes[c].getChildren().length > 0){
                 await this.downloadChildren(childNodes[c]);
@@ -202,7 +200,7 @@ class FILESYSTEM{
     clearToWaiting(){
         this.FS_AREA_DIV.innerText = "Waiting for connection...\n\n(click 'Connect XRP')";
         this.FS_AREA_DIV.style.display = "flex";
-        
+
         this.FS_STORAGE_BAR_DIV.style.width = 0 + "%";
         this.FS_STORAGE_BAR_DIV.innerHTML = "&nbsp;Storage:";
     }
@@ -251,7 +249,7 @@ class FILESYSTEM{
                     dirTreeNode.on("dblclick", (event, node) => {
                         this.FS_TREE.expandAllNodes();
                     });
-        
+
 
                     dirTreeNode.changeOption("forceParent", true);                                  // If node marked as dir then force it to be a dir
                     dirTreeNode.setEnabled(this.STATE);
@@ -304,7 +302,7 @@ class FILESYSTEM{
         for(var nodeKey in fsNode){
             if(!isNaN(nodeKey)){                                                                // Check if number (false means number inside string)
                 var fileOrDir = Object.keys(fsNode[nodeKey])[0];                                // Get string key that's either FILE or DIR
-                if(fileOrDir == "F"){        
+                if(fileOrDir == "F"){
                     if(fsNode[nodeKey][fileOrDir] == "main.py" && window.SHOWMAIN == false){
                         // pass
 
@@ -315,7 +313,7 @@ class FILESYSTEM{
                         // Assign event so that left clicked nodes can be opened in webpage
                         newFileTreeNode.on("dblclick", (event, node) => {
                             console.log("File left clicked");
-                    
+
                             var currentNode = node;
                             var path = "";
                             while(currentNode != undefined){
@@ -323,7 +321,7 @@ class FILESYSTEM{
                                 path = "/" + currentNode.toString() + path;
                                 currentNode = currentNode.parent;
                             }
-                    
+
                             // Full path to root after this (removes three back slashes)
                             path = "/" + path.substring(3);
                             this.onOpen(path);
@@ -452,7 +450,7 @@ class FILESYSTEM{
 
     // Gets the path (mirror of RP2040 system) from FS tree view
     // and returns it for use in the RP2040 module. NOTE: nodes
-    // are selected on right-click because of callback .setSelected 
+    // are selected on right-click because of callback .setSelected
     // call provided to each node on tree update
     getSelectedNodePath(deleting){
         var selectedNodes = this.FS_TREE.getSelectedNodes();

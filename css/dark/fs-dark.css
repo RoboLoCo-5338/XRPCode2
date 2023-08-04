@@ -28,7 +28,8 @@
 .fs_footer{
     display: flex;
     flex-flow: row;
-    background-color: #121212;
+    /* background-color: #121212;  */
+    background-color: #2980b9;
     width: calc(100% - 1px);
     height: 28px;
 }

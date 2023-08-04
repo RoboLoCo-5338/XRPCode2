@@ -1,4 +1,4 @@
-import { ComponentContainer, ComponentItemConfig, GoldenLayout, ItemType, LayoutManager, LayoutConfig } from "../golden-layout/bundle/esm/golden-layout.js";
+import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-layout.js";
 
 
 /*
@@ -12,9 +12,8 @@ window.latestMicroPythonVersion = [1, 20, 0];
 const layoutSaveKey = "layout";
 
 var myLayout = new GoldenLayout(document.getElementById("IDLayoutContainer"));
-
 var DIR = new DIRCHOOSER();
-var SAVEAS_ELEMENT = document.getElementById("IDSaveAs")  //element to use with the SaveAs dialog box.
+var SAVEAS_ELEMENT = document.getElementById("IDSaveAs");  //element to use with the SaveAs dialog box.
 
 var onExportToEditor = (bytes) => {
     var editorSpriteID = 0;
@@ -89,23 +88,26 @@ if(localStorage.getItem(showChangelogVersion) == null){
 //})
 
 var progressBarElem = document.getElementById("IDProgressBar");
+var progressBarText = document.getElementById("IDProgressBar_Text");
+document.getElementById("IdProgress_TitleText").innerText = 'Update in Progress...';
 var lastMessage = undefined;
 window.setPercent = (percent, message) => {
     progressBarElem.style.width = percent + "%";
 
-    if(message != undefined){
-        progressBarElem.innerText = message + " " + percent + "%";
+    if (message != undefined) {
+        progressBarText.innerText = message + " " + percent + "%";
         lastMessage = message;
-    }else{
-        progressBarElem.innerText = lastMessage + " " + Math.round(percent) + "%";
+    } else {
+        progressBarText.innerText = lastMessage + " " + Math.round(percent) + "%";
     }
-}
+};
+
 window.resetPercentDelay = () => {
     setTimeout(() => {
         progressBarElem.style.width = "0%";
-        progressBarElem.innerText = "";
+        progressBarText.innerText = "";
     }, 100);
-}
+};
 
 var defaultConfig = {
     header:{
@@ -194,7 +196,7 @@ document.getElementById("IDAddEditorBTN").onclick = (event) =>{
     var id1;
     for (const [id] of Object.entries(EDITORS)) {
         id1 = id;
-        break;    
+        break;
     }
 
     EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
@@ -428,7 +430,7 @@ function registerShell(_container, state){
             }
         }
 
-        let answer = await confirmMessage("The MicroPython on your XRP needs to be updated. The new version is " + window.latestMicroPythonVersion[0] + "." + window.latestMicroPythonVersion[1] + "." + window.latestMicroPythonVersion[2] +"<br>Would you like to update now?");
+        let answer = await confirmMessage("The MicroPython on your XRP needs to be updated. The new version is " + window.latestMicroPythonVersion[0] + "." + window.latestMicroPythonVersion[1] + "." + window.latestMicroPythonVersion[2] +"<br>Would you like to update now? If so, click OK to proceed with the update.");
         if(answer){
             await alertMessage("When the <b>Select Folder</b> window comes up, select the <b>RPI-RP2</b> drive when it appears.<br>Next, click on 'Edit Files' and wait for the XRP to connect.<br> This process may take a few seconds.");
             REPL.updateMicroPython();
@@ -458,7 +460,7 @@ function registerEditor(_container, state){
             else{
                 console.log('Pick a folder');
                 var path = await DIR.getPathFromUser(SAVEAS_ELEMENT);
-                if(path != undefined){
+                if (path != undefined) {
                     // Make sure no editors with this file path already exist
                     for (const [id, editor] of Object.entries(EDITORS)) {
                         if(editor.EDITOR_PATH == path){
@@ -467,22 +469,27 @@ function registerEditor(_container, state){
                             return;
                         }
                     }
-
                     editor.setPath(path);
                     editor.setSaved();
                     editor.updateTitleSaved();
                     editor.onSaveToThumby();
                 }
             }
-        }else{
+        } else{
             //check if name is untitled
             if(editor.EDITOR_TITLE.search("untitled") != -1){
                 await editor.onSaveAsToThumby();
                 return;
             }
             console.log('Saved');
+
             editor.setSaved();
+
             editor.updateTitleSaved();
+
+            // show progress bar to show saving progress
+            UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+            document.getElementById("IdProgress_TitleText").innerText = "Saving...";
 
             if(editor.isBlockly){
                 var blockData = editor.getValue() + '\n\n\n## ' + getTimestamp() + '\n##XRPBLOCKS ' + editor.getBlockData();
@@ -497,6 +504,10 @@ function registerEditor(_container, state){
                     await REPL.getOnBoardFSTree();
                 }
             }
+
+            // close progress bar modal after done saving to XRP
+            UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
+
         }
     }
     editor.onSaveAsToThumby = async () => {
@@ -514,6 +525,7 @@ function registerEditor(_container, state){
         }
     }
     editor.onFastExecute = async (lines) => {
+
         if(REPL.DISCONNECT == true){
             window.alertMessage("No XRP is connected. Double-check that the XRP is connected before attempting to run the program.");
             return;
@@ -557,11 +569,10 @@ function registerEditor(_container, state){
             return;
         }
 
-
         //check if power switch is on.
         if(! await REPL.isPowerSwitchOn()) {
             if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
-                    "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")){
+                "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")) {
                 return;
             }
         }
@@ -573,22 +584,28 @@ function registerEditor(_container, state){
 
         //save all unsaved files [TODO] Do we always save the current editors program?
         for (const [id, editor] of Object.entries(EDITORS)) {
-            if(!editor.SAVED_TO_THUMBY) {
+            if (!editor.SAVED_TO_THUMBY) {
                 await editor.onSaveToThumby();
             }
         }
+
+        UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+        document.getElementById("IdProgress_TitleText").innerText = "Running Program...";
+
         // update the main file so if they unplug the robot and turn it on it will execute this program.
         lines = await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
         ATERM.TERM.scrollToBottom();
+        UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
         await REPL.executeLines(lines);
         editor.FAST_EXECUTE_BUTTON.disabled = false;
         removeFSOverlay();
 
         if(REPL.RUN_ERROR && REPL.RUN_ERROR.includes("[Errno 2] ENOENT", 0)){
-            window.alertMessage("The program that you were trying to RUN has not been saved to this XRP.<br>To RUN this program save the file to XRP and click RUN again.")
+            window.alertMessage("The program that you were trying to RUN has not been saved to this XRP.<br>To RUN this program save the file to XRP and click RUN again.");
         }
 
     }
+
     editor.onConvert = async (oldPath, data, ID) => {
         if(REPL.DISCONNECT == true){
             window.alertMessage("This program can not be converted because no XRP is connected. Double-check that the XRP is connected before attempting to convert the program.");
@@ -720,7 +737,7 @@ async function confirmMessage(message){
 window.confirmMessage = confirmMessage;
 
 async function dialogMessage(message){
-    
+
     let elm = document.createElement("div");
     elm.setAttribute("uk-modal","");
     let elm2 = document.createElement("div");

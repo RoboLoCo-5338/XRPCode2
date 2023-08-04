@@ -7,7 +7,7 @@
     height: calc(100% - 20px);
 }
 .editor_header_toolbar {
-    background-color:black;
+    background-color: transparent;
     display:flex;
     align-items: center;
     width:100%;
