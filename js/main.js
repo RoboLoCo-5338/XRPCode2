@@ -12,8 +12,6 @@ window.latestMicroPythonVersion = [1, 20, 0];
 const layoutSaveKey = "layout";
 
 var myLayout = new GoldenLayout(document.getElementById("IDLayoutContainer"));
-
-var closeProgressModal = false;
 var DIR = new DIRCHOOSER();
 var SAVEAS_ELEMENT = document.getElementById("IDSaveAs");  //element to use with the SaveAs dialog box.
 
@@ -475,7 +473,6 @@ function registerEditor(_container, state){
                     editor.setSaved();
                     editor.updateTitleSaved();
                     editor.onSaveToThumby();
-                    closeProgressModal = true;
                 }
             }
         } else{
@@ -523,23 +520,14 @@ function registerEditor(_container, state){
             }
             editor.setPath(path);
             editor.setSaved();
-
-            closeProgressModal = false;
-            UIkit.modal(document.getElementById("IDProgressBarParent")).show();
-            document.getElementById("IdProgress_TitleText").innerText = "Loading...";
-
             editor.updateTitleSaved();
             await editor.onSaveToThumby();
-        } else {
-            // user hit CANCEL on the save file modal
-            closeProgressModal = true;
         }
     }
     editor.onFastExecute = async (lines) => {
 
         if(REPL.DISCONNECT == true){
             window.alertMessage("No XRP is connected. Double-check that the XRP is connected before attempting to run the program.");
-            UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
             return;
         }
         var count = 0;
@@ -549,7 +537,6 @@ function registerEditor(_container, state){
         }
         if(REPL.BUSY) {
             window.alertMessage("Another program is already running. Stop that program first and then press RUN again.");
-            UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
             return;
         }
 
@@ -586,7 +573,6 @@ function registerEditor(_container, state){
         if(! await REPL.isPowerSwitchOn()) {
             if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
                 "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")) {
-                UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
                 return;
             }
         }
@@ -599,18 +585,12 @@ function registerEditor(_container, state){
         //save all unsaved files [TODO] Do we always save the current editors program?
         for (const [id, editor] of Object.entries(EDITORS)) {
             if (!editor.SAVED_TO_THUMBY) {
-                UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
                 await editor.onSaveToThumby();
             }
         }
 
-        // if user cancels from the Save File dialog, hide the IDProgressBarParent Modal
-        if (closeProgressModal == true) {
-            UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
-        } else {
-            UIkit.modal(document.getElementById("IDProgressBarParent")).show();
-            document.getElementById("IdProgress_TitleText").innerText = "Loading...";
-        }
+        UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+        document.getElementById("IdProgress_TitleText").innerText = "Running Program...";
 
         // update the main file so if they unplug the robot and turn it on it will execute this program.
         lines = await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
@@ -621,7 +601,7 @@ function registerEditor(_container, state){
         removeFSOverlay();
 
         if(REPL.RUN_ERROR && REPL.RUN_ERROR.includes("[Errno 2] ENOENT", 0)){
-            window.alertMessage("The program that you were trying to RUN has not been saved to this XRP.<br>To RUN this program save the file to XRP and click RUN again.")
+            window.alertMessage("The program that you were trying to RUN has not been saved to this XRP.<br>To RUN this program save the file to XRP and click RUN again.");
         }
 
     }

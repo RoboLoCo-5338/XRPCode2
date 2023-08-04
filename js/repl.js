@@ -94,12 +94,12 @@ class ReplJS{
         });
 
         document.getElementById("IDConnectThumbyBTN").addEventListener("click", (event) => {
-            if(REPL.DISCONNECT == false){
+            if (REPL.DISCONNECT == false) {
                 //Already connected
                 return;
             }
             this.connect();
-        })
+        });
 
         this.DISCONNECT = true;
     }
@@ -986,6 +986,7 @@ class ReplJS{
         }
 
         UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+        document.getElementById("IdProgress_TitleText").innerText = 'Update in Progress...';
 
         let response = await fetch("/lib/package.json");
         response = await response.text();
@@ -1027,6 +1028,7 @@ class ReplJS{
     async updateMicroPython() {
 
         UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+        document.getElementById("IdProgress_TitleText").innerText = 'Update in Progress...';
 
         if(this.BUSY == true){
             return;
@@ -1052,9 +1054,8 @@ class ReplJS{
             writable = await fileHandle.createWritable();
         }catch(err){
             console.log(err);
-            // alert("error updating MicroPython");
             UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
-            UIKit.modal("Error updating MicroPython. Please try again.");
+            window.alertMessage("Error updating MicroPython. Please try again.");
             return;                                                                     // If the user doesn't allow tab to save to opened file, don't edit file
         }
         window.setPercent(35);
@@ -1070,6 +1071,7 @@ class ReplJS{
 
         this.BUSY = false;
 
+        // hide modal after installation is complete
         UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
     }
 
