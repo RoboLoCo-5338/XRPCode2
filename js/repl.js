@@ -424,7 +424,8 @@ class ReplJS{
 
         // Not really needed for hiding output to terminal since raw does not echo
         // but is needed to only grab the FS lines/data
-
+        
+        this.RUN_BUSY  = true;
         this.startReaduntil(">");
         await this.writeToDevice(lines + "\x04");
         this.SPECIAL_FORCE_OUTPUT_FLAG = true;  //you see the OK, but also get any fast output
