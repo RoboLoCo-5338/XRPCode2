@@ -829,12 +829,20 @@ class ReplJS{
     }
 
     async updateMainFile(fileToEx){
+       
+        var fileToEx2 = fileToEx;
+        if (fileToEx.startsWith('/')) {
+            fileToEx2 = fileToEx.slice(1);
+        }
+        
         var value = "try:\n" +
                     "   with open('"+fileToEx+"', mode='r') as exfile:\n" +
                     "       code = exfile.read()\n"+
-                    "   exec(code)\n" +
+                    "   execCode = compile(code, '" +fileToEx2+"', 'exec')\n" +
+                    "   exec(execCode)\n" +
                     "except Exception as e:\n" +
-                    "   print(e)\n"+
+                    "   import sys\n" +
+                    "   sys.print_exception(e)\n"+
                     "finally:\n"+
                     "   import XRPLib.resetbot";
         await this.uploadFile("//main.py", value, true, false);
