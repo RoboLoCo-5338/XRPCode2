@@ -60,8 +60,6 @@ let v = jresp.version
 window.latestLibraryVersion = v.split(".");
 
 
-
-
 window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
 
 window.SHOWMAIN = false;
@@ -235,9 +233,15 @@ function recursiveFindEditors(content, editors){
 var REPL = new ReplJS();
 window.REPL = REPL;
 
+// set up blockly dialog to come to us
+Blockly.dialog.setPrompt(async function (p1,p2, callback){
+    var [ans, value] = await window.promptMessage(p1, p2);
+    if(ans == false) callback(null);
+    callback(value);
+});
+
 
 // Filesystem module
-
 // Add the overlay to the Filesystem container.
 function addFSOverlay() {
     let overlay = document.createElement('div');
