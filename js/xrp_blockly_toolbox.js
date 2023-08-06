@@ -50,7 +50,7 @@ var blocklyToolbox = {
                     "kind": "BLOCK",
                     "type": "xrp_straight_effort",
                     "inputs":{
-                        "dist": {"shadow": {"type": "math_number", "fields": {"NUM": "150"}}},
+                        "dist": {"shadow": {"type": "math_number", "fields": {"NUM": "20"}}},
                         "effort": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}}
                     },
                 },
@@ -104,6 +104,13 @@ var blocklyToolbox = {
                 {
                     "kind": "BLOCK",
                     "type": "xrp_servo_deg",
+                    "inputs":{
+                        "degrees": {"shadow": {"type": "math_number", "fields": {"NUM": "90"}}}
+                    }
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_servo2_deg",
                     "inputs":{
                         "degrees": {"shadow": {"type": "math_number", "fields": {"NUM": "90"}}}
                     },

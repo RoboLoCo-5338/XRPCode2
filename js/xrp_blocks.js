@@ -12,7 +12,7 @@ Blockly.Blocks['xrp_motor_effort'] = {
     this.appendDummyInput()
       .appendField("Motor:")
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
-      .appendField("effort:");
+      .appendField("Effort:");
     this.appendValueInput("effort")
       .setCheck("Number");
     this.setInputsInline(true);
@@ -27,16 +27,16 @@ Blockly.Blocks['xrp_motor_effort'] = {
 Blockly.Blocks['xrp_motor_speed'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Motor")
+      .appendField("Motor:")
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
-      .appendField("Speed");
+      .appendField("Speed:");
     this.appendValueInput("speed")
       .setCheck("Number");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(352); // crimson
-    this.setTooltip("Set the speed in RPM for the selected motor");
+    this.setTooltip("Set the speed in rotations per minute(RPM) for the selected motor");
     this.setHelpUrl("");
   }
 };
@@ -46,7 +46,7 @@ Blockly.Blocks['xrp_motor_direction'] = {
     this.appendDummyInput()
       .appendField("Motor:")
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
-      .appendField("direction:")
+      .appendField("Direction:")
       .appendField(new Blockly.FieldDropdown([["Reverse", "True"], ["Forward", "False"]]), "DIRECTION");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -100,7 +100,7 @@ Blockly.Blocks['xrp_motor_reset_position'] = {
     this.appendDummyInput()
       .appendField("Motor:")
       .appendField(new Blockly.FieldDropdown([["Left", "1"], ["Right", "2"], ["3", "3"], ["4", "4"]]), "MOTOR")
-      .appendField("Reset Encoder")
+      .appendField("Reset encoder")
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(352); // crimson
@@ -114,10 +114,11 @@ Blockly.Blocks['xrp_straight_effort'] = {
   init: function () {
     this.appendValueInput("dist")
       .setCheck("Number")
-      .appendField("Drive Straight");
+      .appendField("Straight")
+      .appendField("cm:");
     this.appendValueInput("effort")
       .setCheck("Number")
-      .appendField("Effort");
+      .appendField("Effort:");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -131,10 +132,10 @@ Blockly.Blocks['xrp_turn_effort'] = {
   init: function () {
     this.appendValueInput("degrees")
       .setCheck("Number")
-      .appendField("Turn");
+      .appendField("Turn  Deg:");
     this.appendValueInput("effort")
       .setCheck("Number")
-      .appendField("Effort");
+      .appendField("Effort:");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -147,13 +148,13 @@ Blockly.Blocks['xrp_turn_effort'] = {
 Blockly.Blocks['xrp_seteffort'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Set Effort");
+      .appendField("Set effort");
     this.appendValueInput("LEFT")
       .setCheck("Number")
-      .appendField("Left");
+      .appendField("Left:");
     this.appendValueInput("RIGHT")
       .setCheck("Number")
-      .appendField("Right");
+      .appendField("Right:");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -166,13 +167,13 @@ Blockly.Blocks['xrp_seteffort'] = {
 Blockly.Blocks['xrp_speed'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Set Speed");
+      .appendField("Set speed");
     this.appendValueInput("LEFT")
       .setCheck(null)
-      .appendField("Left");
+      .appendField("Left:");
     this.appendValueInput("RIGHT")
       .setCheck(null)
-      .appendField("Right");
+      .appendField("Right:");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -185,7 +186,7 @@ Blockly.Blocks['xrp_speed'] = {
 Blockly.Blocks['xrp_stop_motors'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Stop Motors");
+      .appendField("Stop motors");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -198,7 +199,7 @@ Blockly.Blocks['xrp_stop_motors'] = {
 Blockly.Blocks['xrp_resetencoders'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Reset Encoders");
+      .appendField("Reset encoders");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(10); // orange
@@ -210,7 +211,7 @@ Blockly.Blocks['xrp_resetencoders'] = {
 Blockly.Blocks['xrp_getleftencoder'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Left Encoder");
+      .appendField("Left encoder");
     this.setOutput(true, null);
     this.setColour(10); // orange
     this.setTooltip("");
@@ -221,7 +222,7 @@ Blockly.Blocks['xrp_getleftencoder'] = {
 Blockly.Blocks['xrp_getrightencoder'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Right Encoder");
+      .appendField("Right encoder");
     this.setOutput(true, null);
     this.setColour(10); // orange
     this.setTooltip("");
@@ -234,7 +235,21 @@ Blockly.Blocks['xrp_servo_deg'] = {
   init: function () {
     this.appendValueInput("degrees")
       .setCheck("Number")
-      .appendField('Set Servo1 \xB0');
+      .appendField('Servo1  Deg:');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(300); // light purple
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_servo2_deg'] = {
+  init: function () {
+    this.appendValueInput("degrees")
+      .setCheck("Number")
+      .appendField('Servo2  Deg:');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -248,7 +263,7 @@ Blockly.Blocks['xrp_servo_deg'] = {
 Blockly.Blocks['xrp_getsonardist'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Sonar Distance");
+      .appendField("Sonar distance");
     this.setOutput(true, null);
     this.setColour(90); // soft green
     this.setTooltip("");
@@ -260,7 +275,7 @@ Blockly.Blocks['xrp_getsonardist'] = {
 Blockly.Blocks['xrp_l_refl'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Left Reflectance");
+      .appendField("Left reflectance");
     this.setOutput(true, null);
     this.setColour(90); // soft green
     this.setTooltip("");
@@ -271,7 +286,7 @@ Blockly.Blocks['xrp_l_refl'] = {
 Blockly.Blocks['xrp_r_refl'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Right Reflectance");
+      .appendField("Right reflectance");
     this.setOutput(true, null);
     this.setColour(90); // soft green
     this.setTooltip("");
@@ -317,7 +332,7 @@ Blockly.Blocks['xrp_pitch'] = {
 Blockly.Blocks['xrp_acc_x'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("acc_x");
+      .appendField("Acc_x");
     this.setOutput(true, null);
     this.setColour(90); // soft green
     this.setTooltip("");
@@ -328,7 +343,7 @@ Blockly.Blocks['xrp_acc_x'] = {
 Blockly.Blocks['xrp_acc_y'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("acc_y");
+      .appendField("Acc_y");
     this.setOutput(true, null);
     this.setColour(90); // soft green
     this.setTooltip("");
@@ -339,7 +354,7 @@ Blockly.Blocks['xrp_acc_y'] = {
 Blockly.Blocks['xrp_acc_z'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("acc_z");
+      .appendField("Acc_z");
     this.setOutput(true, null);
     this.setColour(90); // soft green
     this.setTooltip("");
@@ -376,7 +391,7 @@ Blockly.Blocks['xrp_led_off'] = {
 Blockly.Blocks['xrp_button_pressed'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("User Button");
+      .appendField("User button");
     this.setOutput(true, null);
     this.setColour(150); // darker teal
     this.setTooltip("");
@@ -388,7 +403,7 @@ Blockly.Blocks['xrp_button_pressed'] = {
 Blockly.Blocks['xrp_wait_for_button_press'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Wait for Button Press");
+      .appendField("Wait for button press");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(150); // darker teal
@@ -401,9 +416,9 @@ Blockly.Blocks['xrp_wait_for_button_press'] = {
 Blockly.Blocks['xrp_ws_forward_button'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Forward Button")
+      .appendField("Web forward button")
     this.appendStatementInput('func')
-      .appendField('Function');
+      .appendField('Function:');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190); // turquoise
@@ -415,9 +430,9 @@ Blockly.Blocks['xrp_ws_forward_button'] = {
 Blockly.Blocks['xrp_ws_back_button'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Back Button")
+      .appendField("Web back button")
     this.appendStatementInput('func')
-      .appendField('Function');
+      .appendField('Function:');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190); // turquoise
@@ -429,9 +444,9 @@ Blockly.Blocks['xrp_ws_back_button'] = {
 Blockly.Blocks['xrp_ws_left_button'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Left Button")
+      .appendField("Web left button")
     this.appendStatementInput('func')
-      .appendField('Function'); this.setPreviousStatement(true, null);
+      .appendField('Function:'); this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190); // turquoise
     this.setTooltip("");
@@ -442,9 +457,9 @@ Blockly.Blocks['xrp_ws_left_button'] = {
 Blockly.Blocks['xrp_ws_right_button'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Right Button")
+      .appendField("Web right button")
     this.appendStatementInput('func')
-      .appendField('Function'); this.setPreviousStatement(true, null);
+      .appendField('Function:'); this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190); // turquoise
     this.setTooltip("");
@@ -455,9 +470,9 @@ Blockly.Blocks['xrp_ws_right_button'] = {
 Blockly.Blocks['xrp_ws_stop_button'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Stop Button")
+      .appendField("Web stop button")
     this.appendStatementInput('func')
-      .appendField('Function'); this.setPreviousStatement(true, null);
+      .appendField('Function:'); this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190); // turquoise
     this.setTooltip("");
@@ -468,10 +483,10 @@ Blockly.Blocks['xrp_ws_stop_button'] = {
 Blockly.Blocks['xrp_ws_add_button'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Add Button  Name")
+      .appendField("Web add button  Name:")
       .appendField(new Blockly.FieldTextInput("name"), "TEXT")
     this.appendStatementInput('func')
-      .appendField('Function');
+      .appendField('Function:');
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190); // turquoise
@@ -483,12 +498,12 @@ Blockly.Blocks['xrp_ws_add_button'] = {
 Blockly.Blocks['xrp_ws_log_data'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Web Log Data");
+      .appendField("Web log data");
     this.appendValueInput("log_name")
-      .appendField("Label")
+      .appendField("Label:")
       .setCheck("String");
     this.appendValueInput("DATA")
-      .appendField("Data");
+      .appendField("Data:");
     this.setInputsInline(false);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -501,12 +516,12 @@ Blockly.Blocks['xrp_ws_log_data'] = {
 Blockly.Blocks['xrp_ws_start_server'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Start Web Server");
+      .appendField("Start web server");
     this.appendValueInput("server_ssid")
-      .appendField("Name")
+      .appendField("Name:")
       .setCheck("String");
     this.appendValueInput("server_pwd")
-      .appendField("Password")
+      .appendField("Password:")
       .setCheck("String");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -521,7 +536,7 @@ Blockly.Blocks['xrp_ws_start_server'] = {
 Blockly.Blocks['xrp_sleep'] = {
   init: function () {
     this.appendDummyInput()
-      .appendField("Sleep")
+      .appendField("Sleep:")
       .appendField(new Blockly.FieldNumber(0.5,0), "TIME");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

@@ -246,7 +246,7 @@ function addFSOverlay() {
     overlay.style.right = 0;
     overlay.style.bottom = 0;
     overlay.style.left = 0;
-    overlay.style.background = 'rgba(255,255,255,0.5)';
+    overlay.style.background = 'rgba(255,255,255,0.2)'; //[TODO] I made the alpha only 0.2 for dark mode. It may need more for light mode.
     overlay.id = 'overlay'; // Add an ID or class for later reference
     FS._container._element.appendChild(overlay);
 }

@@ -136,6 +136,14 @@ Blockly.Python['xrp_servo_deg'] = function (block) {
   return code;
 };
 
+Blockly.Python['xrp_servo2_deg'] = function (block) {
+  PY.definitions_['import_servo'] = 'from XRPLib.servo import Servo';
+  PY.definitions_[`servo2_setup`] = `servo2 = Servo(17)`;
+  var value_degrees = Blockly.Python.valueToCode(block, 'degrees', Blockly.Python.ORDER_ATOMIC);
+  var code = `servo2.set_angle(${value_degrees})\n`;
+  return code;
+};
+
 //Distance
 Blockly.Python['xrp_getsonardist'] = function (block) {
   PY.definitions_['import_rangefinder'] = 'from XRPLib.rangefinder import Rangefinder';
