@@ -262,9 +262,14 @@ var FS = undefined;
 function registerFilesystem(_container, state){
     FS = new FILESYSTEM(_container, state);
 
-    DIR.onRename = (path) => REPL.renameFile(path, prompt("Type a new name: ", path.substring(path.lastIndexOf("/")+1)));
+    DIR.onRename = async (path) => {
+        var [ans, pathNew] = await window.promptMessage("Type a new name: ", path.substring(path.lastIndexOf("/")+1));
+        if(ans == false) return;
+        REPL.renameFile(path, pathNew);
+    }
     DIR.onNewFolder = async (fileOrDir, path) => {
-        var newFolderName = prompt("Enter the new folder name: ", "NewFolder");
+        var [ans, newFolderName] = await window.promptMessage("Enter the new folder name: ", "NewFolder");
+        if(ans == false) return;
         if(newFolderName != null){
             if(fileOrDir == 1){ // Dir
                 await REPL.buildPath(path + "/" + newFolderName);
@@ -278,7 +283,11 @@ function registerFilesystem(_container, state){
     FS.onDelete = (path) => REPL.deleteFileOrDir(path);
 
     //[TODO] - Don't let them pick main.py if it is not turned on
-    FS.onRename = (path) => REPL.renameFile(path, prompt("Type a new name: ", path.substring(path.lastIndexOf("/")+1)));
+    FS.onRename = async (path) => {
+        var [ans, pathNew] = await window.promptMessage("Type a new name: ", path.substring(path.lastIndexOf("/")+1));
+        if(ans == false) return;
+        REPL.renameFile(path, pathNew);
+    }
     FS.onFormat = () => REPL.format();
     FS.onUpdate = () => REPL.update();
     FS.onUploadFiles = async () => {
@@ -347,7 +356,8 @@ function registerFilesystem(_container, state){
         myLayout.addComponent('Editor', state, 'Editor');
     }
     FS.onNewFolder = async (fileOrDir, path) => {
-        var newFolderName = prompt("Enter the new folder name:", "NewFolder");
+        var [ans, newFolderName] = await window.promptMessage("Enter the new folder name:", "NewFolder");
+        if (ans == false) return;
         if(newFolderName != null){
             if(fileOrDir == 1){ // Dir
                 await REPL.buildPath(path + "/" + newFolderName);
@@ -725,7 +735,6 @@ async function alertMessage(message){
 window.alertMessage = alertMessage;
 
 var CONFIRM  = false;
-
 async function confirmMessage(message){
     await UIkit.modal.confirm(message).then(function () {
         CONFIRM = true;
@@ -735,6 +744,20 @@ async function confirmMessage(message){
     return CONFIRM;
 }
 window.confirmMessage = confirmMessage;
+
+var val = "";
+var ans = false;
+async function promptMessage(message, input){
+    await UIkit.modal.prompt(message, input).then(function (input) {
+        val = input;
+        ans = true;
+    }, function () {
+        ans = false;
+        val = "";
+    });
+    return [ans,val];
+}
+window.promptMessage = promptMessage;
 
 async function dialogMessage(message){
 
