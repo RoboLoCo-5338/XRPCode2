@@ -17,12 +17,14 @@ html, body{
 
 .layout_container{
     background-color: gray;
-    height: calc(100% - 45px);
+    height: calc(100% - 100px);
+    /* height: 100%; */
     width: 100%;
     position: absolute;
     left: 0;
-    top: 45px;
-    box-shadow: -3px 0px 9px 0px rgba( 0, 0, 0, 0.4 );
+    /* top: 45px; */
+    top: 120px;
+    /* box-shadow: -3px 0px 9px 0px rgba( 0, 0, 0, 0.4 ); */
 }
 
 .progress_bar_parent {
@@ -135,7 +137,8 @@ a:link {
 }
 .header_logo_space{
   background-color: #121212;
-  flex: 0.1675;
+  /* flex: 0.1675; */
+  /* flex: 0; */
   height: 100%;
   display: flex;
   align-items: center;

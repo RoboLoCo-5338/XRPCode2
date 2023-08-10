@@ -27,13 +27,12 @@ class EditorWrapper{
         // Toolbar and editor div always exist, child elements are added or removed from them
         this.HEADER_TOOLBAR_DIV = document.createElement("div");
         this.HEADER_TOOLBAR_DIV.classList.add("editor_header_toolbar");
-        this._container.element.appendChild(this.HEADER_TOOLBAR_DIV);
+        this.generateEditorHeaderToolbar();
 
         this.EDITOR_DIV = document.createElement("div");
         this.EDITOR_DIV.id = "IDEditorDiv" + this.ID;
         this.EDITOR_DIV.classList.add("editor");
         this._container.element.appendChild(this.EDITOR_DIV);
-
 
         this.defaultCode =   "from XRPLib.defaults import *\n\n" +
                              "# available variables frm defaults: left_motor, right_motor, drivetrain,\n" +
@@ -45,7 +44,7 @@ class EditorWrapper{
         // and Blockly.
         if(state["value"] == undefined && state.choose){
             this.setTitle("Choose Mode");
-            this.HEADER_TOOLBAR_DIV.innerHTML = "Please choose your Editor preference:";
+            // this.HEADER_TOOLBAR_DIV.innerHTML = "Please choose your Editor preference:";
 
             var blockly_button = document.createElement("button");
             blockly_button.classList = "uk-button uk-button-secondary uk-width-1-2 uk-height-1-1 uk-text-small";
@@ -67,11 +66,15 @@ class EditorWrapper{
             micropython_button.onclick = () => {
                 cleanUp();
                 this.initEditorPanelUI(state["value"]);
+                this.updateEditorHeaderBar('micropython', this.ID);
+                document.getElementById('IDAddEditorBTN').style.display = "none";
             };
             blockly_button.onclick = () => {
                 cleanUp();
                 this.state['isBlockly'] = true;
                 this.initEditorPanelUI(state["value"]);
+                this.updateEditorHeaderBar('blockly', this.ID);
+                document.getElementById('IDAddEditorBTN').style.display = "none";
             };
         }else{
             this.initEditorPanelUI(state["value"]);
@@ -103,14 +106,17 @@ class EditorWrapper{
         });
 
         // Used for setting the active editor outside this module, typically for bit map builder
+        // these methods are in main.js
         this.onFocus = undefined;
         this.onSaveToThumby = undefined;
+        this.onUploadFiles = undefined;
         this.onSaveAsToThumby = undefined;
         this.onFastExecute = undefined;
         this.onEmulate = undefined;
         this.onOpen = undefined;
         this.onConvert = undefined;
         this.onDownloadFile = undefined;
+        this.addNewEditor = undefined;
 
         // Make sure mouse down anywhere on panel focuses the panel
         // Mouse down is used so New Tab, Open Python, etc can allow the focus out.
@@ -131,7 +137,15 @@ class EditorWrapper{
         this.state = {};
         this.state.id = this.ID;
         this._container.setState(this.state);
+    }
 
+    generateEditorHeaderToolbar() {
+        this.HEADER_TOOLBAR_DIV = document.getElementById("editor_header_toolbar");
+    }
+
+    runXRPCode() {
+        let id = localStorage.getItem("activeTabId");
+        this.EDITORS[id].onFastExecute(this.getValue());
     }
 
     closeThisEditor(){
@@ -145,12 +159,38 @@ class EditorWrapper{
 
         delete this.EDITORS[this.ID];
         this.clearStorage();
+        this.hideBlocklyPythonOptions();
 
         console.log("Cleared info for Editor: " + this._container.title);
 
         this._container.close();
     }
-    initEditorPanelUI(data){
+
+    hideBlocklyPythonOptions() {
+        document.getElementById("micropython_dropdown").style.display = "none";
+        document.getElementById("blockly_dropdown").style.display = "none";
+        document.getElementById("file_options").style.display = "none";
+        document.getElementById("IDAddEditorBTN").style.display = "block";
+    }
+
+    // this method is called after a user clicks to create a new file
+    // if new file is.py, show micropython options and if new file is.blocks, show blockly options
+    updateEditorHeaderBar(tabFileType, tabId) {
+        localStorage.setItem("activeTabId", tabId);
+        if (tabFileType == 'blockly') {
+            localStorage.setItem("activeTabFileType", "blockly");
+            // hide micropython dropdown options since this is a blockly file
+            document.getElementById("micropython_dropdown").style.display = "none";
+            document.getElementById("blockly_dropdown").style.display = "inline-block";
+        } else {
+            localStorage.setItem("activeTabFileType", "micropython");
+            // hide blockly dropdown options since this is a micropython file
+            document.getElementById("blockly_dropdown").style.display = "none";
+            document.getElementById("micropython_dropdown").style.display = "inline-block";
+        }
+    }
+
+    initEditorPanelUI(data) {
         // Remove all buttons from header toolbar, if they exist
         while(this.HEADER_TOOLBAR_DIV.children.length > 0){
             this.HEADER_TOOLBAR_DIV.removeChild(this.HEADER_TOOLBAR_DIV.children[0]);
@@ -168,6 +208,7 @@ class EditorWrapper{
         this.FILE_BUTTON = document.createElement("button");
         this.FILE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
         this.FILE_BUTTON.textContent = "File\u25BE";
+        this.FILE_BUTTON.id = "file_options";
         this.FILE_BUTTON.title = "File operations for PC and XRP";
         this.HEADER_TOOLBAR_DIV.appendChild(this.FILE_BUTTON);
 
@@ -183,11 +224,39 @@ class EditorWrapper{
         this.FILE_DROPDOWN.appendChild(this.FILE_DROPDOWN_UL);
 
         var listElem = document.createElement("li");
+        this.NEW_FILE_BTN = document.createElement("button");
+        this.NEW_FILE_BTN.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.NEW_FILE_BTN.innerText = "New File";
+        this.NEW_FILE_BTN.id = "IDAddEditorBTN_FileDD";
+        this.NEW_FILE_BTN.alt = "Add a new file button"
+        this.NEW_FILE_BTN.title = "Add a new file";
+        this.NEW_FILE_BTN.onclick = () => {
+            this.addNewEditor();
+        }
+        listElem.appendChild(this.NEW_FILE_BTN);
+        this.FILE_DROPDOWN_UL.appendChild(listElem);
+
+        var listElem = document.createElement("li");
+        this.FS_UPLOAD_BTN = document.createElement("button");
+        this.FS_UPLOAD_BTN.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.FS_UPLOAD_BTN.onclick = () => {
+            this.onUploadFiles()
+        };
+        this.FS_UPLOAD_BTN.innerText = "Upload to XRP";
+        this.FS_UPLOAD_BTN.title = "Uploads files to the XRP";
+        listElem.appendChild(this.FS_UPLOAD_BTN);
+        this.FILE_DROPDOWN_UL.appendChild(listElem);
+
+        var listElem = document.createElement("li");
         this.FILE_EXPORT_BUTTON = document.createElement("button");
         this.FILE_EXPORT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
         this.FILE_EXPORT_BUTTON.textContent = "Export to PC";
         this.FILE_EXPORT_BUTTON.title = "Export editor contents to file on PC";
-        this.FILE_EXPORT_BUTTON.onclick = () => {UIkit.dropdown(this.FILE_DROPDOWN).hide(); this.onDownloadFile(this.EDITOR_PATH)}
+        this.FILE_EXPORT_BUTTON.onclick = () => {
+            UIkit.dropdown(this.FILE_DROPDOWN).hide();
+            this.EDITORS[id].onDownloadFile(this.EDITOR_PATH);;
+            console.log('Downloading file for Tab Id: ', id);
+        }
         listElem.appendChild(this.FILE_EXPORT_BUTTON);
         this.FILE_DROPDOWN_UL.appendChild(listElem);
 
@@ -200,7 +269,12 @@ class EditorWrapper{
         this.FILE_SAVE_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
         this.FILE_SAVE_BUTTON.textContent = "Save to XRP";
         this.FILE_SAVE_BUTTON.title = "Save editor contents to file on XRP (ctrl-s)";
-        this.FILE_SAVE_BUTTON.onclick = () => {UIkit.dropdown(this.FILE_DROPDOWN).hide(); this.onSaveToThumby()};
+        this.FILE_SAVE_BUTTON.onclick = () => {
+            UIkit.dropdown(this.FILE_DROPDOWN).hide();
+            let id = localStorage.getItem("activeTabId");
+            this.EDITORS[id].onSaveToThumby();
+            console.log('Saving File for Tab Id: ', id);
+        };
         listElem.appendChild(this.FILE_SAVE_BUTTON);
         this.FILE_DROPDOWN_UL.appendChild(listElem);
 
@@ -209,12 +283,20 @@ class EditorWrapper{
         this.FILE_SAVEAS_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
         this.FILE_SAVEAS_BUTTON.textContent = "Save As to XRP";
         this.FILE_SAVEAS_BUTTON.title = "Save editor contents to file on XRP under a specific path";
-        this.FILE_SAVEAS_BUTTON.onclick = () => {UIkit.dropdown(this.FILE_DROPDOWN).hide(); this.onSaveAsToThumby()};
+        this.FILE_SAVEAS_BUTTON.onclick = () => {
+            UIkit.dropdown(this.FILE_DROPDOWN).hide();
+            let id = localStorage.getItem("activeTabId");
+            this.EDITORS[id].onSaveAsToThumby();
+            console.log("Saving File as for Tab Id: ", id);
+        };
         listElem.appendChild(this.FILE_SAVEAS_BUTTON);
         this.FILE_DROPDOWN_UL.appendChild(listElem);
 
+        this.makeBlocklyPythonHeaderOptions();
+
         var isBlockly = localStorage.getItem("isBlockly" + this.ID) || this.state.isBlockly;
 
+        // WHEN A USER CREATES A NEW TAB, THE FOLLOWING WILL SET THE EDITOR TO BLOCKLY OR MICROPYTHON SETTINGS
         if(data == undefined && (isBlockly == "true" || isBlockly == true)) {
             console.log("INIT BLOCKLY VIEWER");
             localStorage.setItem("isBlockly" + this.ID, true);
@@ -278,56 +360,159 @@ class EditorWrapper{
         this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
     }
 
-    turnIntoBlocklyViewer(data){
-        this.isBlockly = true;
-        if(this.ACE_EDITOR) this.ACE_EDITOR.destroy();
+    makeBlocklyPythonHeaderOptions() {
+        // hide top header NEW FILE button since NEW FILE will now be in the FILE dropdown menu
+        document.getElementById('IDAddEditorBTN').style.display = "none";
 
-        // Make the editor area
-        if(!this.BLOCKLY_DIV){
+        var listElem = document.createElement("li");
+        listElem.classList = "uk-nav-divider";
+
+         // Make the editor area
+         if (!this.BLOCKLY_DIV) {
             this.BLOCKLY_DIV = document.createElement("div");
             this.BLOCKLY_DIV.style.position = "absolute";
         }
         this.EDITOR_DIV.appendChild(this.BLOCKLY_DIV);
 
+        var listElem = document.createElement("li");
+        listElem.classList = "uk-nav-divider";
+
+         // BLOCKLY DROPDOWN OPTIONS
+         this.BLOCKLY_BUTTON = document.createElement("button");
+         this.BLOCKLY_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap view-options";
+         this.BLOCKLY_BUTTON.textContent = "View\u25BE";
+         this.BLOCKLY_BUTTON.id = "blockly_dropdown";
+         this.BLOCKLY_BUTTON.title = "Operations for Blockly files";
+         this.HEADER_TOOLBAR_DIV.appendChild(this.BLOCKLY_BUTTON);
+
+         this.BLOCKLY_DROPDOWN = document.createElement("div");
+         this.BLOCKLY_DROPDOWN.setAttribute("uk-dropdown", "mode: click; offset: 0; delay-hide: 200");
+         this.HEADER_TOOLBAR_DIV.appendChild(this.BLOCKLY_DROPDOWN);
+         this.BLOCKLY_DROPDOWN.addEventListener("mouseleave", () => {
+             UIkit.dropdown(this.BLOCKLY_DROPDOWN).hide();
+         })
+
+         this.BLOCKLY_DROPDOWN_UL = document.createElement("ul");
+         this.BLOCKLY_DROPDOWN_UL.classList = "uk-nav uk-dropdown-nav uk-dark";
+         this.BLOCKLY_DROPDOWN.appendChild(this.BLOCKLY_DROPDOWN_UL);
+
+        listElem = document.createElement("li");
         this.OPEN_PYTHON = document.createElement("button");
-        this.OPEN_PYTHON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
-        this.OPEN_PYTHON.textContent = "View Python";
-        this.OPEN_PYTHON.title = "View the python code generated from this Blockly";
+        this.OPEN_PYTHON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.OPEN_PYTHON.textContent = "View MicroPython";
+        this.OPEN_PYTHON.title = "View the micropython code generated from this Blockly";
         this.OPEN_PYTHON.onclick = (ev) => {
             document.getElementById("view-python-button").onclick = (ev) => {
-                    this.opAce.destroy();
+                this.opAce.destroy();
             };
-
             this.opAce = ace.edit("view-python-ace");
             this.opAce.session.setMode("ace/mode/python");
             this.opAce.setReadOnly(true);
             this.opAce.setTheme("ace/theme/tomorrow_night_bright");
-            this.opAce.setValue(this.getValue(), 1);
+            let id = localStorage.getItem("activeTabId");
+            this.opAce.setValue(this.EDITORS[id].getValue(), 1);
             UIkit.modal(document.getElementById("view-python-code")).show();
         };
-        this.HEADER_TOOLBAR_DIV.appendChild(this.OPEN_PYTHON);
+        listElem.appendChild(this.OPEN_PYTHON);
+        this.BLOCKLY_DROPDOWN_UL.appendChild(listElem);
 
-        this.FAST_EXECUTE_BUTTON = document.createElement("button");
-        this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
-        this.FAST_EXECUTE_BUTTON.textContent = "Run \u23f5";
-        this.FAST_EXECUTE_BUTTON.title = "Execute editor contents at root '/' of Thumby";
-        this.FAST_EXECUTE_BUTTON.onclick = () => {this.onFastExecute(this.getValue())};
-        this.HEADER_TOOLBAR_DIV.appendChild(this.FAST_EXECUTE_BUTTON);
-
+        listElem = document.createElement("li");
         this.CONVERT_PYTHON = document.createElement("button");
-        this.CONVERT_PYTHON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
-        this.CONVERT_PYTHON.textContent = "Convert To Python";
-        this.CONVERT_PYTHON.title = "Convert this blocks program to a python program";
+        this.CONVERT_PYTHON.classList = "uk-button uk-button-secondary uk-height-1-1 uk-width-1-1 uk-text-nowrap";
+        this.CONVERT_PYTHON.textContent = "Convert To MicroPython";
+        this.CONVERT_PYTHON.title = "Convert this blocks program to a micropython program";
         this.CONVERT_PYTHON.onclick = async (ev) => {
             //ask if OK to do
             //call onConvert in main.js
             if(! await window.confirmMessage("This will convert your Blocks program to a Python program.<br> Your Blocks program will be put in the trash<br>and a new python program will be created.<br>Are you sure you want to continue?")){
                 return;
             }
-            this.onConvert(this.EDITOR_PATH, this.getValue(), this.ID);
+            let id = localStorage.getItem("activeTabId");
+            this.onConvert(this.EDITOR_PATH, this.EDITORS[id].getValue(), id);
         };
-        this.HEADER_TOOLBAR_DIV.appendChild(this.CONVERT_PYTHON);
+        listElem.appendChild(this.CONVERT_PYTHON);
+        this.BLOCKLY_DROPDOWN_UL.appendChild(listElem);
 
+        // MICROPYTHON DROPDOWN OPTIONS
+        this.VIEW_BUTTON = document.createElement("button");
+        this.VIEW_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap view-options";
+        this.VIEW_BUTTON.id = "micropython_dropdown";
+        this.VIEW_BUTTON.textContent = "View\u25BE";
+        this.VIEW_BUTTON.title = "Operations for MicroPython files";
+        this.HEADER_TOOLBAR_DIV.appendChild(this.VIEW_BUTTON);
+
+        this.VIEW_DROPDOWN = document.createElement("div");
+        this.VIEW_DROPDOWN.setAttribute("uk-dropdown", "mode: click; offset: 0; delay-hide: 200");
+        this.HEADER_TOOLBAR_DIV.appendChild(this.VIEW_DROPDOWN);
+        this.VIEW_DROPDOWN.addEventListener("mouseleave", () => {
+            UIkit.dropdown(this.VIEW_DROPDOWN).hide();
+        })
+
+        this.VIEW_DROPDOWN_UL = document.createElement("ul");
+        this.VIEW_DROPDOWN_UL.classList = "uk-nav uk-dropdown-nav uk-dark";
+        this.VIEW_DROPDOWN.appendChild(this.VIEW_DROPDOWN_UL);
+
+        listElem = document.createElement("li");
+        this.VIEW_INC_FONT_BUTTON = document.createElement("button");
+        this.VIEW_INC_FONT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.VIEW_INC_FONT_BUTTON.textContent = "Increase Font";
+        this.VIEW_INC_FONT_BUTTON.title = "Increase editor font size";
+        this.VIEW_INC_FONT_BUTTON.onclick = () => {
+            let id = localStorage.getItem("activeTabId");
+            this.EDITORS[id].increaseFontSize();
+        };
+        listElem.appendChild(this.VIEW_INC_FONT_BUTTON);
+        this.VIEW_DROPDOWN_UL.appendChild(listElem);
+
+        listElem = document.createElement("li");
+        this.VIEW_DEC_FONT_BUTTON = document.createElement("button");
+        this.VIEW_DEC_FONT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.VIEW_DEC_FONT_BUTTON.textContent = "Decrease Font";
+        this.VIEW_DEC_FONT_BUTTON.title = "Decrease editor font size";
+        this.VIEW_DEC_FONT_BUTTON.onclick = () => {
+            let id = localStorage.getItem("activeTabId");
+            this.EDITORS[id].decreaseFontSize();
+        };
+        listElem.appendChild(this.VIEW_DEC_FONT_BUTTON);
+        this.VIEW_DROPDOWN_UL.appendChild(listElem);
+
+        listElem = document.createElement("li");
+        this.VIEW_RESET_FONT_BUTTON = document.createElement("button");
+        this.VIEW_RESET_FONT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.VIEW_RESET_FONT_BUTTON.textContent = "Reset Font Size";
+        this.VIEW_RESET_FONT_BUTTON.title = "Reset font to default";
+        this.VIEW_RESET_FONT_BUTTON.onclick = () => {
+            UIkit.dropdown(this.VIEW_DROPDOWN).hide();
+            let id = localStorage.getItem("activeTabId");
+            this.EDITORS[id].resetFontSize();
+        };
+        listElem.appendChild(this.VIEW_RESET_FONT_BUTTON);
+        this.VIEW_DROPDOWN_UL.appendChild(listElem);
+
+        listElem = document.createElement("li");
+        this.VIEW_AUTOCOMPLETE_BUTTON = document.createElement("button");
+        this.VIEW_AUTOCOMPLETE_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.VIEW_AUTOCOMPLETE_BUTTON.textContent = "Turn live autocomplete ...";
+        this.VIEW_AUTOCOMPLETE_BUTTON.title = "When turned off, basic autocomplete can be accessed using left-ctrl + space. Affects all editors";
+        this.VIEW_AUTOCOMPLETE_BUTTON.onclick = () => {
+            UIkit.dropdown(this.VIEW_DROPDOWN).hide();
+            let id = localStorage.getItem("activeTabId");
+            this.EDITORS[id].toggleAutocompleteStateForAll();
+        };
+        listElem.appendChild(this.VIEW_AUTOCOMPLETE_BUTTON);
+        this.VIEW_DROPDOWN_UL.appendChild(listElem);
+
+    }
+
+    turnIntoBlocklyViewer(data) {
+        localStorage.setItem("activeTabId", this.ID);
+        localStorage.setItem("activeTabFileType", "blockly");
+        // hide micropython dropdown options since this is a blockly file
+        document.getElementById("micropython_dropdown").style.display = "none";
+        document.getElementById("blockly_dropdown").style.display = "inline-block";
+
+        this.isBlockly = true;
+        if (this.ACE_EDITOR) this.ACE_EDITOR.destroy();
 
         if(this.BLOCKLY_WORKSPACE && data != undefined){
             console.log("loaded workspace early notice");
@@ -343,8 +528,10 @@ class EditorWrapper{
         }
     }
 
-    setupBlockly(data){
-        if(!this.BLOCKLY_WORKSPACE){
+    setupBlockly(data) {
+
+        if (!this.BLOCKLY_WORKSPACE) {
+
             this.BLOCKLY_WORKSPACE = Blockly.inject(this.BLOCKLY_DIV,{
                 toolbox: blocklyToolbox,
                 move:{
@@ -354,7 +541,9 @@ class EditorWrapper{
                 zoom:{controls: true, wheel: false,
                     startScale: 1, maxScale: 1, minScale: 0.1, scaleSpeed: 1.2,
                 pinch: false},
-                trashcan: true});
+                trashcan: true
+            });
+
             // Saving of editor state
             this.BLOCKLY_WORKSPACE.addChangeListener((e)=>{
                 if(e.type == Blockly.Events.FINISHED_LOADING){
@@ -382,8 +571,10 @@ class EditorWrapper{
             // Ctrl+s / Cmd+s (Save)
             this.BLOCKLY_DIV.onkeydown = (e) => {
               if((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)
-                && e.keyCode == 83){
-                this.onSaveToThumby();
+                  && e.keyCode == 83) {
+                let id = localStorage.getItem("activeTabId");
+                this.EDITORS[id].onSaveToThumby();
+                console.log("Saving File for Tab Id: ", id);
                 e.preventDefault();
               }
             };
@@ -412,128 +603,25 @@ class EditorWrapper{
     }
 
     turnIntoCodeViewer(data){
-        var listElem = document.createElement("li");
-        listElem.classList = "uk-nav-divider";
-
-        this.VIEW_BUTTON = document.createElement("button");
-        this.VIEW_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
-        this.VIEW_BUTTON.textContent = "View\u25BE";
-        this.VIEW_BUTTON.title = "View settings";
-        this.HEADER_TOOLBAR_DIV.appendChild(this.VIEW_BUTTON);
-
-        this.VIEW_DROPDOWN = document.createElement("div");
-        this.VIEW_DROPDOWN.setAttribute("uk-dropdown", "mode: click; offset: 0; delay-hide: 200");
-        this.HEADER_TOOLBAR_DIV.appendChild(this.VIEW_DROPDOWN);
-        this.VIEW_DROPDOWN.addEventListener("mouseleave", () => {
-            UIkit.dropdown(this.VIEW_DROPDOWN).hide();
-        })
-
-        this.VIEW_DROPDOWN_UL = document.createElement("ul");
-        this.VIEW_DROPDOWN_UL.classList = "uk-nav uk-dropdown-nav uk-dark";
-        this.VIEW_DROPDOWN.appendChild(this.VIEW_DROPDOWN_UL);
-
-        listElem = document.createElement("li");
-        this.VIEW_INC_FONT_BUTTON = document.createElement("button");
-        this.VIEW_INC_FONT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
-        this.VIEW_INC_FONT_BUTTON.textContent = "Increase Font";
-        this.VIEW_INC_FONT_BUTTON.title = "Increase editor font size";
-        this.VIEW_INC_FONT_BUTTON.onclick = () => {this.increaseFontSize()};
-        listElem.appendChild(this.VIEW_INC_FONT_BUTTON);
-        this.VIEW_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        this.VIEW_DEC_FONT_BUTTON = document.createElement("button");
-        this.VIEW_DEC_FONT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
-        this.VIEW_DEC_FONT_BUTTON.textContent = "Decrease Font";
-        this.VIEW_DEC_FONT_BUTTON.title = "Decrease editor font size";
-        this.VIEW_DEC_FONT_BUTTON.onclick = () => {this.decreaseFontSize()};
-        listElem.appendChild(this.VIEW_DEC_FONT_BUTTON);
-        this.VIEW_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        this.VIEW_RESET_FONT_BUTTON = document.createElement("button");
-        this.VIEW_RESET_FONT_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
-        this.VIEW_RESET_FONT_BUTTON.textContent = "Reset Font Size";
-        this.VIEW_RESET_FONT_BUTTON.title = "Reset font to default";
-        this.VIEW_RESET_FONT_BUTTON.onclick = () => {UIkit.dropdown(this.VIEW_DROPDOWN).hide(); this.resetFontSize()};
-        listElem.appendChild(this.VIEW_RESET_FONT_BUTTON);
-        this.VIEW_DROPDOWN_UL.appendChild(listElem);
-
-        // buttons to toggle dark mode and light mode for future
-        // // SET EDITOR TO DARK MODE
-        // listElem = document.createElement("li");
-        // this.DARK_THEME_BUTTON = document.createElement("button");
-        // this.DARK_THEME_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
-        // this.DARK_THEME_BUTTON.textContent = "Set Dark Mode";
-        // this.DARK_THEME_BUTTON.title = "Set theme to dark mode";
-        // this.DARK_THEME_BUTTON.onclick = () => {
-        //     this.setThemeDark();
-        // };
-        // listElem.appendChild(this.DARK_THEME_BUTTON);
-        // this.VIEW_DROPDOWN_UL.appendChild(listElem);
-
-        // // SET EDITOR TO LIGHT MODE
-        // listElem = document.createElement("li");
-        // this.LIGHT_THEME_BUTTON = document.createElement("button");
-        // this.LIGHT_THEME_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
-        // this.LIGHT_THEME_BUTTON.textContent = "Set Light Mode";
-        // this.LIGHT_THEME_BUTTON.title = "Set theme to light mode";
-        // this.LIGHT_THEME_BUTTON.onclick = () => {
-        //     this.setThemeLight();
-        // };
-        // listElem.appendChild(this.LIGHT_THEME_BUTTON);
-        // this.VIEW_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        this.VIEW_AUTOCOMPLETE_BUTTON = document.createElement("button");
-        this.VIEW_AUTOCOMPLETE_BUTTON.classList = "uk-button uk-button-secondary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
-        this.VIEW_AUTOCOMPLETE_BUTTON.textContent = "Turn live autocomplete ...";
-        this.VIEW_AUTOCOMPLETE_BUTTON.title = "When turned off, basic autocomplete can be accessed using left-ctrl + space. Affects all editors";
-        this.VIEW_AUTOCOMPLETE_BUTTON.onclick = () => {UIkit.dropdown(this.VIEW_DROPDOWN).hide(); this.toggleAutocompleteStateForAll()};
-        listElem.appendChild(this.VIEW_AUTOCOMPLETE_BUTTON);
-        this.VIEW_DROPDOWN_UL.appendChild(listElem);
-
-
-        this.FAST_EXECUTE_BUTTON = document.createElement("button");
-        this.FAST_EXECUTE_BUTTON.classList = "uk-button uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
-        this.FAST_EXECUTE_BUTTON.textContent = "Run \u23f5";
-        this.FAST_EXECUTE_BUTTON.title = "Execute editor contents at root '/' of Thumby";
-        this.FAST_EXECUTE_BUTTON.onclick = () => {this.onFastExecute(this.getValue())};
-        this.HEADER_TOOLBAR_DIV.appendChild(this.FAST_EXECUTE_BUTTON);
 
         // Listen for window resize event and re-fit terminal
         this.windowResizeListener = window.addEventListener('resize', this.resize.bind(this));
 
-
         // Init the ace editor
         this.ACE_EDITOR = ace.edit(this.EDITOR_DIV);
+
         this.ACE_EDITOR.session.setMode("ace/mode/python");
         this.ACE_EDITOR.setKeyboardHandler("ace/keyboard/vscode");
 
-        // var lastTheme = localStorage.getItem("lastTheme");
-        // const darkEditorTheme = localStorage.getItem("darkEditorTheme");
-        // const lightEditorTheme = localStorage.getItem("lightEditorTheme");
+        localStorage.setItem("activeTabId", this.ID);
+        localStorage.setItem("activeTabFileType", "micropython");
+        // hide micropython dropdown options since this is a blockly file
+        document.getElementById("blockly_dropdown").style.display = "none";
+        document.getElementById("micropython_dropdown").style.display = "inline-block";
 
-        // initially sets the theme to light or dark mode based off localStorage setting
-        // if (lastTheme != undefined && lastTheme != null && lastTheme === "light") {
-        //     // if (!lightEditorTheme) {
-        //     //     this.setThemeLight();
-        //     // } else {
-        //     //     this.setTheme(lightEditorTheme);
-        //     // }
-        // } else {
-        //     // if (!darkEditorTheme){
-        //     //     this.setThemeDark();
-        //     // } else {
-        //     //     this.setTheme(darkEditorTheme);
-        //     // }
-        // }
-
-        // we will automatically set this as dark mode for now
         this.setThemeDark();
 
         this.resize();
-
 
         this.INSERT_RESTORE = false;
 
@@ -599,7 +687,9 @@ class EditorWrapper{
             name: 'SaveCurrentTab',
             bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
             exec: () => {
-                this.onSaveToThumby();
+                let id = localStorage.getItem("activeTabId");
+                this.EDITORS[id].onSaveToThumby();
+                console.log('Saving File for Tab Id: ', id);
             },
             readOnly: true
         });
@@ -616,9 +706,8 @@ class EditorWrapper{
         return false;
     }
 
-
     // Need special function for this since constructor would come before onOpen def
-    useOnOpen(){
+    useOnOpen() {
         this.onOpen(this);
     }
 
@@ -630,7 +719,6 @@ class EditorWrapper{
         }
     }
 
-
     setAutocompleteState(state){
         this.ACE_EDITOR.setOptions({
             enableLiveAutocompletion: state,
@@ -639,7 +727,6 @@ class EditorWrapper{
         this.AUTOCOMPLETE_STATE = state;
         this.setAutocompleteButtonText();
     }
-
 
     toggleAutocompleteStateForAll(){
         if(this.AUTOCOMPLETE_STATE){
@@ -659,7 +746,6 @@ class EditorWrapper{
         }
     }
 
-
     setPath(path){
         this.EDITOR_PATH = path;
         localStorage.setItem("EditorPath" + this.ID, this.EDITOR_PATH);
@@ -677,7 +763,6 @@ class EditorWrapper{
         this.SAVED_TO_THUMBY = true;
         localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
     }
-
 
     updateTitleSaved(){
         if(this.SAVED_TO_THUMBY == true){
@@ -710,7 +795,6 @@ class EditorWrapper{
             this.ACE_EDITOR.setTheme(`ace/theme/${theme}`);
         }
     }
-
 
     setTitle(title){
         var t = title.split('/').at(-1);
@@ -878,6 +962,6 @@ class EditorWrapper{
         }else{
             return this.ACE_EDITOR.getSelectedText();
         }
-    }
+    };
 
 }

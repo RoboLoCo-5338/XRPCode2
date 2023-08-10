@@ -1,3 +1,5 @@
+// import { EditorWrapper } from "../../../js/editor_wrapper.js";
+
 /******/ "use strict";
 /******/ var __webpack_modules__ = ({
 
@@ -22,9 +24,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _errors_internal_error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../errors/internal-error */ "./src/ts/errors/internal-error.ts");
 /* harmony import */ var _utils_types__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/types */ "./src/ts/utils/types.ts");
 /* harmony import */ var _resolved_config__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./resolved-config */ "./src/ts/config/resolved-config.ts");
-
-
-
 
 /** @public */
 var ItemConfig;
@@ -1071,21 +1070,21 @@ class ComponentContainer extends _utils_event_emitter__WEBPACK_IMPORTED_MODULE_0
     /** @internal */
     constructor(
     /** @internal */
-    _config, 
+    _config,
     /** @internal */
-    _parent, 
+    _parent,
     /** @internal */
-    _layoutManager, 
+    _layoutManager,
     /** @internal */
-    _element, 
+    _element,
     /** @internal */
-    _updateItemConfigEvent, 
+    _updateItemConfigEvent,
     /** @internal */
-    _showEvent, 
+    _showEvent,
     /** @internal */
-    _hideEvent, 
+    _hideEvent,
     /** @internal */
-    _focusEvent, 
+    _focusEvent,
     /** @internal */
     _blurEvent) {
         super();
@@ -1486,9 +1485,9 @@ class BrowserPopout extends _utils_event_emitter__WEBPACK_IMPORTED_MODULE_0__.Ev
      */
     constructor(
     /** @internal */
-    _config, 
+    _config,
     /** @internal */
-    _initialWindowSize, 
+    _initialWindowSize,
     /** @internal */
     _layoutManager) {
         super();
@@ -2037,15 +2036,15 @@ class DragSource {
     /** @internal */
     constructor(
     /** @internal */
-    _layoutManager, 
+    _layoutManager,
     /** @internal */
-    _element, 
+    _element,
     /** @internal */
-    _extraAllowableChildTargets, 
+    _extraAllowableChildTargets,
     /** @internal */
-    _componentTypeOrFtn, 
+    _componentTypeOrFtn,
     /** @internal */
-    _componentState, 
+    _componentState,
     /** @internal */
     _title) {
         this._layoutManager = _layoutManager;
@@ -2265,25 +2264,25 @@ class Header extends _utils_event_emitter__WEBPACK_IMPORTED_MODULE_0__.EventEmit
     /** @internal */
     constructor(
     /** @internal */
-    _layoutManager, 
+    _layoutManager,
     /** @internal */
-    _parent, settings, 
+    _parent, settings,
     /** @internal */
-    _configClosable, 
+    _configClosable,
     /** @internal */
-    _getActiveComponentItemEvent, closeEvent, 
+    _getActiveComponentItemEvent, closeEvent,
     /** @internal */
-    _popoutEvent, 
+    _popoutEvent,
     /** @internal */
-    _maximiseToggleEvent, 
+    _maximiseToggleEvent,
     /** @internal */
-    _clickEvent, 
+    _clickEvent,
     /** @internal */
-    _touchStartEvent, 
+    _touchStartEvent,
     /** @internal */
-    _componentRemoveEvent, 
+    _componentRemoveEvent,
     /** @internal */
-    _componentFocusEvent, 
+    _componentFocusEvent,
     /** @internal */
     _componentDragStartEvent) {
         super();
@@ -2473,15 +2472,18 @@ class Header extends _utils_event_emitter__WEBPACK_IMPORTED_MODULE_0__.EventEmit
         }
         this._canRemoveComponent = isClosable || this._tabsContainer.tabCount > 1;
     }
+
     /** @internal */
     applyFocusedValue(value) {
         if (value) {
             this._element.classList.add("lm_focused" /* Focused */);
+            let componentItem = this._header;
         }
         else {
             this._element.classList.remove("lm_focused" /* Focused */);
         }
     }
+
     /** @internal */
     processMaximised() {
         if (this._maximiseButton === undefined) {
@@ -2657,15 +2659,13 @@ class Splitter {
         this._element = document.createElement('div');
         this._element.classList.add("lm_splitter" /* Splitter */);
         const dragHandleElement = document.createElement('div');
-        dragHandleElement.classList.add("lm_drag_handle" /* DragHandle */);
         const handleExcessSize = this._grabSize - this._size;
         const handleExcessPos = handleExcessSize / 2;
         if (this._isVertical) {
             dragHandleElement.style.top = (0,_utils_utils__WEBPACK_IMPORTED_MODULE_0__.numberToPixels)(-handleExcessPos);
             dragHandleElement.style.height = (0,_utils_utils__WEBPACK_IMPORTED_MODULE_0__.numberToPixels)(this._size + handleExcessSize);
             this._element.classList.add("lm_vertical" /* Vertical */);
-            this._element.style.height = (0,_utils_utils__WEBPACK_IMPORTED_MODULE_0__.numberToPixels)(this._size);
-        }
+            this._element.style.height = (0,_utils_utils__WEBPACK_IMPORTED_MODULE_0__.numberToPixels)(this._size);        }
         else {
             dragHandleElement.style.left = (0,_utils_utils__WEBPACK_IMPORTED_MODULE_0__.numberToPixels)(-handleExcessPos);
             dragHandleElement.style.width = (0,_utils_utils__WEBPACK_IMPORTED_MODULE_0__.numberToPixels)(this._size + handleExcessSize);
@@ -2709,13 +2709,13 @@ class Tab {
     /** @internal */
     constructor(
     /** @internal */
-    _layoutManager, 
+    _layoutManager,
     /** @internal */
-    _componentItem, 
+    _componentItem,
     /** @internal */
-    _closeEvent, 
+    _closeEvent,
     /** @internal */
-    _focusEvent, 
+    _focusEvent,
     /** @internal */
     _dragStartEvent) {
         var _a;
@@ -2780,8 +2780,7 @@ class Tab {
     // get header(): Header { return this._header; }
     get componentItem() { return this._componentItem; }
     /** @deprecated use {@link (Tab:class).componentItem} */
-    get contentItem() { return this._componentItem; }
-    get element() { return this._element; }
+    get contentItem() { return this._componentItem; }    get element() { return this._element; }
     get titleElement() { return this._titleElement; }
     get closeElement() { return this._closeElement; }
     get reorderEnabled() { return this._dragListener !== undefined; }
@@ -2929,23 +2928,56 @@ class Tab {
             this._closeEvent(this._componentItem);
         }
     }
+
+    // this method will update the EditorHeaderToolbar
+    updateEditorHeaderToolbar() {
+        let tabId = this._componentItem._container._state.id;
+        let tabTitle = this._componentItem._title;
+
+        if (tabTitle.startsWith('untitled-')) {
+            tabTitle = tabTitle.slice(0, -2); // "untitled-1.blocks •" <-- brand new files save as this otherwise
+        }
+
+        let tabFileType_blockly = tabTitle.endsWith(".blocks");
+        let tabFileType_python = tabTitle.endsWith(".py");
+
+        if (tabFileType_blockly == true) {
+            localStorage.setItem("activeTabFileType", "blockly");
+            // hide micropython dropdown options since this is a blockly file
+            document.getElementById("file_options").style.display = "block";
+            document.getElementById("IDAddEditorBTN").style.display = "none";
+            document.getElementById("micropython_dropdown").style.display = "none";
+            document.getElementById("blockly_dropdown").style.display = "inline-block";
+        } else if (tabFileType_python == true) {
+            localStorage.setItem("activeTabFileType", "micropython");
+            // hide blockly dropdown options since this is a micropython file
+            document.getElementById("file_options").style.display = "block";
+            document.getElementById("IDAddEditorBTN").style.display = "none";
+            document.getElementById("blockly_dropdown").style.display = "none";
+            document.getElementById("micropython_dropdown").style.display = "inline-block";
+        }
+        localStorage.setItem("activeTabId", tabId);
+        localStorage.setItem('activeTabFileName', tabTitle);
+    }
+
     /** @internal */
     notifyFocus() {
         if (this._focusEvent === undefined) {
             throw new _errors_internal_error__WEBPACK_IMPORTED_MODULE_0__.UnexpectedUndefinedError('TNA15007');
         }
         else {
+            this.updateEditorHeaderToolbar();
             this._focusEvent(this._componentItem);
         }
     }
+
     /** @internal */
     enableReorder() {
         this._dragListener = new _utils_drag_listener__WEBPACK_IMPORTED_MODULE_1__.DragListener(this._element, [this._titleElement]);
         this._dragListener.on('dragStart', this._dragStartListener);
         this._componentItem.on('destroy', this._contentItemDestroyListener);
     }
-    /** @internal */
-    disableReorder() {
+    /** @internal */    disableReorder() {
         if (this._dragListener === undefined) {
             throw new _errors_internal_error__WEBPACK_IMPORTED_MODULE_0__.UnexpectedUndefinedError('TDR87745');
         }
@@ -3717,7 +3749,7 @@ __webpack_require__.r(__webpack_exports__);
 /** @public */
 class ComponentItem extends _content_item__WEBPACK_IMPORTED_MODULE_0__.ContentItem {
     /** @internal */
-    constructor(layoutManager, config, 
+    constructor(layoutManager, config,
     /** @internal */
     _parentItem) {
         super(layoutManager, config, _parentItem, document.createElement('div'));
@@ -3832,7 +3864,6 @@ class ComponentItem extends _content_item__WEBPACK_IMPORTED_MODULE_0__.ContentIt
     }
     setTab(tab) {
         this._tab = tab;
-        this.emit('tab', tab);
         this._container.setTab(tab);
     }
     /** @internal */
@@ -3952,9 +3983,9 @@ __webpack_require__.r(__webpack_exports__);
  */
 class ContentItem extends _utils_event_emitter__WEBPACK_IMPORTED_MODULE_0__.EventEmitter {
     /** @internal */
-    constructor(layoutManager, config, 
+    constructor(layoutManager, config,
     /** @internal */
-    _parent, 
+    _parent,
     /** @internal */
     _element) {
         super();
@@ -4718,7 +4749,7 @@ __webpack_require__.r(__webpack_exports__);
 /** @public */
 class RowOrColumn extends _content_item__WEBPACK_IMPORTED_MODULE_0__.ContentItem {
     /** @internal */
-    constructor(isColumn, layoutManager, config, 
+    constructor(isColumn, layoutManager, config,
     /** @internal */
     _rowOrColumnParent) {
         super(layoutManager, config, _rowOrColumnParent, RowOrColumn.createElement(document, isColumn));
@@ -8201,7 +8232,7 @@ class EventEmitter {
         /** @internal */
         constructor(
         /** @internal */
-        _name, 
+        _name,
         /** @internal */
         _target) {
             this._name = _name;
@@ -8221,7 +8252,7 @@ class EventEmitter {
     EventEmitter.BubblingEvent = BubblingEvent;
     class ClickBubblingEvent extends BubblingEvent {
         /** @internal */
-        constructor(name, target, 
+        constructor(name, target,
         /** @internal */
         _mouseEvent) {
             super(name, target);
@@ -8232,7 +8263,7 @@ class EventEmitter {
     EventEmitter.ClickBubblingEvent = ClickBubblingEvent;
     class TouchStartBubblingEvent extends BubblingEvent {
         /** @internal */
-        constructor(name, target, 
+        constructor(name, target,
         /** @internal */
         _touchEvent) {
             super(name, target);
@@ -9014,7 +9045,7 @@ class VirtualLayout extends _layout_manager__WEBPACK_IMPORTED_MODULE_0__.LayoutM
 /************************************************************************/
 /******/ // The module cache
 /******/ var __webpack_module_cache__ = {};
-/******/ 
+/******/
 /******/ // The require function
 /******/ function __webpack_require__(moduleId) {
 /******/ 	// Check if module is in cache
@@ -9028,14 +9059,14 @@ class VirtualLayout extends _layout_manager__WEBPACK_IMPORTED_MODULE_0__.LayoutM
 /******/ 		// no module.loaded needed
 /******/ 		exports: {}
 /******/ 	};
-/******/ 
+/******/
 /******/ 	// Execute the module function
 /******/ 	__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 
+/******/
 /******/ 	// Return the exports of the module
 /******/ 	return module.exports;
 /******/ }
-/******/ 
+/******/
 /************************************************************************/
 /******/ /* webpack/runtime/define property getters */
 /******/ (() => {
@@ -9048,12 +9079,12 @@ class VirtualLayout extends _layout_manager__WEBPACK_IMPORTED_MODULE_0__.LayoutM
 /******/ 		}
 /******/ 	};
 /******/ })();
-/******/ 
+/******/
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
 /******/ (() => {
 /******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ })();
-/******/ 
+/******/
 /******/ /* webpack/runtime/make namespace object */
 /******/ (() => {
 /******/ 	// define __esModule on exports
@@ -9064,7 +9095,7 @@ class VirtualLayout extends _layout_manager__WEBPACK_IMPORTED_MODULE_0__.LayoutM
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 	};
 /******/ })();
-/******/ 
+/******/
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
