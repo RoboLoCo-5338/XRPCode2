@@ -740,7 +740,8 @@ window.alertMessage = alertMessage;
 
 var CONFIRM  = false;
 async function confirmMessage(message){
-    await UIkit.modal.confirm(message).then(function () {
+    await UIkit.modal.confirm(message)
+    .then(function () {
         CONFIRM = true;
     }, function () {
         CONFIRM = false;

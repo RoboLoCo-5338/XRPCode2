@@ -17,6 +17,7 @@ class EditorWrapper{
             while(this.ID in this.EDITORS){
                 this.ID = this.ID + 1;
             }
+            state.id = this.ID;
         }else{
             this.ID = state.id;
         }

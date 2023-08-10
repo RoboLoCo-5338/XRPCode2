@@ -105,7 +105,7 @@ class ReplJS{
     }
 
 
-    // Returns tru if product and vendor ID match for MicroPython, otherwise false #
+    // Returns true if product and vendor ID match for MicroPython, otherwise false #
     checkPortMatching(port){
         var info = port.getInfo();
         if((info.usbProductId == this.USB_PRODUCT_ID || info.usbProductId == this.USB_PRODUCT_MAC_ID) && info.usbVendorId == this.USB_VENDOR_ID){
@@ -1058,6 +1058,7 @@ class ReplJS{
         var writable;
         window.setPercent(3);
         try{
+            //message select the RPI-RP2
             let dirHandler = await window.showDirectoryPicker({mode: "readwrite"});
             let fileHandle = await dirHandler.getFileHandle("firmware.uf2", {create: true});
             writable = await fileHandle.createWritable();
@@ -1071,7 +1072,7 @@ class ReplJS{
 
         let data = await (await fetch("micropython/firmware.uf2")).arrayBuffer();
         window.setPercent(85);
-
+        //message to click on Edit Files
         await writable.write(data);
         window.resetPercentDelay();
         this.HAS_MICROPYTHON = true;
@@ -1128,6 +1129,7 @@ class ReplJS{
             }
             if(!gotToPrompt){
                 await window.alertMessage("Please press the reset button on your XRP and then click on OK")
+                return false;
             }
         }
         return true;
@@ -1214,7 +1216,7 @@ class ReplJS{
             }
         }else{
             if(this.checkPortmatching(ports)){
-                this.PORT = ports[ip];
+                this.PORT = ports[ip]; //[TODO] This looks like a bug shouldn't it be just ports and not ports[ip]?
                 if(this.DEBUG_CONSOLE_ON) console.log("%cAuto connected!", "color: lime");
                 await this.openPort();
                 this.BUSY = false;
