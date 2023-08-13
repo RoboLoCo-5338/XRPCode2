@@ -1,20 +1,23 @@
 .header {
     background-color: #2980b9;
-    min-height: 45px;
+    /* min-height: 67px; */
     /* min-width: 100%; */
+    min-height: 70px;
     width: 100%;
     display: flex;
     flex-flow: row wrap;
     color: white;
     z-index: 1000;
     margin: 0%;
+    padding-top: 3px;
   }
   .header_logo_space {
     background-color: #2980b9;
-    height: 100%;
+    height: 50%;
     display: inline-block;
-    align-items: center;
-    justify-content: center;
+    flex: none;
+    /* align-items: center; */
+    /* justify-content: center; */
     object-fit: fill;
   }
   .header_button_space {
@@ -24,7 +27,7 @@
     height: 100%;
   }
   .header_link_space {
-    width: 20%;
+    margin-right:0%;
     background-color: #2980b9;
     color: white;
   }
@@ -34,7 +37,32 @@
   .xrp_logo {
     height: 100%;
     width: 100%;
+    padding-right: 10%;
   }
   .micropython-width {
     width: 12vw;
+  }
+  .action-button {
+    position:absolute;
+    top: 45px;
+    right: 20px;
+    height: 40px;
+    width: 120px;
+    border-radius: 5px;
+    z-index: 1000;
+  }
+  .run-button {
+    background-color: green;
+    /* top: 50px; */
+  }
+  .connect-xrp {
+    color: black;
+    background-color: white;
+    position:absolute;
+    top: 45px;
+    right: 20px;
+    height: 40px;
+    width: 200px;
+    border-radius: 5px;
+    z-index: 1000;
   }

@@ -1260,18 +1260,18 @@ init(true);function init(packaged) {
 
     if (!global || !global.document)
         return;
-    
+
     config.set("packaged", packaged || require.packaged || module.packaged || (global.define && define.packaged));
 
     var scriptOptions = {};
     var scriptUrl = "";
     var currentScript = (document.currentScript || document._currentScript ); // native or polyfill
     var currentDocument = currentScript && currentScript.ownerDocument || document;
-    
+
     if (currentScript && currentScript.src) {
         scriptUrl = currentScript.src.split(/[?#]/)[0].split("/").slice(0, -1).join("/") || "";
     }
-    
+
     var scripts = currentDocument.getElementsByTagName("script");
     for (var i=0; i<scripts.length; i++) {
         var script = scripts[i];
@@ -8236,7 +8236,7 @@ function Folding() {
                 else if (cmp == 2) {
                     continue;
                 }
-                else 
+                else
                 if (cmp == 42) {
                     break;
                 }
@@ -8439,23 +8439,23 @@ function Folding() {
         if (folds.length == 1) {
             foldLines.splice(foldLines.indexOf(foldLine), 1);
         }
-        else 
+        else
         if (foldLine.range.isEnd(fold.end.row, fold.end.column)) {
             folds.pop();
             foldLine.end.row = folds[folds.length - 1].end.row;
             foldLine.end.column = folds[folds.length - 1].end.column;
         }
-        else 
+        else
         if (foldLine.range.isStart(fold.start.row, fold.start.column)) {
             folds.shift();
             foldLine.start.row = folds[0].start.row;
             foldLine.start.column = folds[0].start.column;
         }
-        else 
+        else
         if (fold.sameRow) {
             folds.splice(folds.indexOf(fold), 1);
         }
-        else 
+        else
         {
             var newFoldLine = foldLine.split(fold.start.row, fold.start.column);
             folds = newFoldLine.folds;
@@ -10151,7 +10151,7 @@ var EditSession = /** @class */ (function () {
                             foldLine.addRemoveChars(lastRow, 0, end.column - start.column);
                         }
                     }
-                    else 
+                    else
                     if (cmp == -1) {
                         foldLine.addRemoveChars(firstRow, 0, end.column - start.column);
                         foldLine.shiftRow(len);
@@ -19334,7 +19334,7 @@ var WorkerClient = function(worker) {
                 break;
         }
     };
-    
+
     this.reportError = function(err) {
         window.console && console.error && console.error(err);
     };
@@ -20880,4 +20880,3 @@ exports.version = exports.config.version;
                     }
                 });
             })();
-        

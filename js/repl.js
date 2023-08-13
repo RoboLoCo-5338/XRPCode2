@@ -1205,30 +1205,38 @@ class ReplJS{
         var ports = await navigator.serial.getPorts();
         if(Array.isArray(ports)){
             for(var ip=0; ip<ports.length; ports++){
-                if(this.checkPortMatching(ports[ip])){
+                if(this.checkPortMatching(ports[ip])) {
                     this.PORT = ports[ip];
                     if(this.DEBUG_CONSOLE_ON) console.log("%cAuto connected!", "color: lime");
                     await this.openPort();
                     this.BUSY = false;
-                    if(this.DEBUG_CONSOLE_ON) console.log("fcg: out of tryAutoConnect");
+                    if (this.DEBUG_CONSOLE_ON) console.log("fcg: out of tryAutoConnect");
+                    // when XRP is connected, show the RUN button and hide the CONNECT XRP button
+                    document.getElementById('IDRunBTN').style.display = "block";
+                    document.getElementById('IDConnectThumbyBTN').style.display = "none";
                     return true;
                 }
             }
-        }else{
-            if(this.checkPortmatching(ports)){
+        } else {
+            if(this.checkPortmatching(ports)) {
                 this.PORT = ports[ip]; //[TODO] This looks like a bug shouldn't it be just ports and not ports[ip]?
                 if(this.DEBUG_CONSOLE_ON) console.log("%cAuto connected!", "color: lime");
                 await this.openPort();
                 this.BUSY = false;
-                if(this.DEBUG_CONSOLE_ON) console.log("fcg: out of tryAutoConnect");
+                if (this.DEBUG_CONSOLE_ON) console.log("fcg: out of tryAutoConnect");
+                // when XRP is connected, show the RUN button and hide the CONNECT XRP button
+                document.getElementById('IDRunBTN').style.display = "block";
+                document.getElementById('IDConnectThumbyBTN').style.display = "none";
                 return true;
             }
         }
-        if(this.DEBUG_CONSOLE_ON) console.log("%cNot Auto connected...", "color: yellow");
+        if (this.DEBUG_CONSOLE_ON)
+            console.log("%cNot Auto connected...", "color: yellow");
+            document.getElementById('IDConnectThumbyBTN').style.display = "block";
+            this.BUSY = false;
 
-        this.BUSY = false;
-        if(this.DEBUG_CONSOLE_ON) console.log("fcg: out of tryAutoConnect");
-
+        if (this.DEBUG_CONSOLE_ON)
+            console.log("fcg: out of tryAutoConnect");
         return false;
     }
 
@@ -1255,16 +1263,19 @@ class ReplJS{
                 this.PORT = port;
                 if(this.DEBUG_CONSOLE_ON) console.log("%cManually connected!", "color: lime");
                 await this.openPort();
-
+                // when XRP is connected, show the RUN button and hide the CONNECT XRP button
+                document.getElementById('IDRunBTN').style.display = "block";
+                document.getElementById('IDConnectThumbyBTN').style.display = "none";
             }).catch((err) => {
-                if(this.DEBUG_CONSOLE_ON) console.log("%cNot manually connected...", "color: yellow");
-
+                if (this.DEBUG_CONSOLE_ON)
+                    console.log("%cNot manually connected...", "color: yellow");
+                    document.getElementById('IDConnectThumbyBTN').style.display = "block";
                 //alert("Didn't see XRP?\n\nCheck the following:\n* XRP is on\n* MicroUSB cable is plugged into XRP and computer\n* MicroUSB cable has data lines (some cables only transfer power)");
             });
             this.MANNUALLY_CONNECTING = false;
             this.BUSY = false;
-            if(this.DEBUG_CONSOLE_ON) console.log("fcg: out of tryAutoConnect");
-
+            if (this.DEBUG_CONSOLE_ON)
+                console.log("fcg: out of tryAutoConnect");
         }
     }
 
@@ -1289,11 +1300,14 @@ class ReplJS{
                     break;
                 }
             }
+            document.getElementById('IDRunBTN').style.display = "block";
             return
+
         }
 
         //The user pushed STOP while things were idle. Lets make sure the robot is stopped and run restbot.
         await this.stopTheRobot();  //make sure the robot is really stopped
+        document.getElementById('IDRunBTN').style.display = "block";
         // Then just invoke resetbot to stop all motors
         var cmd = "import XRPLib.resetbot\n"
         await this.writeUtilityCmdRaw(cmd, true, 1);
