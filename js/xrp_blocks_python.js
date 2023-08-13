@@ -331,7 +331,7 @@ Blockly.Python['xrp_ws_start_server'] = function (block) {
 //Logic
 Blockly.Python['xrp_sleep'] = function (block) {
   PY.definitions_['import_time'] = 'import time';
-  var number_time = block.getFieldValue('TIME');
+  var number_time = Blockly.Python.valueToCode(block, 'TIME', Blockly.Python.ORDER_ATOMIC);
   var code = `time.sleep(${number_time})\n`;
   return code;
 };

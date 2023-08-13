@@ -459,7 +459,8 @@ var EDITORS = {};
 var LAST_ACTIVE_EDITOR = undefined; // Each editor will set this to themselves on focus, bitmap builder uses this
 function registerEditor(_container, state){
     var editor = new EditorWrapper(_container, state, EDITORS);
-    editor.onFocus = () => {LAST_ACTIVE_EDITOR = editor};
+    editor.onFocus = () => {
+        LAST_ACTIVE_EDITOR = editor};
     editor.onSaveToThumby = async () => {
         // Warn user when trying to save and no Thumby is connected
         if(REPL.DISCONNECT == true){

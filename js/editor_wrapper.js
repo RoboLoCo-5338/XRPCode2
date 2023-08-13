@@ -118,10 +118,17 @@ class EditorWrapper{
         this._container.element.addEventListener('mousedown', (event) => {
             this._container.focus();
             this.onFocus();
+            console.log("M editor # " + state.id)
         });
         this._container.element.addEventListener('focusin', (event) => {
             this._container.focus();
             this.onFocus();
+            console.log("F editor # " + state.id)
+
+        });
+
+        this._container.on('show', function(){
+            console.log("S editor # " + state.id)
         });
 
         // Used to suggest a name for certain operations

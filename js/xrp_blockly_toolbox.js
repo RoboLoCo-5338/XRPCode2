@@ -255,8 +255,10 @@ var blocklyToolbox = {
             "contents": [
                 {
                     "kind": "BLOCK",
-                    "blockxml": "<block type=\"xrp_sleep\">\n                <field name=\"TIME\">0.5</field>\n              </block>",
-                    "type": "xrp_sleep"
+                    "type": "xrp_sleep",
+                    "inputs":{
+                        "TIME": {"shadow": {"type": "math_number", "fields": {"NUM": "0.5"}}}
+                    },
                 },
                 {
                     "kind": "BLOCK",

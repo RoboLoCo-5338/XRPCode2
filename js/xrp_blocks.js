@@ -537,7 +537,9 @@ Blockly.Blocks['xrp_sleep'] = {
   init: function () {
     this.appendDummyInput()
       .appendField("Sleep:")
-      .appendField(new Blockly.FieldNumber(0.5,0), "TIME");
+    this.appendValueInput("TIME")
+      .setCheck("Number");
+    this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(200); // slate blue
