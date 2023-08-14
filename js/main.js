@@ -192,6 +192,144 @@ document.getElementById("IDStopBTN").onclick = async (event) =>{
 
 }
 
+// File Menu Support
+document.getElementById("IDFileBTN").onclick = (event) =>{
+    //get active file id
+    getActiveId();
+}
+var FILE_DROPDOWN = document.getElementById("IDFile");
+FILE_DROPDOWN.addEventListener("mouseleave", () => {
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+});
+
+document.getElementById("IDFileAdd").onclick = (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].addNewEditor();
+}
+
+document.getElementById("IDFileUpload").onclick = (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].onUploadFiles();
+}
+
+document.getElementById("IDFileExport").onclick = (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].onDownloadFile(EDITORS[id].EDITOR_PATH);;
+}
+
+document.getElementById("IDFileSave").onclick = (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].onSaveToThumby();
+}
+
+document.getElementById("IDFileSaveAs").onclick = (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].onSaveAsToThumby();
+}
+
+// View Menu Support
+document.getElementById("IDViewBTN").onclick = (event) =>{
+    //get active file id
+    var id = getActiveId();
+    if(EDITORS[id].isBlockly){
+        document.getElementById("blockly_dropdown").style.display = "block"
+        document.getElementById("micropython_dropdown").style.display = "none"
+    }
+    else{
+        document.getElementById("blockly_dropdown").style.display = "none"
+        document.getElementById("micropython_dropdown").style.display = "block"
+    }
+}
+var VIEW_DROPDOWN = document.getElementById("IDView");
+VIEW_DROPDOWN.addEventListener("mouseleave", () => {
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+});
+
+// View Menu Blockly Support
+var opAce;
+document.getElementById("IDViewVM").onclick = (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    document.getElementById("view-python-button").onclick = (ev) => {
+        opAce.destroy();
+    };
+    opAce = ace.edit("view-python-ace");
+    opAce.session.setMode("ace/mode/python");
+    opAce.setReadOnly(true);
+    opAce.setTheme("ace/theme/tomorrow_night_bright");
+    let id = localStorage.getItem("activeTabId");
+    opAce.setValue(EDITORS[id].getValue(), 1);
+    UIkit.modal(document.getElementById("view-python-code")).show();
+}
+document.getElementById("IDViewCM").onclick = async (event) =>{
+    if(! await window.confirmMessage("This will convert your Blocks program to a Python program.<br> Your Blocks program will be put in the trash<br>and a new python program will be created.<br>Are you sure you want to continue?")){
+        return;
+    }
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    await EDITORS[id].onConvert(EDITORS[id].EDITOR_PATH, EDITORS[id].getValue(), id);
+}
+
+// View Menu ACE Support
+
+
+document.getElementById("IDViewIncF").onclick = (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].increaseFontSize();
+}
+document.getElementById("IDViewDecF").onclick = (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].decreaseFontSize();
+}
+document.getElementById("IDViewResetF").onclick = (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].resetFontSize();
+}
+document.getElementById("IDViewAutoComplete").onclick = (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].toggleAutocompleteStateForAll();
+}
+
+//Help Menu Support
+var HELP_DROPDOWN = document.getElementById("IDHelpDrop");
+HELP_DROPDOWN.addEventListener("mouseleave", () => {
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+})
+
+var toggle = true;
+document.getElementById("IDHelpBTN").onclick = (event) =>{
+    if(toggle){
+        document.getElementById("IDHelp").style.display = "block"
+        document.getElementById("IDHelp2").style.display = "none"
+        toggle = false;
+    }
+    else{
+        document.getElementById("IDHelp").style.display = "none"
+        document.getElementById("IDHelp2").style.display = "block"
+        toggle = true;
+    }
+
+}
+
+document.getElementById("IDUserGuide").onclick = (event) =>{
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+    window.open("https://xrpusersguide.readthedocs.io/en/latest/course/introduction.html", "_blank")
+}
+document.getElementById("IDAPI").onclick = (event) =>{
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+    window.open("https://open-stem.github.io/XRP_MicroPython/", "_blank")
+}
+
+disableMenuItems(); 
+/*
 // Add editor panel to layout
 document.getElementById("IDAddEditorBTN").onclick = (event) =>{
     var id1;
@@ -203,6 +341,7 @@ document.getElementById("IDAddEditorBTN").onclick = (event) =>{
     EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
     myLayout.addComponent('Editor', {"value":undefined, choose:true}, 'Editor');
 }
+*/
 
 // Return true if a panel with this title exists, false otherwise
 function recursiveFindTitle(content, title){
@@ -247,7 +386,7 @@ function addFSOverlay() {
     overlay.style.right = 0;
     overlay.style.bottom = 0;
     overlay.style.left = 0;
-    overlay.style.background = 'rgba(255,255,255,0.5)';
+    overlay.style.background = 'rgba(255,255,255,0.3)';
     overlay.id = 'overlay'; // Add an ID or class for later reference
     FS._container._element.appendChild(overlay);
 }
@@ -431,19 +570,23 @@ function registerShell(_container, state){
 
     REPL.onData = (data) => ATERM.write(data);
     REPL.onDisconnect = () => {
-        ATERM.writeln('\n\r\x1b[1;31m' + "Disconnected" + '\x1b[1;0m');
         ATERM.writeln("Waiting for connection... (click 'Connect XRP')");
         FS.clearToWaiting();
+        window.disableMenuItems();
+        
         //FS.removeUpdate();
 
-        FS.disableButtons();
-        //[TODO] Changed connect button back to ready to connect status
+        //FS.disableButtons();
+        // when XRP is disconnected, show the CONNECT XRP button and hide the RUN button
+        document.getElementById('IDRunBTN').style.display = "none";
+        document.getElementById('IDConnectThumbyBTN').style.display = "block";
     }
     REPL.onConnect = () => {
-        ATERM.writeln('\x1b[1;32m' + "\n\rConnected" + '\x1b[1;0m');
-        FS.enableButtons();
-        //[TODO] Changed connect button to connected status
-
+        window.enableMenuItems();
+        // when XRP is connected, show the RUN button and hide the CONNECT XRP button
+        document.getElementById('IDRunBTN').style.display = "block";
+        document.getElementById('IDConnectThumbyBTN').style.display = "none";
+        //FS.enableButtons();
     }
     REPL.onFSData = (jsonStrData, fsSizeData) => {
         FS.updateTree(jsonStrData);
@@ -654,7 +797,9 @@ function registerEditor(_container, state) {
         // show STOP button and hide RUN button when program is running
         document.getElementById('IDRunBTN').style.display = "none";
         document.getElementById('IDStopBTN').style.display = "block";
+        
         addFSOverlay();
+        disableMenuItems();
 
         //save all unsaved files [TODO] Do we always save the current editors program?
         for (const [id, editor] of Object.entries(EDITORS)) {
@@ -674,6 +819,8 @@ function registerEditor(_container, state) {
         // document.getElementById('IDRunBTN').disabled = false;
 
         removeFSOverlay();
+        enableMenuItems();
+        
         // after code finishes running, show RUN button and hide STOP button
         document.getElementById('IDRunBTN').style.display = "block";
         document.getElementById('IDStopBTN').style.display = "none";
@@ -701,7 +848,7 @@ function registerEditor(_container, state) {
             //open a new file editor with a .py extension
             //force a save
 
-        oldPath = localStorage.getItem("activeTabFileName");
+        //oldPath = localStorage.getItem("activeTabFileName");
 
         await REPL.buildPath("/trash"); //make sure the trash directory is there.
         await REPL.renameFile(oldPath, "/trash" + oldPath);
@@ -713,13 +860,13 @@ function registerEditor(_container, state) {
         ed.clearStorage();
         ed._container.close();
         delete EDITORS[ID];
+    */
         //bring the focus back to the editors
         for (const [id] of Object.entries(EDITORS)) {
             var id1 = id;
             break;
             }
         EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
-    */
         var newFile = oldPath.replace(".blocks", ".py");
         var state = {};
         state.value = data;
@@ -734,13 +881,11 @@ function registerEditor(_container, state) {
     }
 
     editor.onDownloadFile = async () => {
-        let filePath = localStorage.getItem("activeTabFileName");
-        await downloadFileFromPath([filePath]);
+        await downloadFileFromPath([editor.EDITOR_PATH]);
     }
 
     EDITORS[editor.ID] = editor;
 }
-
 
 
 // Register Golden layout panels
@@ -790,6 +935,7 @@ String.prototype.convertToHex = function (delim) {
     }).join(delim || "");
 };
 
+
 /**
  * Return the timestamp in fixed format
  * @returns {String}    Timestamp in format [YYYY-MM-DD HH:MM:SS]
@@ -800,6 +946,34 @@ function getTimestamp() {
     const d = new Date();
 
     return `[${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}]`;
+}
+
+function disableMenuItems(){
+    document.getElementById('IDViewCM').disabled = true;
+    document.getElementById('IDFileUpload').disabled = true;
+    document.getElementById('IDFileExport').disabled = true;
+    document.getElementById('IDFileSave').disabled = true;
+    document.getElementById('IDFileSaveAs').disabled = true;
+}
+window.disableMenuItems = disableMenuItems;
+
+function enableMenuItems(){
+    document.getElementById('IDViewCM').disabled = false;
+    document.getElementById('IDFileUpload').disabled = false;
+    document.getElementById('IDFileExport').disabled = false;
+    document.getElementById('IDFileSave').disabled = false;
+    document.getElementById('IDFileSaveAs').disabled = false;
+}
+window.enableMenuItems = enableMenuItems;
+
+function getActiveId(){
+    for (const [id, editor] of Object.entries(EDITORS)) {
+        if(EDITORS[id]._container._tab._element.className.includes("lm_focused")){
+            console.log("active is " + id);
+            localStorage.setItem("activeTabId", id);
+            return id;
+        }
+    }
 }
 
 async function alertMessage(message){

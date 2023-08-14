@@ -7,7 +7,7 @@
 
     <title>XRP Code Editor</title>
 
-        <link rel="stylesheet" href="uikit-3.16.22/css/uikit.css?version=3" />
+        <link rel="stylesheet" href="uikit-3.16.22/css/uikit.css?version=4" />
 
         <link rel="stylesheet" href="js/xterm/css/xterm.css?version=3"/>
 
@@ -78,7 +78,7 @@
 
                 <div class="header_button_space uk-margin-medium-left uk-height-1-1 uk-width-1-3">
 
-                    <div class="uk-button-group uk-height-1-1 uk-width-1-1">
+                    <div class="uk-button-group uk-height-1-1 uk-text-left">
 
                         <img id="logo" class="xrp_logo" src="css/XRP_Logo.svg" alt="XRP Logo" uk-img>
 
@@ -94,7 +94,117 @@
                             dir="rtl">
                             Connect XRP
                         </button> -->
+                        <div id="editor_header_toolbar" class="editor_header_toolbar"></div>
 
+                        <div class="editor_header_toolbar">
+
+                            <!-- FILE Menu-->
+                            <button 
+                                id="IDFileBTN" 
+                                class = "uk-button-xmenu uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap view-options" 
+                                title =  "File operations for PC and XRP" >
+                                File&#x25BE
+                            </button>
+                            <div id="IDFile" uk-dropdown = "mode: click; offset: 0; delay-hide: 200">
+                                <ul id="IDFileDrop" class="uk-nav uk-dropdown-nav uk-dark">
+                                    <li><button 
+                                        id="IDFileAdd" 
+                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
+                                        title = "Add a new Blockly or MicroPython file">
+                                        New File
+                                    </button></li>
+                                    <li><button 
+                                        id = "IDFileUpload" 
+                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
+                                        title =  "Uploads files to the XRP">
+                                        Upload to XRP
+                                    </button></li>
+                                    <li><button 
+                                        id = "IDFileExport" 
+                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
+                                        title =  "Export editor contents to file on PC">
+                                        Export to XRP
+                                    </button></li>
+                                    <li class =  "uk-nav-divider"></li>
+                                    <li><button 
+                                        id = "IDFileSave" 
+                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
+                                        title =  "Save editor contents to file on XRP (ctrl-s)">
+                                        Save to XRP
+                                    </button></li>
+                                    <li><button 
+                                        id = "IDFileSaveAs" 
+                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
+                                        title =  "Save editor contents to file on XRP under a specific path">
+                                        Save As to XRP
+                                    </button></li>
+                                </ul>
+                            </div>
+                            <!-- VIEW Menu-->
+                            <button 
+                                id="IDViewBTN" 
+                                class = "uk-button-xmenu uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap view-options"
+                                title = "Operations of currently selected file">
+                                View&#x25BE
+                            </button>
+                            <div id="IDView" uk-dropdown = "mode: click; offset: 0; delay-hide: 200">
+                                <!-- VIEW Menu Blockly-->
+                                <ul id="blockly_dropdown" class="uk-nav uk-dropdown-nav uk-dark" style="display:block">
+                                    <li><button 
+                                        id = "IDViewVM" 
+                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
+                                        title =  "View the micropython code generated from this Blockly">
+                                        View MicroPython
+                                    </button></li>
+                                    <li><button 
+                                        id = "IDViewCM" 
+                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
+                                        title =  "Convert this blocks program to a micropython program">
+                                        Convert To MicroPython
+                                    </button></li>
+                                </ul>
+                                <!-- VIEW Menu ACE-->
+                                <ul id="micropython_dropdown" class="uk-nav uk-dropdown-nav uk-dark" style="display:none">
+                                    <li><button 
+                                        id = "IDViewIncF" 
+                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
+                                        title =  "Increase editor font size">
+                                        Increase Font
+                                    </button></li>
+                                    <li><button 
+                                        id = "IDViewDecF" 
+                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
+                                        title =  "Decrease editor font size">
+                                        Decrease Font
+                                    </button></li>
+                                    <li><button 
+                                        id = "IDViewResetF" 
+                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
+                                        title =  "Reset font to default">
+                                        Reset Font Size
+                                    </button></li>
+                                    <li><button 
+                                        id = "IDViewAutoComplete" 
+                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
+                                        title =  "When turned off, basic autocomplete can be accessed using left-ctrl + space. Affects all editors">
+                                        Turn live autocomplete off
+                                    </button></li>
+                                </ul>
+                            </div>
+                            <!-- HELP Menu-->
+                            <button id="IDHelpBTN" class = "uk-button-xmenu uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap view-options">Help&#x25BE</button>
+                            <div id="IDHelpDrop" uk-dropdown = "mode: click; offset: 0; delay-hide: 200">
+                                <ul id="IDHelp" class="uk-nav uk-dropdown-nav uk-dark" style="display: none">
+                                    <li><button id="IDUserGuide" class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1">
+                                        User Guide
+                                    </button></li>
+                                    <li><button id = "IDAPI" class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1">
+                                        API
+                                    </button></li>
+                                </ul>
+                            </div>
+                        </div>
+                    <!--
                         <button
                             title="Adds a code editor panel"
                             alt="Add a new file button"
@@ -103,7 +213,7 @@
                             uk-icon="file-edit" dir="rtl">
                             New File
                         </button>
-
+                    
                         <button
                             title="Opens link in new tab"
                             alt="Link to open User Guide"
@@ -121,10 +231,11 @@
                             uk-icon="home" dir="rtl">
                             XRP API
                         </button>
+                    -->
                     </div>
 
                     <!-- BELOW LOGO -->
-                    <div id="editor_header_toolbar" class="editor_header_toolbar"></div>
+                    <!--<div id="editor_header_toolbar" class="editor_header_toolbar"></div> -->
 
                 </div>
             </div>

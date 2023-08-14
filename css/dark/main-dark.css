@@ -17,13 +17,13 @@ html, body{
 
 .layout_container{
     background-color: gray;
-    height: calc(100% - 100px);
-    /* height: 100%; */
+    height: calc(100% - 30px); 
+    /* height: 100%; */ 
     width: 100%;
     position: absolute;
     left: 0;
     /* top: 45px; */
-    top: 120px;
+    top: 45px;
     /* box-shadow: -3px 0px 9px 0px rgba( 0, 0, 0, 0.4 ); */
 }
 
@@ -147,7 +147,7 @@ a:link {
 }
 .header_button_space{
   background-color: rgb(117, 117, 117);
-  flex: 0.42;
+  flex: 0;
   height: 100%;
 }
 .header_link_space{

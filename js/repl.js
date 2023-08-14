@@ -1211,9 +1211,6 @@ class ReplJS{
                     await this.openPort();
                     this.BUSY = false;
                     if (this.DEBUG_CONSOLE_ON) console.log("fcg: out of tryAutoConnect");
-                    // when XRP is connected, show the RUN button and hide the CONNECT XRP button
-                    document.getElementById('IDRunBTN').style.display = "block";
-                    document.getElementById('IDConnectThumbyBTN').style.display = "none";
                     return true;
                 }
             }
@@ -1224,9 +1221,6 @@ class ReplJS{
                 await this.openPort();
                 this.BUSY = false;
                 if (this.DEBUG_CONSOLE_ON) console.log("fcg: out of tryAutoConnect");
-                // when XRP is connected, show the RUN button and hide the CONNECT XRP button
-                document.getElementById('IDRunBTN').style.display = "block";
-                document.getElementById('IDConnectThumbyBTN').style.display = "none";
                 return true;
             }
         }
@@ -1263,9 +1257,6 @@ class ReplJS{
                 this.PORT = port;
                 if(this.DEBUG_CONSOLE_ON) console.log("%cManually connected!", "color: lime");
                 await this.openPort();
-                // when XRP is connected, show the RUN button and hide the CONNECT XRP button
-                document.getElementById('IDRunBTN').style.display = "block";
-                document.getElementById('IDConnectThumbyBTN').style.display = "none";
             }).catch((err) => {
                 if (this.DEBUG_CONSOLE_ON)
                     console.log("%cNot manually connected...", "color: yellow");
@@ -1300,14 +1291,14 @@ class ReplJS{
                     break;
                 }
             }
-            document.getElementById('IDRunBTN').style.display = "block";
+            //document.getElementById('IDRunBTN').style.display = "block";
             return
 
         }
 
         //The user pushed STOP while things were idle. Lets make sure the robot is stopped and run restbot.
         await this.stopTheRobot();  //make sure the robot is really stopped
-        document.getElementById('IDRunBTN').style.display = "block";
+        //document.getElementById('IDRunBTN').style.display = "block";
         // Then just invoke resetbot to stop all motors
         var cmd = "import XRPLib.resetbot\n"
         await this.writeUtilityCmdRaw(cmd, true, 1);

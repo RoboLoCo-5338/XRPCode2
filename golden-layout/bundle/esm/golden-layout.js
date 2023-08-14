@@ -2931,6 +2931,7 @@ class Tab {
 
     // this method will update the EditorHeaderToolbar
     updateEditorHeaderToolbar() {
+        return;
         let tabId = this._componentItem._container._state.id;
         let tabTitle = this._componentItem._title;
 
@@ -2945,14 +2946,14 @@ class Tab {
             localStorage.setItem("activeTabFileType", "blockly");
             // hide micropython dropdown options since this is a blockly file
             document.getElementById("file_options").style.display = "block";
-            document.getElementById("IDAddEditorBTN").style.display = "none";
+            //document.getElementById("IDAddEditorBTN").style.display = "none";
             document.getElementById("micropython_dropdown").style.display = "none";
             document.getElementById("blockly_dropdown").style.display = "inline-block";
         } else if (tabFileType_python == true) {
             localStorage.setItem("activeTabFileType", "micropython");
             // hide blockly dropdown options since this is a micropython file
             document.getElementById("file_options").style.display = "block";
-            document.getElementById("IDAddEditorBTN").style.display = "none";
+            //document.getElementById("IDAddEditorBTN").style.display = "none";
             document.getElementById("blockly_dropdown").style.display = "none";
             document.getElementById("micropython_dropdown").style.display = "inline-block";
         }

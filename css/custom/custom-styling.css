@@ -2,7 +2,7 @@
     background-color: #2980b9;
     /* min-height: 67px; */
     /* min-width: 100%; */
-    min-height: 70px;
+    min-height: 45px;
     width: 100%;
     display: flex;
     flex-flow: row wrap;
@@ -44,9 +44,9 @@
   }
   .action-button {
     position:absolute;
-    top: 45px;
+    top: 10px;
     right: 20px;
-    height: 40px;
+    height: 30px;
     width: 120px;
     border-radius: 5px;
     z-index: 1000;
@@ -59,10 +59,71 @@
     color: black;
     background-color: white;
     position:absolute;
-    top: 45px;
+    top: 5px;
     right: 20px;
-    height: 40px;
+    height: 35px;
     width: 200px;
     border-radius: 5px;
     z-index: 1000;
   }
+ 
+
+.uk-dropdown {
+  --uk-position-offset: 10px;
+  --uk-position-viewport-offset: 15px;
+  /* 1 */
+  width: auto;
+  /* 2 */
+  min-width: 200px;
+  /* 3 */
+  padding: 5px;
+  background: #4984ac;
+  color: #666;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+}
+.uk-button-xmenu {
+  /* 1 */
+  margin: 0;
+  /* 2 */
+  border: none;
+  /* 3 */
+  overflow: visible;
+  /* 4 */
+  font: inherit;
+  color: inherit;
+  /* 5 */
+  text-transform: none;
+  /* 6 */
+  -webkit-appearance: none;
+  border-radius: 0;
+  /* 7 */
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 0 10px;
+  vertical-align: middle;
+  font-size: 0.875rem;
+  /* 8 */
+  line-height: 38px;
+  /* 9 */
+  text-align: left;
+  /* 10 */
+  text-decoration: none;
+  transition: 0.1s ease-in-out;
+  transition-property: color, background-color, border-color;
+}
+.uk-button-secondary-xmenu {
+  background-color: #4984ac;
+  color: #fff;
+  border: 1px solid transparent;
+}
+.uk-button-secondary-xmenu:disabled,
+.uk-button-secondary-xmenu:disabled:hover {
+  background-color: #4984ac;
+  color: #beb9b9;
+  border: 1px solid transparent;
+}
+/* Hover */
+.uk-button-secondary-xmenu:hover {
+  background-color: #2980b9;
+  color: #fff;
+}
