@@ -80,6 +80,14 @@ var blocklyToolbox = {
                 },
                 {
                     "kind": "BLOCK",
+                    "type": "xrp_arcade",
+                    "inputs":{
+                        "STRAIGHT": {"shadow": {"type": "math_number", "fields": {"NUM": "0.8"}}},
+                        "TURN": {"shadow": {"type": "math_number", "fields": {"NUM": "0.2"}}}
+                    },
+                },
+                {
+                    "kind": "BLOCK",
                     "type": "xrp_stop_motors"
                 },
                 {
@@ -108,13 +116,6 @@ var blocklyToolbox = {
                         "degrees": {"shadow": {"type": "math_number", "fields": {"NUM": "90"}}}
                     }
                 },
-                {
-                    "kind": "BLOCK",
-                    "type": "xrp_servo2_deg",
-                    "inputs":{
-                        "degrees": {"shadow": {"type": "math_number", "fields": {"NUM": "90"}}}
-                    },
-                }
             ]
         },
         {

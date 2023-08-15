@@ -98,6 +98,15 @@ Blockly.Python['xrp_speed'] = function (block) {
   return code;
 };
 
+Blockly.Python['xrp_arcade'] = function (block) {
+  PY.definitions_['import_drivetrain'] = 'from XRPLib.differential_drive import DifferentialDrive';
+  PY.definitions_[`drietrain_setup`] = `differentialDrive = DifferentialDrive.get_default_differential_drive()`;
+  var value_s = Blockly.Python.valueToCode(block, 'STRAIGHT', Blockly.Python.ORDER_ATOMIC);
+  var value_t = Blockly.Python.valueToCode(block, 'TURN', Blockly.Python.ORDER_ATOMIC);
+  var code = `differentialDrive.arcade(${value_s}, ${value_t})\n`;
+  return code;
+};
+
 Blockly.Python['xrp_stop_motors'] = function (block) {
   PY.definitions_['import_drivetrain'] = 'from XRPLib.differential_drive import DifferentialDrive';
   PY.definitions_[`drietrain_setup`] = `differentialDrive = DifferentialDrive.get_default_differential_drive()`;
@@ -130,17 +139,15 @@ Blockly.Python['xrp_getrightencoder'] = function (block) {
 //Servo
 Blockly.Python['xrp_servo_deg'] = function (block) {
   PY.definitions_['import_servo'] = 'from XRPLib.servo import Servo';
-  PY.definitions_[`servo_setup`] = `servo1 = Servo.get_default_servo()`;
+  var index = block.getFieldValue("SERVO");
+  if(index == 1){
+    PY.definitions_[`servo_setup`] = `servo1 = Servo.get_default_servo()`;
+  }
+  else {
+    PY.definitions_[`servo2_setup`] = `servo2 = Servo(17)`;
+  }
   var value_degrees = Blockly.Python.valueToCode(block, 'degrees', Blockly.Python.ORDER_ATOMIC);
-  var code = `servo1.set_angle(${value_degrees})\n`;
-  return code;
-};
-
-Blockly.Python['xrp_servo2_deg'] = function (block) {
-  PY.definitions_['import_servo'] = 'from XRPLib.servo import Servo';
-  PY.definitions_[`servo2_setup`] = `servo2 = Servo(17)`;
-  var value_degrees = Blockly.Python.valueToCode(block, 'degrees', Blockly.Python.ORDER_ATOMIC);
-  var code = `servo2.set_angle(${value_degrees})\n`;
+  var code = `servo${index}.set_angle(${value_degrees})\n`;
   return code;
 };
 
