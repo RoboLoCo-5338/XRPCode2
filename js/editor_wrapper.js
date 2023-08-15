@@ -60,22 +60,16 @@ class EditorWrapper{
             this.EDITOR_DIV.appendChild(micropython_button);
 
             const cleanUp = ()=>{
-                this.HEADER_TOOLBAR_DIV.innerHTML = "";
-                this.EDITOR_DIV.innerHTML = "";
                 localStorage.removeItem("EditorTitle" + this.ID);
             };
             micropython_button.onclick = () => {
                 cleanUp();
                 this.initEditorPanelUI(state["value"]);
-                this.updateEditorHeaderBar('micropython', this.ID);
-                document.getElementById('IDAddEditorBTN').style.display = "none";
             };
             blockly_button.onclick = () => {
                 cleanUp();
                 this.state['isBlockly'] = true;
                 this.initEditorPanelUI(state["value"]);
-                this.updateEditorHeaderBar('blockly', this.ID);
-                document.getElementById('IDAddEditorBTN').style.display = "none";
             };
         }else{
             this.initEditorPanelUI(state["value"]);
@@ -161,146 +155,13 @@ class EditorWrapper{
 
         delete this.EDITORS[this.ID];
         this.clearStorage();
-        this.hideBlocklyPythonOptions();
 
         console.log("Cleared info for Editor: " + this._container.title);
 
         this._container.close();
     }
 
-    hideBlocklyPythonOptions() {
-        //document.getElementById("micropython_dropdown").style.display = "none";
-        //document.getElementById("blockly_dropdown").style.display = "none";
-        //document.getElementById("file_options").style.display = "none";
-        //document.getElementById("IDAddEditorBTN").style.display = "block";
-    }
-
-    // this method is called after a user clicks to create a new file
-    // if new file is.py, show micropython options and if new file is.blocks, show blockly options
-    updateEditorHeaderBar(tabFileType, tabId) {
-        localStorage.setItem("activeTabId", tabId);
-        if (tabFileType == 'blockly') {
-            localStorage.setItem("activeTabFileType", "blockly");
-            // hide micropython dropdown options since this is a blockly file
-            document.getElementById("micropython_dropdown").style.display = "none";
-            document.getElementById("blockly_dropdown").style.display = "inline-block";
-        } else {
-            localStorage.setItem("activeTabFileType", "micropython");
-            // hide blockly dropdown options since this is a micropython file
-            document.getElementById("blockly_dropdown").style.display = "none";
-            document.getElementById("micropython_dropdown").style.display = "inline-block";
-        }
-    }
-
     initEditorPanelUI(data) {
-    /*
-        // Remove all buttons from header toolbar, if they exist
-        while(this.HEADER_TOOLBAR_DIV.children.length > 0){
-            this.HEADER_TOOLBAR_DIV.removeChild(this.HEADER_TOOLBAR_DIV.children[0]);
-        }
-
-        // Remove all buttons from editor div, if they exist
-        while(this.EDITOR_DIV.children.length > 0){
-            this.EDITOR_DIV.removeChild(this.EDITOR_DIV.children[0]);
-        }
-
-        // Remove the editor now since it will need to be reassigned a new parent div
-        if(this.ACE_EDITOR) this.ACE_EDITOR.destroy();
-
-        // Binary and code viewer always have file button and dropdown
-        this.FILE_BUTTON = document.createElement("button");
-        this.FILE_BUTTON.classList = "uk-button-xmenu uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap";
-        this.FILE_BUTTON.textContent = "File\u25BE";
-        this.FILE_BUTTON.id = "file_options";
-        this.FILE_BUTTON.title = "File operations for PC and XRP";
-        //this.HEADER_TOOLBAR_DIV.appendChild(this.FILE_BUTTON);
-
-        this.FILE_DROPDOWN = document.createElement("div");
-        this.FILE_DROPDOWN.setAttribute("uk-dropdown", "mode: click; offset: 0; delay-hide: 200");
-        this.HEADER_TOOLBAR_DIV.appendChild(this.FILE_DROPDOWN);
-        this.FILE_DROPDOWN.addEventListener("mouseleave", () => {
-            UIkit.dropdown(this.FILE_DROPDOWN).hide();
-        })
-
-        this.FILE_DROPDOWN_UL = document.createElement("div");
-        this.FILE_DROPDOWN_UL.classList = "uk-nav uk-dropdown-nav";
-        this.FILE_DROPDOWN.appendChild(this.FILE_DROPDOWN_UL);
-
-        var listElem = document.createElement("li");
-        this.NEW_FILE_BTN = document.createElement("button");
-        this.NEW_FILE_BTN.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.NEW_FILE_BTN.innerText = "New File";
-        this.NEW_FILE_BTN.id = "IDAddEditorBTN_FileDD";
-        this.NEW_FILE_BTN.alt = "Add a new file button"
-        this.NEW_FILE_BTN.title = "Add a new file";
-        this.NEW_FILE_BTN.onclick = () => {
-            this.addNewEditor();
-        }
-        listElem.appendChild(this.NEW_FILE_BTN);
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
-
-        var listElem = document.createElement("li");
-        this.FS_UPLOAD_BTN = document.createElement("button");
-        this.FS_UPLOAD_BTN.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.FS_UPLOAD_BTN.onclick = () => {
-            this.onUploadFiles()
-        };
-        this.FS_UPLOAD_BTN.disabled = true;
-        this.FS_UPLOAD_BTN.innerText = "Upload to XRP";
-        this.FS_UPLOAD_BTN.title = "Uploads files to the XRP";
-        listElem.appendChild(this.FS_UPLOAD_BTN);
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
-
-        var listElem = document.createElement("li");
-        this.FILE_EXPORT_BUTTON = document.createElement("button");
-        this.FILE_EXPORT_BUTTON.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.FILE_EXPORT_BUTTON.textContent = "Export to PC";
-        this.FILE_EXPORT_BUTTON.title = "Export editor contents to file on PC";
-        this.FILE_EXPORT_BUTTON.onclick = () => {
-            UIkit.dropdown(this.FILE_DROPDOWN).hide();
-            let id = localStorage.getItem("activeTabId");
-            this.EDITORS[id].onDownloadFile(this.EDITOR_PATH);;
-            console.log('Downloading file for Tab Id: ', id);
-        }
-        this.FILE_EXPORT_BUTTON.disabled = true;
-        listElem.appendChild(this.FILE_EXPORT_BUTTON);
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        listElem.classList = "uk-nav-divider";
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        this.FILE_SAVE_BUTTON = document.createElement("button");
-        this.FILE_SAVE_BUTTON.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.FILE_SAVE_BUTTON.textContent = "Save to XRP";
-        this.FILE_SAVE_BUTTON.title = "Save editor contents to file on XRP (ctrl-s)";
-        this.FILE_SAVE_BUTTON.onclick = () => {
-            UIkit.dropdown(this.FILE_DROPDOWN).hide();
-            let id = localStorage.getItem("activeTabId");
-            this.EDITORS[id].onSaveToThumby();
-            console.log('Saving File for Tab Id: ', id);
-        };
-        this.FILE_SAVE_BUTTON.disabled = true;
-        listElem.appendChild(this.FILE_SAVE_BUTTON);
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        this.FILE_SAVEAS_BUTTON = document.createElement("button");
-        this.FILE_SAVEAS_BUTTON.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.FILE_SAVEAS_BUTTON.textContent = "Save As to XRP";
-        this.FILE_SAVEAS_BUTTON.title = "Save editor contents to file on XRP under a specific path";
-        this.FILE_SAVEAS_BUTTON.onclick = () => {
-            UIkit.dropdown(this.FILE_DROPDOWN).hide();
-            let id = localStorage.getItem("activeTabId");
-            this.EDITORS[id].onSaveAsToThumby();
-            console.log("Saving File as for Tab Id: ", id);
-        };
-    
-        this.FILE_SAVEAS_BUTTON.disabled = true;
-        listElem.appendChild(this.FILE_SAVEAS_BUTTON);
-        this.FILE_DROPDOWN_UL.appendChild(listElem);
-    */
         this.makeBlocklyPythonHeaderOptions();
 
         var isBlockly = localStorage.getItem("isBlockly" + this.ID) || this.state.isBlockly;
@@ -370,192 +231,12 @@ class EditorWrapper{
     }
 
     makeBlocklyPythonHeaderOptions() {
-        // hide top header NEW FILE button since NEW FILE will now be in the FILE dropdown menu
-        //document.getElementById('IDAddEditorBTN').style.display = "none";
-
-        var listElem = document.createElement("li");
-        listElem.classList = "uk-nav-divider";
-
          // Make the editor area
          if (!this.BLOCKLY_DIV) {
             this.BLOCKLY_DIV = document.createElement("div");
             this.BLOCKLY_DIV.style.position = "absolute";
         }
         this.EDITOR_DIV.appendChild(this.BLOCKLY_DIV);
-
-        var listElem = document.createElement("li");
-        listElem.classList = "uk-nav-divider";
-/*
-         // BLOCKLY DROPDOWN OPTIONS
-         this.BLOCKLY_BUTTON = document.createElement("button");
-         this.BLOCKLY_BUTTON.classList = "uk-button-xmenu uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap view-options";
-         this.BLOCKLY_BUTTON.textContent = "View\u25BE";
-         this.BLOCKLY_BUTTON.id = "blockly_dropdownx";
-         this.BLOCKLY_BUTTON.title = "Operations for Blockly files";
-         this.BLOCKLY_BUTTON.onclick = () => {
-            for (const [id, editor] of Object.entries(this.EDITORS)) {
-                if(this.EDITORS[id]._container._tab._element.className.includes("lm_focused")){
-                    console.log("active is " + id);
-                    localStorage.setItem("activeTabId", id);
-                    if(this.EDITORS[id].isBlockly){
-                        this.EDITORS[id].BLOCKLY_BUTTON.style.display = "block";
-                        this.EDITORS[id].VIEW_BUTTON.style.display = "none";
-                        //this.EDITORS[id].VIEW_DROPDOWN.style.display = "inline-block";
-                    }
-                    else{
-                        //this.EDITORS[id].BLOCKLY_BUTTON.style.display = "none";
-                        //this.EDITORS[id].VIEW_BUTTON.style.display = "block";
-                        //this.EDITORS[id].VIEW_DROPDOWN.style.display = "inline-block";
-                        document.getElementById("file_options").style.display = "block";
-                        document.getElementById("blockly_dropdown").style.display = "none";
-                        document.getElementById("micropython_dropdown").style.display = "inline-block";
-                    }
-                }
-            }
-        }
-         this.HEADER_TOOLBAR_DIV.appendChild(this.BLOCKLY_BUTTON);
-
-         this.BLOCKLY_DROPDOWN = document.createElement("div");
-         this.BLOCKLY_DROPDOWN.setAttribute("uk-dropdown", "mode: click; offset: 0; delay-hide: 200");
-         this.HEADER_TOOLBAR_DIV.appendChild(this.BLOCKLY_DROPDOWN);
-         this.BLOCKLY_DROPDOWN.addEventListener("mouseleave", () => {
-             UIkit.dropdown(this.BLOCKLY_DROPDOWN).hide();
-         })
-
-         this.BLOCKLY_DROPDOWN_UL = document.createElement("ul");
-         this.BLOCKLY_DROPDOWN_UL.classList = "uk-nav uk-dropdown-nav uk-dark";
-         this.BLOCKLY_DROPDOWN.appendChild(this.BLOCKLY_DROPDOWN_UL);
-
-        listElem = document.createElement("li");
-        this.OPEN_PYTHON = document.createElement("button");
-        this.OPEN_PYTHON.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.OPEN_PYTHON.textContent = "View MicroPython";
-        this.OPEN_PYTHON.title = "View the micropython code generated from this Blockly";
-        this.OPEN_PYTHON.onclick = (ev) => {
-            document.getElementById("view-python-button").onclick = (ev) => {
-                this.opAce.destroy();
-            };
-            this.opAce = ace.edit("view-python-ace");
-            this.opAce.session.setMode("ace/mode/python");
-            this.opAce.setReadOnly(true);
-            this.opAce.setTheme("ace/theme/tomorrow_night_bright");
-            let id = localStorage.getItem("activeTabId");
-            this.opAce.setValue(this.EDITORS[id].getValue(), 1);
-            UIkit.modal(document.getElementById("view-python-code")).show();
-        };
-        listElem.appendChild(this.OPEN_PYTHON);
-        this.BLOCKLY_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        this.CONVERT_PYTHON = document.createElement("button");
-        this.CONVERT_PYTHON.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.CONVERT_PYTHON.textContent = "Convert To MicroPython";
-        this.CONVERT_PYTHON.title = "Convert this blocks program to a micropython program";
-        this.CONVERT_PYTHON.disabled = true;
-        this.CONVERT_PYTHON.onclick = async (ev) => {
-            //ask if OK to do
-            //call onConvert in main.js
-            if(! await window.confirmMessage("This will convert your Blocks program to a Python program.<br> Your Blocks program will be put in the trash<br>and a new python program will be created.<br>Are you sure you want to continue?")){
-                return;
-            }
-            let id = localStorage.getItem("activeTabId");
-            this.onConvert(this.EDITOR_PATH, this.EDITORS[id].getValue(), id);
-        };
-        listElem.appendChild(this.CONVERT_PYTHON);
-        this.BLOCKLY_DROPDOWN_UL.appendChild(listElem);
-
-        // MICROPYTHON DROPDOWN OPTIONS
-        this.VIEW_BUTTON = document.createElement("button");
-        this.VIEW_BUTTON.classList = "uk-button-xmenu uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap view-options";
-        this.VIEW_BUTTON.id = "micropython_dropdownx";
-        this.VIEW_BUTTON.textContent = "View\u25BE";
-        this.VIEW_BUTTON.title = "Operations for MicroPython files";
-        this.VIEW_BUTTON.onclick = () => {
-            for (const [id, editor] of Object.entries(this.EDITORS)) {
-                if(this.EDITORS[id]._container._tab._element.className.includes("lm_focused")){
-                    console.log("active is " + id);
-                    localStorage.setItem("activeTabId", id);
-                    if(this.EDITORS[id].isBlockly){
-                        this.EDITORS[id].BLOCKLY_BUTTON.style.display = "block";
-                        this.EDITORS[id].VIEW_BUTTON.style.display = "none";
-                        this.EDITORS[id].BLOCKLY_DROPDOWN.style.display = "inline-block";
-                    }
-                    else{
-                        //this.EDITORS[id].BLOCKLY_BUTTON.style.display = "none";
-                        //this.EDITORS[id].VIEW_BUTTON.style.display = "block";
-                        //this.EDITORS[id].VIEW_DROPDOWN.style.display = "inline-block";
-                        document.getElementById("file_options").style.display = "block";
-                        document.getElementById("blockly_dropdown").style.display = "none";
-                        document.getElementById("micropython_dropdown").style.display = "inline-block";
-                    }
-
-
-                }
-            }
-        }
-        //this.HEADER_TOOLBAR_DIV.appendChild(this.VIEW_BUTTON);
-
-        this.VIEW_DROPDOWN = document.createElement("div");
-        this.VIEW_DROPDOWN.setAttribute("uk-dropdown", "mode: click; offset: 0; delay-hide: 200");
-        this.HEADER_TOOLBAR_DIV.appendChild(this.VIEW_DROPDOWN);
-        this.VIEW_DROPDOWN.addEventListener("mouseleave", () => {
-            UIkit.dropdown(this.VIEW_DROPDOWN).hide();
-        })
-
-        this.VIEW_DROPDOWN_UL = document.createElement("ul");
-        this.VIEW_DROPDOWN_UL.classList = "uk-nav uk-dropdown-nav uk-dark";
-        this.VIEW_DROPDOWN.appendChild(this.VIEW_DROPDOWN_UL);
-
-        listElem = document.createElement("li");
-        this.VIEW_INC_FONT_BUTTON = document.createElement("button");
-        this.VIEW_INC_FONT_BUTTON.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.VIEW_INC_FONT_BUTTON.textContent = "Increase Font";
-        this.VIEW_INC_FONT_BUTTON.title = "Increase editor font size";
-        this.VIEW_INC_FONT_BUTTON.onclick = () => {
-            let id = localStorage.getItem("activeTabId");
-            this.EDITORS[id].increaseFontSize();
-        };
-        listElem.appendChild(this.VIEW_INC_FONT_BUTTON);
-        this.VIEW_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        this.VIEW_DEC_FONT_BUTTON = document.createElement("button");
-        this.VIEW_DEC_FONT_BUTTON.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.VIEW_DEC_FONT_BUTTON.textContent = "Decrease Font";
-        this.VIEW_DEC_FONT_BUTTON.title = "Decrease editor font size";
-        this.VIEW_DEC_FONT_BUTTON.onclick = () => {
-            let id = localStorage.getItem("activeTabId");
-            this.EDITORS[id].decreaseFontSize();
-        };
-        listElem.appendChild(this.VIEW_DEC_FONT_BUTTON);
-        this.VIEW_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        this.VIEW_RESET_FONT_BUTTON = document.createElement("button");
-        this.VIEW_RESET_FONT_BUTTON.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.VIEW_RESET_FONT_BUTTON.textContent = "Reset Font Size";
-        this.VIEW_RESET_FONT_BUTTON.title = "Reset font to default";
-        this.VIEW_RESET_FONT_BUTTON.onclick = () => {
-            UIkit.dropdown(this.VIEW_DROPDOWN).hide();
-            let id = localStorage.getItem("activeTabId");
-            this.EDITORS[id].resetFontSize();
-        };
-        listElem.appendChild(this.VIEW_RESET_FONT_BUTTON);
-        this.VIEW_DROPDOWN_UL.appendChild(listElem);
-
-        listElem = document.createElement("li");
-        this.VIEW_AUTOCOMPLETE_BUTTON = document.createElement("button");
-        this.VIEW_AUTOCOMPLETE_BUTTON.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.VIEW_AUTOCOMPLETE_BUTTON.textContent = "Turn live autocomplete ...";
-        this.VIEW_AUTOCOMPLETE_BUTTON.title = "When turned off, basic autocomplete can be accessed using left-ctrl + space. Affects all editors";
-        this.VIEW_AUTOCOMPLETE_BUTTON.onclick = () => {
-            UIkit.dropdown(this.VIEW_DROPDOWN).hide();
-            let id = localStorage.getItem("activeTabId");
-            this.EDITORS[id].toggleAutocompleteStateForAll();
-        };
-        listElem.appendChild(this.VIEW_AUTOCOMPLETE_BUTTON);
-        this.VIEW_DROPDOWN_UL.appendChild(listElem);
-*/
     }
 
     turnIntoBlocklyViewer(data) {
