@@ -129,7 +129,16 @@ class DIRCHOOSER{
         else{
             extension = this.DIR_CHOOSER_FOOTER_INPUT.value.split(".").slice(-1)[0];  //get the current extension 
         }
-        this.DIR_CHOOSER_FOOTER_INPUT.select();     //show the text as already selected to edit
+        //select all but the extension
+        var start = this.DIR_CHOOSER_FOOTER_INPUT.value.indexOf(extension);
+        if (start == -1){
+            this.DIR_CHOOSER_FOOTER_INPUT.select(); 
+        }
+        else {
+            this.DIR_CHOOSER_FOOTER_INPUT.focus();
+            this.DIR_CHOOSER_FOOTER_INPUT.setSelectionRange(0, start - 1); //select the extension plus the .
+        }
+
         this.updateFinalPath();
 
         while (this.WAITING_FOR_USER == 1) {

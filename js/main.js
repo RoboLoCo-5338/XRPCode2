@@ -192,12 +192,62 @@ document.getElementById("IDStopBTN").onclick = async (event) =>{
 
 }
 
+// This is to make the menus act more like true menus. When the menu dropdowns are active then moving to the next menu switches to that menu.
+var FILE_BUTTON = document.getElementById("IDFileBTN");
+var VIEW_BUTTON = document.getElementById("IDViewBTN");
+var HELP_BUTTON = document.getElementById("IDHelpBTN");
+var FILE_DROPDOWN = document.getElementById("IDFile");
+var VIEW_DROPDOWN = document.getElementById("IDView");
+var HELP_DROPDOWN = document.getElementById("IDHelpDrop");
+
+
+
+var menus_down = false;
+FILE_BUTTON.addEventListener("mouseenter", () => {
+    if(menus_down){
+        UIkit.dropdown(FILE_DROPDOWN).show();
+    }
+});
+
+VIEW_BUTTON.addEventListener("mouseenter", () => {
+    if(menus_down){
+        UIkit.dropdown(VIEW_DROPDOWN).show();
+    }
+});
+
+HELP_BUTTON.addEventListener("mouseenter", () => {
+    if(menus_down){
+        UIkit.dropdown(HELP_DROPDOWN).show();
+    }
+});
+
+FILE_DROPDOWN.addEventListener("show", () => {
+    menus_down = true;
+});
+
+FILE_DROPDOWN.addEventListener("hide", () => {
+    menus_down = false;
+});
+VIEW_DROPDOWN.addEventListener("show", () => {
+    menus_down = true;
+});
+
+VIEW_DROPDOWN.addEventListener("hide", () => {
+    menus_down = false;
+});
+HELP_DROPDOWN.addEventListener("show", () => {
+    menus_down = true;
+});
+
+HELP_DROPDOWN.addEventListener("hide", () => {
+    menus_down = false;
+});
+
 // File Menu Support
-document.getElementById("IDFileBTN").onclick = (event) =>{
+FILE_BUTTON.onclick = (event) =>{
     //get active file id
     getActiveId();
 }
-var FILE_DROPDOWN = document.getElementById("IDFile");
 FILE_DROPDOWN.addEventListener("mouseleave", () => {
     UIkit.dropdown(FILE_DROPDOWN).hide();
 });
@@ -233,19 +283,10 @@ document.getElementById("IDFileSaveAs").onclick = (event) =>{
 }
 
 // View Menu Support
-document.getElementById("IDViewBTN").onclick = (event) =>{
+VIEW_BUTTON.onclick = (event) =>{
     //get active file id
-    var id = getActiveId();
-    if(EDITORS[id].isBlockly){
-        document.getElementById("blockly_dropdown").style.display = "block"
-        document.getElementById("micropython_dropdown").style.display = "none"
-    }
-    else{
-        document.getElementById("blockly_dropdown").style.display = "none"
-        document.getElementById("micropython_dropdown").style.display = "block"
-    }
+    getActiveId();
 }
-var VIEW_DROPDOWN = document.getElementById("IDView");
 VIEW_DROPDOWN.addEventListener("mouseleave", () => {
     UIkit.dropdown(VIEW_DROPDOWN).hide();
 });
@@ -266,10 +307,10 @@ document.getElementById("IDViewVM").onclick = (event) =>{
     UIkit.modal(document.getElementById("view-python-code")).show();
 }
 document.getElementById("IDViewCM").onclick = async (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
     if(! await window.confirmMessage("This will convert your Blocks program to a Python program.<br> Your Blocks program will be put in the trash<br>and a new python program will be created.<br>Are you sure you want to continue?")){
         return;
     }
-    UIkit.dropdown(VIEW_DROPDOWN).hide();
     let id = localStorage.getItem("activeTabId");
     await EDITORS[id].onConvert(EDITORS[id].EDITOR_PATH, EDITORS[id].getValue(), id);
 }
@@ -287,11 +328,13 @@ document.getElementById("IDViewDecF").onclick = (event) =>{
     let id = localStorage.getItem("activeTabId");
     EDITORS[id].decreaseFontSize();
 }
+/*
 document.getElementById("IDViewResetF").onclick = (event) =>{
     UIkit.dropdown(VIEW_DROPDOWN).hide();
     let id = localStorage.getItem("activeTabId");
     EDITORS[id].resetFontSize();
 }
+*/
 document.getElementById("IDViewAutoComplete").onclick = (event) =>{
     UIkit.dropdown(VIEW_DROPDOWN).hide();
     let id = localStorage.getItem("activeTabId");
@@ -299,28 +342,17 @@ document.getElementById("IDViewAutoComplete").onclick = (event) =>{
 }
 
 //Help Menu Support
-var HELP_DROPDOWN = document.getElementById("IDHelpDrop");
+HELP_BUTTON.onclick = (event) =>{
+    //get active file id
+    getActiveId();
+}
 HELP_DROPDOWN.addEventListener("mouseleave", () => {
     UIkit.dropdown(HELP_DROPDOWN).hide();
 })
 
-var toggle = true;
-document.getElementById("IDHelpBTN").onclick = (event) =>{
-    if(toggle){
-        document.getElementById("IDHelp").style.display = "block"
-        document.getElementById("IDHelp2").style.display = "none"
-        toggle = false;
-    }
-    else{
-        document.getElementById("IDHelp").style.display = "none"
-        document.getElementById("IDHelp2").style.display = "block"
-        toggle = true;
-    }
-
-}
-
 document.getElementById("IDUserGuide").onclick = (event) =>{
     UIkit.dropdown(HELP_DROPDOWN).hide();
+    menus_down = false;
     window.open("https://xrpusersguide.readthedocs.io/en/latest/course/introduction.html", "_blank")
 }
 document.getElementById("IDAPI").onclick = (event) =>{
@@ -967,13 +999,28 @@ function enableMenuItems(){
 window.enableMenuItems = enableMenuItems;
 
 function getActiveId(){
+    var foundId = 0;
     for (const [id, editor] of Object.entries(EDITORS)) {
         if(EDITORS[id]._container._tab._element.className.includes("lm_focused")){
-            console.log("active is " + id);
-            localStorage.setItem("activeTabId", id);
-            return id;
+            foundId = id;
+            break;
+        }
+        else if(EDITORS[id]._container._tab.isActive) {
+            foundId = id; //keep track of the Active ones just in case non are in focus
         }
     }
+    
+    console.log("active is " + foundId);
+    localStorage.setItem("activeTabId", foundId);
+    if(EDITORS[foundId].isBlockly){
+        document.getElementById("blockly_dropdown").style.display = "block"
+        document.getElementById("micropython_dropdown").style.display = "none"
+    }
+    else{
+        document.getElementById("blockly_dropdown").style.display = "none"
+        document.getElementById("micropython_dropdown").style.display = "block"
+    }
+    return foundId;
 }
 
 async function alertMessage(message){

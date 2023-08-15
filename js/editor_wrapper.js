@@ -124,19 +124,13 @@ class EditorWrapper{
         this._container.element.addEventListener('mousedown', (event) => {
             this._container.focus();
             this.onFocus();
-            console.log("M editor # " + state.id)
         });
         this._container.element.addEventListener('focusin', (event) => {
             this._container.focus();
             this.onFocus();
-            console.log("F editor # " + state.id)
 
         });
 
-        this._container.on('shown', function(){
-            console.log("S editor # " + state.id)
-        });
-        
         // Used to suggest a name for certain operations
         this.FILE_OPTIONS = {
             suggestedName: ".py",
@@ -755,21 +749,6 @@ class EditorWrapper{
         });
     }
 
-    disableMenuItems(){
-        this.CONVERT_PYTHON.disabled = true;
-        this.FS_UPLOAD_BTN.disabled = true;
-        this.FILE_EXPORT_BUTTON.disabled = true;
-        this.FILE_SAVE_BUTTON.disabled = true;
-        this.FILE_SAVEAS_BUTTON.disabled = true;
-    }
-
-    enableMenuItems(){
-        this.CONVERT_PYTHON.disabled = false;
-        this.FS_UPLOAD_BTN.disabled = false;
-        this.FILE_EXPORT_BUTTON.disabled = false;
-        this.FILE_SAVE_BUTTON.disabled = false;
-        this.FILE_SAVEAS_BUTTON.disabled = false;
-    }
     checkAllEditorsForPath(path){
         for(const [editorID, editorWrapper] of Object.entries(this.EDITORS)){
             if(editorWrapper.EDITOR_PATH != undefined
