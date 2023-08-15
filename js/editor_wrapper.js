@@ -140,8 +140,8 @@ class EditorWrapper{
     }
 
     runXRPCode() {
-        let id = localStorage.getItem("activeTabId");
-        this.EDITORS[id].onFastExecute(this.getValue());
+        //let id = localStorage.getItem("activeTabId");
+        this.onFastExecute(this.getValue());
     }
 
     closeThisEditor(){
@@ -307,9 +307,9 @@ class EditorWrapper{
             this.BLOCKLY_DIV.onkeydown = (e) => {
               if((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)
                   && e.keyCode == 83) {
-                let id = localStorage.getItem("activeTabId");
-                this.EDITORS[id].onSaveToThumby();
-                console.log("Saving File for Tab Id: ", id);
+                //let id = localStorage.getItem("activeTabId");
+                this.onSaveToThumby();
+                //console.log("Saving File for Tab Id: ", id);
                 e.preventDefault();
               }
             };
@@ -422,9 +422,9 @@ class EditorWrapper{
             name: 'SaveCurrentTab',
             bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
             exec: () => {
-                let id = localStorage.getItem("activeTabId");
-                this.EDITORS[id].onSaveToThumby();
-                console.log('Saving File for Tab Id: ', id);
+                //let id = localStorage.getItem("activeTabId");
+                this.onSaveToThumby();
+                //console.log('Saving File for Tab Id: ', id);
             },
             readOnly: true
         });
