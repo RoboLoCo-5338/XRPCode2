@@ -527,7 +527,7 @@ function registerFilesystem(_container, state){
                 editor._container.parent.focus();
                 //[TODO] If file open and no changes, just switch to that window, If open and changes, ask if OK to overwrite changes?
                 //       But what if they are using a new XRP with the same file name?
-                window.alertMessage("This file is already open in Editor" + id + "! Please close it first");
+                //window.alertMessage("This file is already open in Editor" + id + "! Please close it first");
                 return;
             }
         }
