@@ -23,16 +23,16 @@ class FILESYSTEM{
         this.FS_AREA_DIV.classList.add("fs_area");
         this.FS_ALL_DIV.appendChild(this.FS_AREA_DIV);
 
-        this.FS_FOOTER_DIV = document.createElement("div");
-        this.FS_FOOTER_DIV.classList = "fs_footer uk-button-group";
-        this.FS_ALL_DIV.appendChild(this.FS_FOOTER_DIV);
+        // this.FS_FOOTER_DIV = document.createElement("div");
+        // this.FS_FOOTER_DIV.classList = "fs_footer uk-button-group";
+        // this.FS_ALL_DIV.appendChild(this.FS_FOOTER_DIV);
 
-        this.FS_UPLOAD_BTN = document.createElement("button");
-        this.FS_UPLOAD_BTN.classList = "uk-button uk-button-primary uk-button-small uk-width-1-1";
-        this.FS_UPLOAD_BTN.onclick = () => {this.onUploadFiles()};
-        this.FS_UPLOAD_BTN.innerText = "UPLOAD FILES";
-        this.FS_UPLOAD_BTN.title = "Uploads files to the XRP";
-        this.FS_FOOTER_DIV.appendChild(this.FS_UPLOAD_BTN);
+        // this.FS_UPLOAD_BTN = document.createElement("button");
+        // this.FS_UPLOAD_BTN.classList = "uk-button uk-button-primary uk-button-small uk-width-1-1";
+        // this.FS_UPLOAD_BTN.onclick = () => {this.onUploadFiles()};
+        // this.FS_UPLOAD_BTN.innerText = "UPLOAD FILES";
+        // this.FS_UPLOAD_BTN.title = "Uploads files to the XRP";
+        // this.FS_FOOTER_DIV.appendChild(this.FS_UPLOAD_BTN);
 
         // this.FS_REFRESH_BTN = document.createElement("button");
         // this.FS_REFRESH_BTN.classList = "uk-button uk-button-primary uk-button-small uk-width-1-1";
@@ -77,6 +77,17 @@ class FILESYSTEM{
         li.appendChild(this.FS_DROPDOWN_NEWFOLDER_BTN);
         this.FS_DROPDOWN_UL.appendChild(li);
 
+        // li = document.createElement("li");
+        // this.FS_DROPDOWN_NEWFILE_BTN = document.createElement("button");
+        // this.FS_DROPDOWN_NEWFILE_BTN.classList = "uk-button uk-button-secondary uk-width-1-1";
+        // this.FS_DROPDOWN_NEWFILE_BTN.onclick = () => {
+        //     this.onNewFile();
+        // };
+        // this.FS_DROPDOWN_NEWFILE_BTN.innerText = "New File";
+        // this.FS_DROPDOWN_NEWFILE_BTN.title = "Creates new file in same folder of file or under selected folder";
+        // li.appendChild(this.FS_DROPDOWN_NEWFILE_BTN);
+        // this.FS_DROPDOWN_UL.appendChild(li);
+
         li = document.createElement("li");
         this.FS_DROPDOWN_DOWNLOAD_BTN = document.createElement("button");
         this.FS_DROPDOWN_DOWNLOAD_BTN.classList = "uk-button uk-button-secondary uk-width-1-1";
@@ -113,6 +124,7 @@ class FILESYSTEM{
         this.onUploadFiles = undefined;
         this.onRefresh = undefined;
         this.onDownloadFiles = undefined;
+        // this.onNewFile = undefined;
 
 
         // Make sure mouse click anywhere on panel focuses the panel
@@ -135,20 +147,20 @@ class FILESYSTEM{
         this.DIR_CHOOSER_PATH = "";
 
         // Disable these buttons by default when no Thumby is connected (gets re-enabled in main.js on connection)
-        this.disableButtons();
+        // this.disableButtons();
     }
 
 
-    disableButtons(){
-        this.FS_UPLOAD_BTN.disabled = true;
-        // this.FS_REFRESH_BTN.disabled = true;
-    }
+    // disableButtons(){
+    //     this.FS_UPLOAD_BTN.disabled = true;
+    //     // this.FS_REFRESH_BTN.disabled = true;
+    // }
 
 
-    enableButtons(){
-        this.FS_UPLOAD_BTN.disabled = false;
-        // this.FS_REFRESH_BTN.disabled = false;
-    }
+    // enableButtons(){
+    //     this.FS_UPLOAD_BTN.disabled = false;
+    //     // this.FS_REFRESH_BTN.disabled = false;
+    // }
 
 
     updateStorageBar(sizeData){

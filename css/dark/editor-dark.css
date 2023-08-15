@@ -9,10 +9,11 @@
 .editor_header_toolbar {
     background-color: transparent;
     display:flex;
-    align-items: center;
-    width:100%;
-    height:20px;
-    border: gray 1px solid;
+    align-items: flex-end;
+    width: 100%;
+    height: 40px;
+    margin-left: 5px;
+    /* border: gray 1px solid; */
 }
 
 .editor_emulation_zone{

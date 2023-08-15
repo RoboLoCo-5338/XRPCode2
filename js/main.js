@@ -60,6 +60,8 @@ let v = jresp.version
 window.latestLibraryVersion = v.split(".");
 
 
+
+
 window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
 
 window.SHOWMAIN = false;
@@ -183,12 +185,183 @@ document.getElementById("IDStopBTN").onclick = async (event) =>{
         window.alertMessage("No XRP is connected. Double-check that the XRP is connected before attempting to STOP a program.");
         return;
     }
-        document.getElementById("IDStopBTN").disabled = true;
+    // document.getElementById("IDStopBTN").disabled = true;
+    document.getElementById('IDRunBTN').style.display = "none";
     await REPL.stop();
-    document.getElementById("IDStopBTN").disabled = false;
+    // document.getElementById("IDStopBTN").disabled = false;
 
 }
 
+// This is to make the menus act more like true menus. When the menu dropdowns are active then moving to the next menu switches to that menu.
+var FILE_BUTTON = document.getElementById("IDFileBTN");
+var VIEW_BUTTON = document.getElementById("IDViewBTN");
+var HELP_BUTTON = document.getElementById("IDHelpBTN");
+var FILE_DROPDOWN = document.getElementById("IDFile");
+var VIEW_DROPDOWN = document.getElementById("IDView");
+var HELP_DROPDOWN = document.getElementById("IDHelpDrop");
+
+
+
+var menus_down = false;
+FILE_BUTTON.addEventListener("mouseenter", () => {
+    if(menus_down){
+        UIkit.dropdown(FILE_DROPDOWN).show();
+    }
+});
+
+VIEW_BUTTON.addEventListener("mouseenter", () => {
+    if(menus_down){
+        UIkit.dropdown(VIEW_DROPDOWN).show();
+    }
+});
+
+HELP_BUTTON.addEventListener("mouseenter", () => {
+    if(menus_down){
+        UIkit.dropdown(HELP_DROPDOWN).show();
+    }
+});
+
+FILE_DROPDOWN.addEventListener("show", () => {
+    menus_down = true;
+});
+
+FILE_DROPDOWN.addEventListener("hide", () => {
+    menus_down = false;
+});
+VIEW_DROPDOWN.addEventListener("show", () => {
+    menus_down = true;
+});
+
+VIEW_DROPDOWN.addEventListener("hide", () => {
+    menus_down = false;
+});
+HELP_DROPDOWN.addEventListener("show", () => {
+    menus_down = true;
+});
+
+HELP_DROPDOWN.addEventListener("hide", () => {
+    menus_down = false;
+});
+
+// File Menu Support
+FILE_BUTTON.onclick = (event) =>{
+    //get active file id
+    getActiveId();
+}
+FILE_DROPDOWN.addEventListener("mouseleave", () => {
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+});
+
+document.getElementById("IDFileAdd").onclick = (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].addNewEditor();
+}
+
+document.getElementById("IDFileUpload").onclick = (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].onUploadFiles();
+}
+
+document.getElementById("IDFileExport").onclick = (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].onDownloadFile(EDITORS[id].EDITOR_PATH);;
+}
+
+document.getElementById("IDFileSave").onclick = (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].onSaveToThumby();
+}
+
+document.getElementById("IDFileSaveAs").onclick = (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].onSaveAsToThumby();
+}
+
+// View Menu Support
+VIEW_BUTTON.onclick = (event) =>{
+    //get active file id
+    getActiveId();
+}
+VIEW_DROPDOWN.addEventListener("mouseleave", () => {
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+});
+
+// View Menu Blockly Support
+var opAce;
+document.getElementById("IDViewVM").onclick = (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    document.getElementById("view-python-button").onclick = (ev) => {
+        opAce.destroy();
+    };
+    opAce = ace.edit("view-python-ace");
+    opAce.session.setMode("ace/mode/python");
+    opAce.setReadOnly(true);
+    opAce.setTheme("ace/theme/tomorrow_night_bright");
+    let id = localStorage.getItem("activeTabId");
+    opAce.setValue(EDITORS[id].getValue(), 1);
+    UIkit.modal(document.getElementById("view-python-code")).show();
+}
+document.getElementById("IDViewCM").onclick = async (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    if(! await window.confirmMessage("This will convert your Blocks program to a Python program.<br> Your Blocks program will be put in the trash<br>and a new python program will be created.<br>Are you sure you want to continue?")){
+        return;
+    }
+    let id = localStorage.getItem("activeTabId");
+    await EDITORS[id].onConvert(EDITORS[id].EDITOR_PATH, EDITORS[id].getValue(), id);
+}
+
+// View Menu ACE Support
+
+
+document.getElementById("IDViewIncF").onclick = (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].increaseFontSize();
+}
+document.getElementById("IDViewDecF").onclick = (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].decreaseFontSize();
+}
+/*
+document.getElementById("IDViewResetF").onclick = (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].resetFontSize();
+}
+*/
+document.getElementById("IDViewAutoComplete").onclick = (event) =>{
+    UIkit.dropdown(VIEW_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].toggleAutocompleteStateForAll();
+}
+
+//Help Menu Support
+HELP_BUTTON.onclick = (event) =>{
+    //get active file id
+    getActiveId();
+}
+HELP_DROPDOWN.addEventListener("mouseleave", () => {
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+})
+
+document.getElementById("IDUserGuide").onclick = (event) =>{
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+    menus_down = false;
+    window.open("https://xrpusersguide.readthedocs.io/en/latest/course/introduction.html", "_blank")
+}
+document.getElementById("IDAPI").onclick = (event) =>{
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+    window.open("https://open-stem.github.io/XRP_MicroPython/", "_blank")
+}
+
+disableMenuItems(); 
+/*
 // Add editor panel to layout
 document.getElementById("IDAddEditorBTN").onclick = (event) =>{
     var id1;
@@ -200,6 +373,7 @@ document.getElementById("IDAddEditorBTN").onclick = (event) =>{
     EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
     myLayout.addComponent('Editor', {"value":undefined, choose:true}, 'Editor');
 }
+*/
 
 // Return true if a panel with this title exists, false otherwise
 function recursiveFindTitle(content, title){
@@ -233,15 +407,9 @@ function recursiveFindEditors(content, editors){
 var REPL = new ReplJS();
 window.REPL = REPL;
 
-// set up blockly dialog to come to us
-Blockly.dialog.setPrompt(async function (p1,p2, callback){
-    var [ans, value] = await window.promptMessage(p1, p2);
-    if(ans == false) callback(null);
-    callback(value);
-});
-
 
 // Filesystem module
+
 // Add the overlay to the Filesystem container.
 function addFSOverlay() {
     let overlay = document.createElement('div');
@@ -250,7 +418,7 @@ function addFSOverlay() {
     overlay.style.right = 0;
     overlay.style.bottom = 0;
     overlay.style.left = 0;
-    overlay.style.background = 'rgba(255,255,255,0.2)'; //[TODO] I made the alpha only 0.2 for dark mode. It may need more for light mode.
+    overlay.style.background = 'rgba(255,255,255,0.3)';
     overlay.id = 'overlay'; // Add an ID or class for later reference
     FS._container._element.appendChild(overlay);
 }
@@ -265,6 +433,8 @@ function removeFSOverlay() {
 var FS = undefined;
 function registerFilesystem(_container, state){
     FS = new FILESYSTEM(_container, state);
+
+    DIR.onRename = (path) => REPL.renameFile(path, prompt("Type a new name: ", path.substring(path.lastIndexOf("/") + 1)));
 
     DIR.onRename = async (path) => {
         var [ans, pathNew] = await window.promptMessage("Type a new name: ", path.substring(path.lastIndexOf("/")+1));
@@ -284,6 +454,30 @@ function registerFilesystem(_container, state){
         }
     }
 
+    // DIR.onNewFile = async () => {
+    //     var id1;
+    //     for (const [id] of Object.entries(EDITORS)) {
+    //         id1 = id;
+    //         break;
+    //     }
+
+    //     EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
+    //     myLayout.addComponent('Editor', { "value": undefined, choose: true }, 'Editor');
+    //     console.log('Creating a new file...');
+    // }
+
+    // DIR.onNewFile = async (fileOrDir, path) => {
+    //     var newFolderName = prompt("Enter the new folder name: ", "NewFolder");
+    //     if(newFolderName != null){
+    //         if(fileOrDir == 1){ // Dir
+    //             await REPL.buildPath(path + "/" + newFolderName);
+    //         }else{              // File
+    //             await REPL.buildPath(path.substring(0, path.lastIndexOf("/")) + "/" + newFolderName);
+    //         }
+    //         await REPL.getOnBoardFSTree();
+    //     }
+    // }
+
     FS.onDelete = (path) => REPL.deleteFileOrDir(path);
 
     //[TODO] - Don't let them pick main.py if it is not turned on
@@ -294,21 +488,21 @@ function registerFilesystem(_container, state){
     }
     FS.onFormat = () => REPL.format();
     FS.onUpdate = () => REPL.update();
-    FS.onUploadFiles = async () => {
-        if(REPL.PORT != undefined){
-            console.log("Pick files to upload");
-            const fileHandles = await window.showOpenFilePicker({multiple: true});
-            if(fileHandles && fileHandles.length > 0){
-                var path = await DIR.getPathFromUser(SAVEAS_ELEMENT, true, fileHandles[0].name);
-                if(path != undefined){
-                    path = path.substring(1,path.lastIndexOf("/")+1);  //strip off the file name to get just the path.
-                    REPL.uploadFiles(path, fileHandles);
-                }
-            }
-        }else{
-            window.alertMessage("No XRP is connected. Files can not be uploaded. Double-check that the XRP is connected before attempting to upload a file.");
-        }
-    }
+    // FS.onUploadFiles = async () => {
+    //     if(REPL.PORT != undefined){
+    //         console.log("Pick files to upload");
+    //         const fileHandles = await window.showOpenFilePicker({multiple: true});
+    //         if(fileHandles && fileHandles.length > 0){
+    //             var path = await DIR.getPathFromUser(SAVEAS_ELEMENT, true, fileHandles[0].name);
+    //             if(path != undefined){
+    //                 path = path.substring(1,path.lastIndexOf("/")+1);  //strip off the file name to get just the path.
+    //                 REPL.uploadFiles(path, fileHandles);
+    //             }
+    //         }
+    //     }else{
+    //         window.alertMessage("No XRP is connected. Files can not be uploaded. Double-check that the XRP is connected before attempting to upload a file.");
+    //     }
+    // }
     FS.onRefresh = async () => {
         if(REPL.PORT != undefined){
             window.setPercent(1, "Refreshing filesystem panel");
@@ -377,7 +571,7 @@ function registerFilesystem(_container, state){
 
 }
 
-async function downloadFileFromPath(fullFilePaths){
+async function downloadFileFromPath(fullFilePaths) {
     for(var i=0; i<fullFilePaths.length; i++){
         var startOfFileName = fullFilePaths[i].lastIndexOf('/');
         var fileName = "";
@@ -408,19 +602,23 @@ function registerShell(_container, state){
 
     REPL.onData = (data) => ATERM.write(data);
     REPL.onDisconnect = () => {
-        ATERM.writeln('\n\r\x1b[1;31m' + "Disconnected" + '\x1b[1;0m');
         ATERM.writeln("Waiting for connection... (click 'Connect XRP')");
         FS.clearToWaiting();
+        window.disableMenuItems();
+        
         //FS.removeUpdate();
 
-        FS.disableButtons();
-        //[TODO] Changed connect button back to ready to connect status
+        //FS.disableButtons();
+        // when XRP is disconnected, show the CONNECT XRP button and hide the RUN button
+        document.getElementById('IDRunBTN').style.display = "none";
+        document.getElementById('IDConnectThumbyBTN').style.display = "block";
     }
     REPL.onConnect = () => {
-        ATERM.writeln('\x1b[1;32m' + "\n\rConnected" + '\x1b[1;0m');
-        FS.enableButtons();
-        //[TODO] Changed connect button to connected status
-
+        window.enableMenuItems();
+        // when XRP is connected, show the RUN button and hide the CONNECT XRP button
+        document.getElementById('IDRunBTN').style.display = "block";
+        document.getElementById('IDConnectThumbyBTN').style.display = "none";
+        //FS.enableButtons();
     }
     REPL.onFSData = (jsonStrData, fsSizeData) => {
         FS.updateTree(jsonStrData);
@@ -457,10 +655,30 @@ function registerShell(_container, state){
 // Editor module
 var EDITORS = {};
 var LAST_ACTIVE_EDITOR = undefined; // Each editor will set this to themselves on focus, bitmap builder uses this
-function registerEditor(_container, state){
+function registerEditor(_container, state) {
     var editor = new EditorWrapper(_container, state, EDITORS);
-    editor.onFocus = () => {
-        LAST_ACTIVE_EDITOR = editor};
+    editor.onFocus = () => { LAST_ACTIVE_EDITOR = editor };
+
+    document.getElementById("IDRunBTN").onclick = async (event) =>{
+        editor.runXRPCode();
+    };
+
+    editor.onUploadFiles = async () => {
+        if(REPL.PORT != undefined){
+            console.log("Pick files to upload");
+            const fileHandles = await window.showOpenFilePicker({multiple: true});
+            if(fileHandles && fileHandles.length > 0){
+                var path = await DIR.getPathFromUser(SAVEAS_ELEMENT, true, fileHandles[0].name);
+                if(path != undefined){
+                    path = path.substring(1,path.lastIndexOf("/")+1);  //strip off the file name to get just the path.
+                    REPL.uploadFiles(path, fileHandles);
+                }
+            }
+        }else{
+            window.alertMessage("No XRP is connected. Files can not be uploaded. Double-check that the XRP is connected before attempting to upload a file.");
+        }
+    }
+
     editor.onSaveToThumby = async () => {
         // Warn user when trying to save and no Thumby is connected
         if(REPL.DISCONNECT == true){
@@ -539,6 +757,19 @@ function registerEditor(_container, state){
             await editor.onSaveToThumby();
         }
     }
+
+    editor.addNewEditor = async () => {
+        var id1;
+        for (const [id] of Object.entries(EDITORS)) {
+            id1 = id;
+            break;
+        }
+
+        EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
+        myLayout.addComponent('Editor', { "value": undefined, choose: true }, 'Editor');
+        console.log('Creating a new file...');
+    }
+
     editor.onFastExecute = async (lines) => {
 
         if(REPL.DISCONNECT == true){
@@ -593,9 +824,14 @@ function registerEditor(_container, state){
         }
 
         //Disable anything that can't be clicked on while the program is running
+        // document.getElementById('IDRunBTN').disabled = true;
 
-        editor.FAST_EXECUTE_BUTTON.disabled = true;
+        // show STOP button and hide RUN button when program is running
+        document.getElementById('IDRunBTN').style.display = "none";
+        document.getElementById('IDStopBTN').style.display = "block";
+        
         addFSOverlay();
+        disableMenuItems();
 
         //save all unsaved files [TODO] Do we always save the current editors program?
         for (const [id, editor] of Object.entries(EDITORS)) {
@@ -612,8 +848,15 @@ function registerEditor(_container, state){
         ATERM.TERM.scrollToBottom();
         UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
         await REPL.executeLines(lines);
-        editor.FAST_EXECUTE_BUTTON.disabled = false;
+        // document.getElementById('IDRunBTN').disabled = false;
+
         removeFSOverlay();
+        enableMenuItems();
+        
+        // after code finishes running, show RUN button and hide STOP button
+        document.getElementById('IDRunBTN').style.display = "block";
+        document.getElementById('IDStopBTN').style.display = "none";
+
 
         if(REPL.RUN_ERROR && REPL.RUN_ERROR.includes("[Errno 2] ENOENT", 0)){
             window.alertMessage("The program that you were trying to RUN has not been saved to this XRP.<br>To RUN this program save the file to XRP and click RUN again.");
@@ -622,6 +865,9 @@ function registerEditor(_container, state){
     }
 
     editor.onConvert = async (oldPath, data, ID) => {
+
+        console.log('oldPath: ', oldPath); // tst
+
         if(REPL.DISCONNECT == true){
             window.alertMessage("This program can not be converted because no XRP is connected. Double-check that the XRP is connected before attempting to convert the program.");
             return;
@@ -633,23 +879,26 @@ function registerEditor(_container, state){
             //move the file to trash
             //open a new file editor with a .py extension
             //force a save
+
+        //oldPath = localStorage.getItem("activeTabFileName");
+
         await REPL.buildPath("/trash"); //make sure the trash directory is there.
         await REPL.renameFile(oldPath, "/trash" + oldPath);
 
-        //close the window
+        // //close the window
         var ed = EDITORS[ID];
         ed.closeThisEditor();
     /*
         ed.clearStorage();
         ed._container.close();
         delete EDITORS[ID];
+    */
         //bring the focus back to the editors
         for (const [id] of Object.entries(EDITORS)) {
             var id1 = id;
             break;
             }
         EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
-    */
         var newFile = oldPath.replace(".blocks", ".py");
         var state = {};
         state.value = data;
@@ -663,14 +912,12 @@ function registerEditor(_container, state){
             }
     }
 
-    editor.onDownloadFile = async (fullFilePath) => {
-
-        await downloadFileFromPath([fullFilePath]);
+    editor.onDownloadFile = async () => {
+        await downloadFileFromPath([editor.EDITOR_PATH]);
     }
 
     EDITORS[editor.ID] = editor;
 }
-
 
 
 // Register Golden layout panels
@@ -720,6 +967,7 @@ String.prototype.convertToHex = function (delim) {
     }).join(delim || "");
 };
 
+
 /**
  * Return the timestamp in fixed format
  * @returns {String}    Timestamp in format [YYYY-MM-DD HH:MM:SS]
@@ -732,6 +980,49 @@ function getTimestamp() {
     return `[${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}]`;
 }
 
+function disableMenuItems(){
+    document.getElementById('IDViewCM').disabled = true;
+    document.getElementById('IDFileUpload').disabled = true;
+    document.getElementById('IDFileExport').disabled = true;
+    document.getElementById('IDFileSave').disabled = true;
+    document.getElementById('IDFileSaveAs').disabled = true;
+}
+window.disableMenuItems = disableMenuItems;
+
+function enableMenuItems(){
+    document.getElementById('IDViewCM').disabled = false;
+    document.getElementById('IDFileUpload').disabled = false;
+    document.getElementById('IDFileExport').disabled = false;
+    document.getElementById('IDFileSave').disabled = false;
+    document.getElementById('IDFileSaveAs').disabled = false;
+}
+window.enableMenuItems = enableMenuItems;
+
+function getActiveId(){
+    var foundId = 0;
+    for (const [id, editor] of Object.entries(EDITORS)) {
+        if(EDITORS[id]._container._tab._element.className.includes("lm_focused")){
+            foundId = id;
+            break;
+        }
+        else if(EDITORS[id]._container._tab.isActive) {
+            foundId = id; //keep track of the Active ones just in case non are in focus
+        }
+    }
+    
+    console.log("active is " + foundId);
+    localStorage.setItem("activeTabId", foundId);
+    if(EDITORS[foundId].isBlockly){
+        document.getElementById("blockly_dropdown").style.display = "block"
+        document.getElementById("micropython_dropdown").style.display = "none"
+    }
+    else{
+        document.getElementById("blockly_dropdown").style.display = "none"
+        document.getElementById("micropython_dropdown").style.display = "block"
+    }
+    return foundId;
+}
+
 async function alertMessage(message){
     await UIkit.modal.alert(message).then(function () {
         console.log('Alert closed.');
@@ -740,6 +1031,7 @@ async function alertMessage(message){
 window.alertMessage = alertMessage;
 
 var CONFIRM  = false;
+
 async function confirmMessage(message){
     await UIkit.modal.confirm(message)
     .then(function () {
