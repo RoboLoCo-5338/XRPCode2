@@ -361,6 +361,12 @@ document.getElementById("IDAPI").onclick = (event) =>{
 }
 
 disableMenuItems(); 
+
+document.getElementById("IDRunBTN").onclick = async (event) =>{
+    let id = getActiveId(); 
+    EDITORS[id].runXRPCode();
+};
+
 /*
 // Add editor panel to layout
 document.getElementById("IDAddEditorBTN").onclick = (event) =>{
@@ -658,10 +664,6 @@ var LAST_ACTIVE_EDITOR = undefined; // Each editor will set this to themselves o
 function registerEditor(_container, state) {
     var editor = new EditorWrapper(_container, state, EDITORS);
     editor.onFocus = () => { LAST_ACTIVE_EDITOR = editor };
-
-    document.getElementById("IDRunBTN").onclick = async (event) =>{
-        editor.runXRPCode();
-    };
 
     editor.onUploadFiles = async () => {
         if(REPL.PORT != undefined){
