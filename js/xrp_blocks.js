@@ -183,6 +183,25 @@ Blockly.Blocks['xrp_speed'] = {
   }
 };
 
+Blockly.Blocks['xrp_arcade'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Arcade");
+    this.appendValueInput("STRAIGHT")
+      .setCheck("Number")
+      .appendField("Straight:");
+    this.appendValueInput("TURN")
+      .setCheck("Number")
+      .appendField("Turn:");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(10); // orange
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
 Blockly.Blocks['xrp_stop_motors'] = {
   init: function () {
     this.appendDummyInput()
@@ -233,23 +252,12 @@ Blockly.Blocks['xrp_getrightencoder'] = {
 // Servo
 Blockly.Blocks['xrp_servo_deg'] = {
   init: function () {
+    this.appendDummyInput()
+      .appendField('Servo:')
+      .appendField(new Blockly.FieldDropdown([["1", "1"], ["2", "2"]]), "SERVO")
+      .appendField('Deg:');
     this.appendValueInput("degrees")
       .setCheck("Number")
-      .appendField('Servo1  Deg:');
-    this.setInputsInline(true);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour(300); // light purple
-    this.setTooltip("");
-    this.setHelpUrl("");
-  }
-};
-
-Blockly.Blocks['xrp_servo2_deg'] = {
-  init: function () {
-    this.appendValueInput("degrees")
-      .setCheck("Number")
-      .appendField('Servo2  Deg:');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

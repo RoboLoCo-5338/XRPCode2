@@ -5,7 +5,7 @@ import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-l
          VERSION NUMBERS
 */
 
-const showChangelogVersion = 3;  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
+const showChangelogVersion = "1.0.0";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
 window.latestMicroPythonVersion = [1, 20, 0];
 
 
@@ -49,7 +49,7 @@ var onExportToEditor = (bytes) => {
     myLayout.addComponent('Editor', state, 'Editor');
 }
 
-// Show pop-up containing IDE changelog every time showChangelogVersion is increased
+// Show pop-up containing IDE changelog every time showChangelogVersion changes
 // Update version string in index.html and play.html as well to match
 
 let response = await fetch("/lib/package.json");
@@ -66,10 +66,9 @@ window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"
 
 window.SHOWMAIN = false;
 
-if(localStorage.getItem(showChangelogVersion) == null){
+if(localStorage.getItem("version") == null || localStorage.getItem("version") != showChangelogVersion ){
 
     console.log("Updates to IDE! Showing changelog...");    // Show message in console
-    localStorage.removeItem(showChangelogVersion-1);        // Remove flag from last version
 
     fetch("CHANGELOG.txt?version=" + showChangelogVersion).then(async (response) => {
         await response.text().then(async (text) => {
@@ -77,7 +76,7 @@ if(localStorage.getItem(showChangelogVersion) == null){
         });
     });
 
-    localStorage.setItem(showChangelogVersion, true);       // Set this show not shown on next page load
+    localStorage.setItem("version", showChangelogVersion);       // Set this show not shown on next page load
    // }
 }
 
@@ -361,6 +360,13 @@ document.getElementById("IDAPI").onclick = (event) =>{
 }
 
 disableMenuItems(); 
+
+document.getElementById("IDRunBTN").onclick = async (event) =>{
+    document.getElementById("IDRunBTN").disabled = true;
+    let id = getActiveId(); 
+    EDITORS[id].runXRPCode();
+};
+
 /*
 // Add editor panel to layout
 document.getElementById("IDAddEditorBTN").onclick = (event) =>{
@@ -521,7 +527,7 @@ function registerFilesystem(_container, state){
                 editor._container.parent.focus();
                 //[TODO] If file open and no changes, just switch to that window, If open and changes, ask if OK to overwrite changes?
                 //       But what if they are using a new XRP with the same file name?
-                window.alertMessage("This file is already open in Editor" + id + "! Please close it first");
+                //window.alertMessage("This file is already open in Editor" + id + "! Please close it first");
                 return;
             }
         }
@@ -591,6 +597,7 @@ async function downloadFileFromPath(fullFilePaths) {
 var ATERM = undefined;
 function registerShell(_container, state){
     ATERM = new ActiveTerminal(_container, state);
+    window.ATERM = ATERM;
     ATERM.onType = (data) => {
         // When the RP2040 is busy with any utility operations where BUSY is set, only allow interrupt key through
         // Allow certain characters through so thumby can pick them up
@@ -602,7 +609,7 @@ function registerShell(_container, state){
 
     REPL.onData = (data) => ATERM.write(data);
     REPL.onDisconnect = () => {
-        ATERM.writeln("Waiting for connection... (click 'Connect XRP')");
+        ATERM.writeln("Waiting for connection... (plug in the XRP and click 'Connect XRP')");
         FS.clearToWaiting();
         window.disableMenuItems();
         
@@ -616,6 +623,7 @@ function registerShell(_container, state){
     REPL.onConnect = () => {
         window.enableMenuItems();
         // when XRP is connected, show the RUN button and hide the CONNECT XRP button
+        document.getElementById("IDRunBTN").disabled = false;
         document.getElementById('IDRunBTN').style.display = "block";
         document.getElementById('IDConnectThumbyBTN').style.display = "none";
         //FS.enableButtons();
@@ -634,9 +642,8 @@ function registerShell(_container, state){
     //REPL.onShowUpdate = () => {FS.showUpdate()};
     REPL.showMicropythonUpdate = async () => {
         if(!REPL.HAS_MICROPYTHON){
-            let answer = await confirmMessage("We have detected there is no MicroPython on your XRP.<br>" +
-                    "If you think this is incorrect please press CANCEL.<br>" +
-                    "If this is correct, please press the reset button while holding down the BOOTSEL button.<br>Then click OK to continue.");
+            let answer = await confirmMessage("Reinstalling MicroPython onto the XRP<br>" +
+                    "please press the reset button while holding down the BOOTSEL button.<br>Then click OK to continue.");
             if(!answer){
                 return;
             }
@@ -658,10 +665,6 @@ var LAST_ACTIVE_EDITOR = undefined; // Each editor will set this to themselves o
 function registerEditor(_container, state) {
     var editor = new EditorWrapper(_container, state, EDITORS);
     editor.onFocus = () => { LAST_ACTIVE_EDITOR = editor };
-
-    document.getElementById("IDRunBTN").onclick = async (event) =>{
-        editor.runXRPCode();
-    };
 
     editor.onUploadFiles = async () => {
         if(REPL.PORT != undefined){
@@ -854,6 +857,7 @@ function registerEditor(_container, state) {
         enableMenuItems();
         
         // after code finishes running, show RUN button and hide STOP button
+        document.getElementById("IDRunBTN").disabled = false;
         document.getElementById('IDRunBTN').style.display = "block";
         document.getElementById('IDStopBTN').style.display = "none";
 

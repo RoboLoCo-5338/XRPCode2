@@ -15,7 +15,7 @@ class ReplJS{
         this.THUMBY_SEND_BLOCK_SIZE = 255;  // How many bytes to send to Thumby at a time when uploading a file to it
 
         // Set true so most terminal output gets passed to javascript terminal
-        this.DEBUG_CONSOLE_ON = true;
+        this.DEBUG_CONSOLE_ON = false;
 
         this.COLLECT_RAW_DATA = false;
         this.COLLECTED_RAW_DATA = [];
@@ -93,12 +93,14 @@ class ReplJS{
             }
         });
 
-        document.getElementById("IDConnectThumbyBTN").addEventListener("click", (event) => {
+        document.getElementById("IDConnectThumbyBTN").addEventListener("click", async (event) => {
             if (REPL.DISCONNECT == false) {
-                //Already connected
-                return;
+                await this.disconnect();
             }
-            this.connect();
+            document.getElementById("IDConnectThumbyBTN").disabled = true;
+            await this.connect();
+            document.getElementById("IDConnectThumbyBTN").disabled = false;
+
         });
 
         this.DISCONNECT = true;
@@ -437,11 +439,17 @@ class ReplJS{
                 This is where errors can be checked for that were returned incase we want to give a better explanation
                 The error information is put into a global variable for end processing if needed.
         */
+        this.RUN_ERROR = undefined;
+        for (let i=0;i<result.length;i++){
+            if(result[i].includes("[Errno",0)){
+            this.RUN_ERROR = result[i];
+        }
+       }
         if(result && result[0].includes("[Errno",0)){
             this.RUN_ERROR = result[0];
         }
         else {
-            this.RUN_ERROR = undefined;
+            
         }
 
         // Get back into normal mode and omit the 3 lines from the normal message,
@@ -666,7 +674,7 @@ class ReplJS{
             bytes = fileContents;
         }
 
-        //[TODO] - This should be just the lenght of what is available. Not just 2MB
+        //[TODO] - This should be just the length of what is available. Not just 2MB
         if(bytes.length >= 2000000){
             alert("This file is at least 2MB, too large, not uploading");
             return;
@@ -1095,8 +1103,8 @@ class ReplJS{
         //       1 - The ctrl-c stopped the program and we are back at the prompt
         //       2 - We were in RAW mode, so try going to NORMAL mode(get REPL output again), if we get a prompt then done
         //       3 - It took the ctrl-c but since the program was in a different thread (timers are the most likely) it didn't stop the program
-        //          For this one we need to try a few more times in hopes the program will be in a state we can interrupt. If not ask the user to hit
-        //             the reset button.
+        //          For this one we need to try a few more times in hopes the program will be in a state we can interrupt. If not ask the user to
+        //             reset and try again.
 
 
         this.startReaduntil(">>>");
@@ -1127,10 +1135,7 @@ class ReplJS{
                     break;
                 }
             }
-            if(!gotToPrompt){
-                await window.alertMessage("Please press the reset button on your XRP and then click on OK")
-                return false;
-            }
+            return gotToPrompt;
         }
         return true;
     }
@@ -1140,7 +1145,13 @@ class ReplJS{
 
         if(! await this.stopTheRobot()){
             this.HAS_MICROPYTHON = false;
-            return false;
+            let ans = await window.confirmMessage("XRPCode is having problems connecting to this XRP.<br>" +
+                                                        "Two Options:" + 
+                                                        "<ul><li>Unplug the XRP checking the cable on both ends</li>" +
+                                                        "<li>Turn the XRP power to off</li>" + 
+                                                        "<li>Click OK and then plug the XRP in again</li></ul>" + 
+                                                        "<br>Or click CANCEL and XRPCode will reinstall MicroPython onto the XRP")
+            return ans;
         }
 
         // do a softreset, but time out if no response
@@ -1159,6 +1170,9 @@ class ReplJS{
                 this.WRITER = await this.PORT.writable.getWriter();     // Make a writer since this is the first time port opened
                 this.readLoop();                // Start read loop
                 if(await this.checkIfMP()){
+                    if(this.HAS_MICROPYTHON == false){    //something went wrong, just get out of here
+                        return;
+                    }
                     this.BUSY = false;
                     await this.getToNormal();
                     await this.getOnBoardFSTree();
@@ -1172,6 +1186,9 @@ class ReplJS{
                 if(err.name == "InvalidStateError"){
                     if(this.DEBUG_CONSOLE_ON) console.log("%cPort already open, everything good to go!", "color: lime");
                     if (await this.checkIfMP()){
+                        if(this.HAS_MICROPYTHON == false){    //something went wrong, just get out of here
+                            return;
+                        }
                         this.onConnect();
                         this.BUSY = false;
                         await this.getToNormal();
@@ -1199,7 +1216,8 @@ class ReplJS{
         }
         this.BUSY = true;
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: in tryAutoConnect");
-
+    
+        window.ATERM.writeln("Connecting to XRP..."); //let the user know that we are trying to connect.
 
         if(this.DEBUG_CONSOLE_ON) console.log("%cTrying auto connect...", "color: yellow");
         var ports = await navigator.serial.getPorts();
@@ -1216,7 +1234,7 @@ class ReplJS{
             }
         } else {
             if(this.checkPortmatching(ports)) {
-                this.PORT = ports[ip]; //[TODO] This looks like a bug shouldn't it be just ports and not ports[ip]?
+                this.PORT = ports; 
                 if(this.DEBUG_CONSOLE_ON) console.log("%cAuto connected!", "color: lime");
                 await this.openPort();
                 this.BUSY = false;
@@ -1295,9 +1313,11 @@ class ReplJS{
             return
 
         }
+        // I don't think this code will run anymore since there is no stop button when a program is not running.
 
         //The user pushed STOP while things were idle. Lets make sure the robot is stopped and run restbot.
         await this.stopTheRobot();  //make sure the robot is really stopped
+
         //document.getElementById('IDRunBTN').style.display = "block";
         // Then just invoke resetbot to stop all motors
         var cmd = "import XRPLib.resetbot\n"
