@@ -210,7 +210,7 @@ class FILESYSTEM{
 
 
     clearToWaiting(){
-        this.FS_AREA_DIV.innerText = "Waiting for connection...\n\n(click 'Connect XRP')";
+        this.FS_AREA_DIV.innerText = "Waiting for connection...";
         this.FS_AREA_DIV.style.display = "flex";
 
         this.FS_STORAGE_BAR_DIV.style.width = 0 + "%";

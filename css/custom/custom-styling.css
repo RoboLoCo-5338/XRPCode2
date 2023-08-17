@@ -55,6 +55,12 @@
     background-color: green;
     /* top: 50px; */
   }
+  .run-button:disabled,
+  .run-button:hover {
+    background-color: rgb(1, 115, 1); /* [TODO] Andy review this color */
+    /* top: 50px; */
+  }
+  
   .connect-xrp {
     color: black;
     background-color: white;
@@ -66,8 +72,11 @@
     border-radius: 5px;
     z-index: 1000;
   }
- 
-
+ .connect-xrp:hover,
+ .connect-xrp:disabled {
+    background-color: #f8e0e0; /* [TODO] Andy review this color */
+  }
+  
 .uk-dropdown {
   --uk-position-offset: 10px;
   --uk-position-viewport-offset: 15px;
@@ -118,12 +127,12 @@
 }
 .uk-button-secondary-xmenu:disabled,
 .uk-button-secondary-xmenu:disabled:hover {
-  background-color: #4984ac;
+  background-color: #4984ac; /* [TODO] Andy review this color */
   color: #beb9b9;
   border: 1px solid transparent;
 }
 /* Hover */
 .uk-button-secondary-xmenu:hover {
-  background-color: #2980b9;
+  background-color: #2980b9; /* [TODO] Andy review this color */
   color: #fff;
 }
