@@ -815,6 +815,7 @@ function registerEditor(_container, state) {
                 default:
                     break;
             }
+            document.getElementById("IDRunBTN").disabled = false;
             return;
         }
 

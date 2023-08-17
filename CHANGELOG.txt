@@ -1,47 +1,22 @@
 
-# Version 3
+# Version 1.0.0
 
-This version has a lot of exciting updates. 
+This version has a lot of UX updates. 
 
 #### UI updates
-In this update, you will see a number of changes that are part of
-a new visual style for the IDE. The new UI isn't complete, but you'll
-be able to see the direction that it is going.
+* A new look with menus just at the top.
+* Change in how the CONNECT / RUN / STOP buttons work. They now guide the user through the process.
+* Colors header modified to match other XRP assets.
+* Improved wording in many dialogs messages.
+* Blockly updates **These updates may cause problems with existing .blocks files**.
+* Pop up progress bars for items that take a longer time.
 
-#### How programs run
-* All programs are now run in a try, except, finally block. This will catch and display
-any exceptions that occur when the program is running.
-* The finally block runs the `/lib/XRPLib/resetbot.py` This program resets the
-main parts of the robot:
-   * Motors
-   * Servos
-   * LED
-   * IMU 
-
-#### Fixed some CONNECT XRP problems
-* Sometimes the XRP would not connect or would display an error
-indicating MicroPython is not loaded even though it was. 
-* STOP would not always stop the program.
-
-#### vscode 
-vscode key bindings are now used when editing a MicroPython program
-
-#### "Save as" changes
-* The program name is now highlighted and ready to edit.
-* If you don't include an extension, then the original file extension
-will be used.
-
-#### STOPing programs
-* Occasionaly you might have to push the STOP button
-more than once to stop a program. It should be rare.
+#### Fixes in the areas of CONNECT / RUN / STOP
+Work to make these areas work consistently.
 
 #### Getting help
 * There are support forums now. To find them click on the USER GUIDE
 button and scroll to the bottom of the introduction page.
-
-#### example programs
-* When the new libraries install you will now see an `XRPExamples`
-directory with example programs in it.
 
 ## Fixes to the XRPLib
 
