@@ -445,13 +445,6 @@ class ReplJS{
             this.RUN_ERROR = result[i];
         }
        }
-        if(result && result[0].includes("[Errno",0)){
-            this.RUN_ERROR = result[0];
-        }
-        else {
-            
-        }
-
         // Get back into normal mode and omit the 3 lines from the normal message,
         // don't want to repeat (assumes already on a normal prompt)
         this.SPECIAL_FORCE_OUTPUT_FLAG = false;
@@ -756,7 +749,7 @@ class ReplJS{
             if(this.WRITER != undefined){
                 // this.startReaduntil("EOF");
                 await this.WRITER.write(writeDataCMD);
-                console.log("Sent file chunk: " + b);
+                //console.log("Sent file chunk: " + b);
                 // await this.haltUntilRead(0);
             }else{
                 if(this.DEBUG_CONSOLE_ON) console.log("%cNot writing to device, none connected", "color: red");
