@@ -144,19 +144,19 @@ class EditorWrapper{
         this.onFastExecute(this.getValue());
     }
 
-    closeThisEditor(){
+    async closeThisEditor(){
         // Remove this since only needed for editor
         window.removeEventListener("resize", this.windowResizeListener);
 
         if(Object.keys(this.EDITORS).length == 1){      //this is the last editor, so open the choose file
             this._container.parent.focus();
-            document.getElementById("IDAddEditorBTN").click();
+            await this.addNewEditor();
         }
 
         delete this.EDITORS[this.ID];
         this.clearStorage();
 
-        console.log("Cleared info for Editor: " + this._container.title);
+        //console.log("Cleared info for Editor: " + this._container.title);
 
         this._container.close();
     }
