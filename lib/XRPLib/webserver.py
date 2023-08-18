@@ -1,6 +1,6 @@
 from phew import server, template, logging, access_point, dns
 from phew.template import render_template
-from phew.server import redirect
+from phew.server import redirect, stop, close
 import gc
 import network
 import time
@@ -32,6 +32,8 @@ class Webserver:
         self.FUNCTION_PREFIX = "startfunction"
         self.FUNCTION_SUFFIX = "endfunction"
         self.display_arrows = False
+        # Instantiate self.wlan now so that running stop before start doesn't cause an error
+        self.wlan = network.WLAN(network.STA_IF)
 
     def start_network(self, ssid:str=None, robot_id:int= None, password:str=None):
         """
@@ -58,8 +60,11 @@ class Webserver:
                     robot_id = 1
                 ssid = f"XRP_{robot_id}"
                 password = "remote.xrp"
-        self.access_point = access_point(ssid, password)
-        self.ip = network.WLAN(network.AP_IF).ifconfig()[0]
+        if password is not None and len(password) < 8:
+            logging.warning("Password is less than 8 characters, this may cause issues with some devices")
+        self.wlan = access_point(ssid, password)
+        logging.info(f"Starting Access Point \"{ssid}\"")
+        self.ip = self.wlan.ifconfig()[0]
 
     def connect_to_network(self, ssid:str=None, password:str=None, timeout = 10):
         """
@@ -101,11 +106,23 @@ class Webserver:
 
         Preconditions: Either start_network or connect_to_network must be called before this method.
         """
+        self.wlan.active(True)
         logging.info(f"Starting DNS Server at {self.ip}")
         dns.run_catchall(self.ip)
         self.DOMAIN = self.ip
         logging.disable_logging_types(logging.LOG_INFO)
         server.run()
+
+    def stop_server(self):
+        """
+        Shuts off the webserver and network and stops handling requests
+        """
+        if self.wlan.active():
+            logging.enable_logging_types(logging.LOG_INFO)
+            logging.info("Stopping Webserver and Network Connections")
+            
+            stop()
+            self.wlan.active(False)
 
     def _index_page(self, request):
         # Render index page and respond to form requests
@@ -210,8 +227,8 @@ class Webserver:
                 return False
             user_function()
             return True
-        except:
-            logging.error("User function "+text+" caused an exception")
+        except RuntimeError as xcpt:
+            logging.error("User function "+text+" caused an exception: "+str(xcpt))
             return False
 
     def _generateHTML(self):
@@ -259,7 +276,7 @@ _HTML1 = """
         <html>
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <meta http-equiv="refresh" content="0.25">
+            <meta http-equiv="refresh" content="1">
             
             <style>
                 a { text-decoration: none; }

@@ -3,9 +3,12 @@
 # License: MIT
 # Author: shaoziyang (shaoziyang@micropython.org.cn)
 # v1.0 2019.7
-
-from .imu_defs import *
-from uctypes import struct, addressof
+try:
+    from .imu_defs import *
+    from uctypes import struct, addressof
+except (TypeError, ModuleNotFoundError):
+    # Import wrapped in a try/except so that autodoc generation can process properly
+    pass
 from machine import I2C, Pin, Timer, disable_irq, enable_irq
 import time, math
 
@@ -239,7 +242,7 @@ class IMU():
 
     def get_gyro_x_rate(self):
         """
-            Individual axis read for the Gyroscope's X-axis, in mg
+            Individual axis read for the Gyroscope's X-axis, in mdps
         """
         # Burst read data registers
         raw_bytes = self._getregs(LSM_REG_OUTX_L_G, 2)
@@ -249,7 +252,7 @@ class IMU():
 
     def get_gyro_y_rate(self):
         """
-            Individual axis read for the Gyroscope's Y-axis, in mg
+            Individual axis read for the Gyroscope's Y-axis, in mdps
         """
         # Burst read data registers
         raw_bytes = self._getregs(LSM_REG_OUTY_L_G, 2)
@@ -259,7 +262,7 @@ class IMU():
 
     def get_gyro_z_rate(self):
         """
-            Individual axis read for the Gyroscope's Z-axis, in mg
+            Individual axis read for the Gyroscope's Z-axis, in mdps
         """
         # Burst read data registers
         raw_bytes = self._getregs(LSM_REG_OUTZ_L_G, 2)
