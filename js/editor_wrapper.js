@@ -49,13 +49,13 @@ class EditorWrapper{
 
             var blockly_button = document.createElement("button");
             blockly_button.classList = "uk-button uk-button-secondary uk-width-1-2 uk-height-1-1 uk-text-small";
-            blockly_button.innerHTML = '<img src="css/blockly.svg" class="uk-width-1-2"/><p>BLOCKLY</p><p>(visual block editor)<p/>';
+            blockly_button.innerHTML = '<img src="images/blockly.svg" class="uk-width-1-2"/><div><p>BLOCKLY</p><p>(visual block editor)<p/></div>';
             blockly_button.title = "Load a Blockly Editor for visual block-based coding.";
             this.EDITOR_DIV.appendChild(blockly_button);
 
             var micropython_button = document.createElement("button");
             micropython_button.classList = "uk-button uk-button-secondary uk-width-1-2 uk-height-1-1 uk-text-small";
-            micropython_button.innerHTML = '<img src="css/micropython.png" class="uk-width-1-2 micropython-width"/><p>MICRO PYTHON</p><p>(text code editor)</p>';
+            micropython_button.innerHTML = '<img src="images/micropython.png" class="micropython-icon"/><div class="micropython-text"><p>MICRO PYTHON</p><p>(text code editor)</p></div>';
             micropython_button.title = "Load a MicroPython Editor for normal text-based coding.";
             this.EDITOR_DIV.appendChild(micropython_button);
 
