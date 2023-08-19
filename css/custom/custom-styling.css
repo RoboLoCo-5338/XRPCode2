@@ -138,17 +138,18 @@
   color: #fff;
   border: 1px solid transparent;
 }
-.uk-button-secondary-xmenu:disabled,
-.uk-button-secondary-xmenu:disabled:hover {
-  background-color: gainsboro;
-  color: #beb9b9;
-  border: 1px solid transparent;
-}
-/* Hover */
 .uk-button-secondary-xmenu:hover {
-  background-color: gainsboro;
+  background-color: #3a6989;
   color: #fff;
 }
+.uk-button-secondary-xmenu:disabled {
+  color: #ABA6A6;
+  border: 1px solid transparent;
+}
+.uk-button-secondary-xmenu:disabled:hover {
+  background-color: #4D7894;
+}
+
 .python-code {
   padding: 10px;
   height: 70%;
