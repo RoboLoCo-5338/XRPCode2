@@ -1,82 +1,95 @@
 .header {
-    background-color: #2980b9;
-    /* min-height: 67px; */
-    /* min-width: 100%; */
-    min-height: 45px;
-    width: 100%;
-    display: flex;
-    flex-flow: row wrap;
-    color: white;
-    z-index: 1000;
-    margin: 0%;
-    padding-top: 3px;
+  background-color: #2980b9;
+  /* min-height: 67px; */
+  /* min-width: 100%; */
+  min-height: 55px;
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  color: white;
+  z-index: 1000;
+  margin: 0%;
+  padding-top: 3px;
+}
+.header_logo_space {
+  background-color: #2980b9;
+  height: 50%;
+  display: inline-block;
+  flex: none;
+  /* align-items: center; */
+  /* justify-content: center; */
+  object-fit: fill;
+}
+.header_button_space {
+  background-color: #2980b9;
+  color: white;
+  width: 100%;
+  height: 100%;
+}
+.header_link_space {
+  margin-right:0%;
+  background-color: #2980b9;
+  color: white;
+}
+.editor_header_toolbar {
+  height: 100%;
+}
+.layout_container {
+  top: 55px;
+}
+.bg-transparent {
+  background-color: transparent;
+}
+.xrp_logo {
+  height: 50px;
+  width: 100%;
+  padding-right: 12%;
+}
+.micropython-icon {
+  width: 12vw;
+  margin: 1.5rem;
+  margin-top: 7%;
+}
+.micropython-text {
+  margin-top: 4%;
   }
-  .header_logo_space {
-    background-color: #2980b9;
-    height: 50%;
-    display: inline-block;
-    flex: none;
-    /* align-items: center; */
-    /* justify-content: center; */
-    object-fit: fill;
-  }
-  .header_button_space {
-    background-color: #2980b9;
-    color: white;
-    width: 100%;
-    height: 100%;
-  }
-  .header_link_space {
-    margin-right:0%;
-    background-color: #2980b9;
-    color: white;
-  }
-  .bg-transparent {
-    background-color: transparent;
-  }
-  .xrp_logo {
-    height: 100%;
-    width: 100%;
-    padding-right: 10%;
-  }
-  .micropython-width {
-    width: 12vw;
-  }
-  .action-button {
-    position:absolute;
-    top: 10px;
-    right: 20px;
-    height: 30px;
-    width: 120px;
-    border-radius: 5px;
-    z-index: 1000;
-  }
-  .run-button {
-    background-color: green;
-    /* top: 50px; */
-  }
-  .run-button:disabled,
-  .run-button:hover {
-    background-color: rgb(1, 115, 1); /* [TODO] Andy review this color */
-    /* top: 50px; */
-  }
-  
-  .connect-xrp {
-    color: black;
-    background-color: white;
-    position:absolute;
-    top: 5px;
-    right: 20px;
-    height: 35px;
-    width: 200px;
-    border-radius: 5px;
-    z-index: 1000;
-  }
- .connect-xrp:hover,
- .connect-xrp:disabled {
-    background-color: #f8e0e0; /* [TODO] Andy review this color */
-  }
-  
+.action-button {
+  position:absolute;
+  top: 10px;
+  right: 20px;
+  height: 30px;
+  width: 120px;
+  border-radius: 5px;
+  z-index: 1000;
+}
+.run-button {
+  background-color: green;
+  /* top: 50px; */
+}
+.run-button:hover {
+  background-color: rgb(1, 115, 1);
+  /* top: 50px; */
+}
+.connect-xrp {
+  color: black;
+  background-color: white;
+  position:absolute;
+  top: 8px;
+  right: 10px;
+  height: 35px;
+  width: 200px;
+  border-radius: 5px;
+  z-index: 1000;
+}
+.connect-xrp:hover {
+  background-color: #d3f8d3; /* light green */
+}
+
+.connect-xrp:disabled,
+.run-button:disabled {
+  background-color: #dcdcdc; /* light grey */
+}
+
 .uk-dropdown {
   --uk-position-offset: 10px;
   --uk-position-viewport-offset: 15px;
@@ -127,12 +140,22 @@
 }
 .uk-button-secondary-xmenu:disabled,
 .uk-button-secondary-xmenu:disabled:hover {
-  background-color: #4984ac; /* [TODO] Andy review this color */
+  background-color: gainsboro;
   color: #beb9b9;
   border: 1px solid transparent;
 }
 /* Hover */
 .uk-button-secondary-xmenu:hover {
-  background-color: #2980b9; /* [TODO] Andy review this color */
+  background-color: gainsboro;
   color: #fff;
+}
+.python-code {
+  padding: 10px;
+  height: 70%;
+  width: 55%;
+}
+.tj_icon {
+  padding-right: 5px;
+  height: 15px;
+  fill: white;
 }
