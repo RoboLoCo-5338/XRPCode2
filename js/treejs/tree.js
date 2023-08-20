@@ -150,7 +150,7 @@ function TreeView(root, container, options){
 			node.setExpanded(false);
 			node.setSelected(false);
 		}
-
+		
 		if(node.isSelected()){
 			span_desc.classList.add("selected");
 		}
@@ -265,24 +265,15 @@ function TreeView(root, container, options){
 			}
 		});
 
-		// Updating treejs preset icons with free font-awesome SVGs
 		if(node.isLeaf() && !TreeUtil.getProperty(node.getOptions(), "forceParent", false)){
 			var ret = '';
-
-			var icon = '';
-			var filename = node.toString();
-			if (filename.endsWith(".blocks")) {
-				icon = "<img class='tj_icon' src='images/light/cube-solid-light.svg' alt='blockly file' uk-img></img>";
-			} else if (filename.endsWith(".py")) {
-				icon = "<img class='tj_icon' src='images/light/python-light.svg' alt='python file' uk-img></img>";
-			}
-
+			var icon = TreeUtil.getProperty(node.getOptions(), "icon", "");
 			if(icon != ""){
-				ret += icon;
+				ret += '<span class="tj_icon">' + icon + '</span>';
 			}else if((icon = TreeUtil.getProperty(options, "leaf_icon", "")) != ""){
-				ret += icon;
+				ret += '<span class="tj_icon">' + icon + '</span>';
 			}else{
-				ret += '<span class="tj_icon">TEST</span>';
+				ret += '<span class="tj_icon">' + TreeConfig.leaf_icon + '</span>';
 			}
 
 			span_desc.innerHTML = ret + node.toString() + "</span>";
@@ -291,15 +282,19 @@ function TreeView(root, container, options){
 			li_outer.appendChild(span_desc);
 		}else{
 			var ret = '';
-			var closed_folder = "<img class='tj_icon' src='images/light/folder-solid-light.svg' alt='closed folder' uk-img></img>";
-			var open_folder = "<img class='tj_icon' src='images/light/folder-open-solid-light.svg' alt='open folder' uk-img></img>";
-			var expanded = "<img class='tj_icon' src='images/light/chevron-down-solid-light.svg' uk-img></img>";
-			var not_expanded = "<img class='tj_icon' src='images/light/chevron-right-solid-light.svg' uk-img></img>";
-
 			if(node.isExpanded()){
-				ret += open_folder + expanded; // OPEN FOLDER
+				ret += '<span class="tj_mod_icon">' + TreeConfig.open_icon + '</span>';
 			}else{
-				ret+= closed_folder + not_expanded; // CLOSED FOLDER
+				ret+= '<span class="tj_mod_icon">' + TreeConfig.close_icon + '</span>';
+			}
+
+			var icon = TreeUtil.getProperty(node.getOptions(), "icon", "");
+			if(icon != ""){
+				ret += '<span class="tj_icon">' + icon + '</span>';
+			}else if((icon = TreeUtil.getProperty(options, "parent_icon", "")) != ""){
+				ret += '<span class="tj_icon">' + icon + '</span>';
+			}else{
+				ret += '<span class="tj_icon">' + TreeConfig.parent_icon + '</span>';
 			}
 
 			span_desc.innerHTML = ret + node.toString() + '</span>';
@@ -313,7 +308,7 @@ function TreeView(root, container, options){
 					ul_container.appendChild(renderNode(child));
 				});
 
-				li_outer.appendChild(ul_container);
+				li_outer.appendChild(ul_container)
 			}
 		}
 
