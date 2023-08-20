@@ -1298,6 +1298,7 @@ class ReplJS{
         }
         if(this.RUN_BUSY){  //if the program is running do ctrl-c until we know it has stopped
             this.STOP = true;  //let the executeLines code know when it stops, it stopped because the STOP button was pushed
+            this.SPECIAL_FORCE_OUTPUT_FLAG = false; //turn off showing output so they don't see the keyboardInterrupt and stack trace.
             var count = 1;
             /*
                 We are BUSY, this means that there is another thread that started the program.
