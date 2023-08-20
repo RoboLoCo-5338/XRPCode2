@@ -325,6 +325,15 @@ Blockly.Python['xrp_ws_log_data'] = function (block) {
 };
 
 
+Blockly.Python['xrp_ws_connect_server'] = function (block) {
+  PY.definitions_['import_webserver'] = 'from XRPLib.webserver import Webserver';
+  PY.definitions_[`webserver_setup`] = `webserver = Webserver.get_default_webserver()`;
+  var ssid = block.getInputTargetBlock("server_ssid").getFieldValue("TEXT");
+  var pwd = block.getInputTargetBlock("server_pwd").getFieldValue("TEXT")
+  var code = `webserver.connect_to_network(ssid="${ssid}", password="${pwd}")\nwebserver.start_server()\n`
+  return code;
+};
+
 Blockly.Python['xrp_ws_start_server'] = function (block) {
   PY.definitions_['import_webserver'] = 'from XRPLib.webserver import Webserver';
   PY.definitions_[`webserver_setup`] = `webserver = Webserver.get_default_webserver()`;
