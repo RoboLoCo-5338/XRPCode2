@@ -32,6 +32,8 @@ Blockly.Blocks['xrp_motor_speed'] = {
       .appendField("Speed:");
     this.appendValueInput("speed")
       .setCheck("Number");
+    this.appendDummyInput()
+      .appendField("cm/s")
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -173,7 +175,10 @@ Blockly.Blocks['xrp_speed'] = {
       .appendField("Left:");
     this.appendValueInput("RIGHT")
       .setCheck(null)
+      .appendField("RPM")
       .appendField("Right:");
+    this.appendDummyInput()
+      .appendField("RPM");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -535,7 +540,26 @@ Blockly.Blocks['xrp_ws_start_server'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(190); // turquoise
-    this.setTooltip("");
+    this.setTooltip("Starts a web server from the XRP");
+    this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['xrp_ws_connect_server'] = {
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Connect web server");
+    this.appendValueInput("server_ssid")
+      .appendField("Name:")
+      .setCheck("String");
+    this.appendValueInput("server_pwd")
+      .appendField("Password:")
+      .setCheck("String");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(190); // turquoise
+    this.setTooltip("Connects the XRP web server to an existing network");
     this.setHelpUrl("");
   }
 };
