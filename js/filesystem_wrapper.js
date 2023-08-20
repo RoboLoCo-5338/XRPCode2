@@ -43,16 +43,16 @@ class FILESYSTEM{
 
 
         this.FS_DROPDOWN_DIV = document.createElement("div");
-        this.FS_DROPDOWN_DIV.setAttribute("uk-dropdown", "offset: 0; toggle: null");
+        this.FS_DROPDOWN_DIV.setAttribute("uk-dropdown", "mode: click; offset: 0; delay-hide: 200; toggle: null;");
         document.body.appendChild(this.FS_DROPDOWN_DIV);
 
-        this.FS_DROPDOWN_UL = document.createElement("div");
+        this.FS_DROPDOWN_UL = document.createElement("ul");
         this.FS_DROPDOWN_UL.classList = "uk-nav uk-dropdown-nav";
         this.FS_DROPDOWN_DIV.appendChild(this.FS_DROPDOWN_UL);
 
         var li = document.createElement("li");
         this.FS_DROPDOWN_DELETE_BTN = document.createElement("button");
-        this.FS_DROPDOWN_DELETE_BTN.classList = "uk-button uk-button-secondary uk-width-1-1";
+        this.FS_DROPDOWN_DELETE_BTN.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
         this.FS_DROPDOWN_DELETE_BTN.onclick = () => {this.onDelete(this.getSelectedNodePath(true)); this.FS_DROPDOWN_DIV.style.display = "none";};
         this.FS_DROPDOWN_DELETE_BTN.innerText = "Delete";
         this.FS_DROPDOWN_DELETE_BTN.title = "Deletes selected file or directory on XRP";
@@ -61,7 +61,7 @@ class FILESYSTEM{
 
         li = document.createElement("li");
         this.FS_DROPDOWN_RENAME_BTN = document.createElement("button");
-        this.FS_DROPDOWN_RENAME_BTN.classList = "uk-button uk-button-secondary uk-width-1-1";
+        this.FS_DROPDOWN_RENAME_BTN.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
         this.FS_DROPDOWN_RENAME_BTN.onclick = () => {this.onRename(this.getSelectedNodePath())};
         this.FS_DROPDOWN_RENAME_BTN.innerText = "Rename";
         this.FS_DROPDOWN_RENAME_BTN.title = "Renames selected file or directory on XRP";
@@ -70,7 +70,7 @@ class FILESYSTEM{
 
         li = document.createElement("li");
         this.FS_DROPDOWN_NEWFOLDER_BTN = document.createElement("button");
-        this.FS_DROPDOWN_NEWFOLDER_BTN.classList = "uk-button uk-button-secondary uk-width-1-1";
+        this.FS_DROPDOWN_NEWFOLDER_BTN.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
         this.FS_DROPDOWN_NEWFOLDER_BTN.onclick = () => {this.onNewFolder(this.getSelectedNodeFileOrDir(), this.getSelectedNodePath())};
         this.FS_DROPDOWN_NEWFOLDER_BTN.innerText = "New Folder";
         this.FS_DROPDOWN_NEWFOLDER_BTN.title = "Creates new directory in same folder of file or under selected folder";
@@ -90,7 +90,7 @@ class FILESYSTEM{
 
         li = document.createElement("li");
         this.FS_DROPDOWN_DOWNLOAD_BTN = document.createElement("button");
-        this.FS_DROPDOWN_DOWNLOAD_BTN.classList = "uk-button uk-button-secondary uk-width-1-1";
+        this.FS_DROPDOWN_DOWNLOAD_BTN.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
         this.FS_DROPDOWN_DOWNLOAD_BTN.onclick = () => {this.downloadSelected(this.FS_TREE.getSelectedNodes()[0], this.getSelectedNodeFileOrDir(), this.getSelectedNodePath())};
         this.FS_DROPDOWN_DOWNLOAD_BTN.innerText = "Export to PC";
         this.FS_DROPDOWN_DOWNLOAD_BTN.title = "Exports the selected items to your computer (all files under directory will be exported)";
@@ -100,6 +100,8 @@ class FILESYSTEM{
 
         this._container.element.appendChild(this.FS_ALL_DIV);
 
+        TreeConfig.leaf_icon = "<img class='tj_icon' src='images/light/file-solid-light.svg' alt='python file' uk-img></img>";
+        TreeConfig.parent_icon = "<img class='tj_icon' src='images/light/folder-open-solid-light.svg' alt='open folder' uk-img></img>";
 
         this.FS_ROOT = new TreeNode("\\");                               // Create the root-node
         this.FS_TREE = new TreeView(this.FS_ROOT, this.FS_AREA_DIV);     // Create the tree
@@ -136,6 +138,7 @@ class FILESYSTEM{
         });
 
 
+        // TESTING ONLY --> why does the bar not show/hide appropriately
         // Add events for FS button parent and the buttons themselves
         this.FS_DROPDOWN_DIV.addEventListener("mouseover", () => {
             this.FS_DROPDOWN_DIV.style.display = "block";
@@ -222,8 +225,8 @@ class FILESYSTEM{
         this.FS_ROOT = new TreeNode("\\");                              // Start new tree from start/root
         this.addChildrenToNodeDIR(this.FS_ROOT, this.LAST_JSON_DATA[""]);
         this.FS_TREE = new TreeView(this.FS_ROOT, div);                 // Render to webpage element
-    }
 
+    }
 
     // Recursive function for updating each branch
     // of FS tree based on json data from RP2040
@@ -272,9 +275,6 @@ class FILESYSTEM{
         }
     }
 
-
-
-
     // Recursive function for updating each branch
     // of FS tree based on json data from RP2040
     addChildrenToNode(treeNode, fsNode){
@@ -291,14 +291,18 @@ class FILESYSTEM{
             else{
                 this.FS_DROPDOWN_UL.children[1].hidden = false;
             }
-            this.FS_DROPDOWN_DIV.style.display = "block";
-            this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
 
-            let top = (event.clientY - this.FS_DROPDOWN_DIV.clientHeight + 3);
-            if(top < 0){
-                top = 0;
-            }
-            this.FS_DROPDOWN_DIV.style.top = top + 'px';
+            this.FS_DROPDOWN_DIV.style.display = "block";
+            this.FS_DROPDOWN_DIV.style.left = '30px';
+            this.FS_DROPDOWN_DIV.style.top = (event.clientY + 10) + 'px';
+
+            // this.FS_DROPDOWN_DIV.style.display = "block";
+            // this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
+            // let top = (event.clientY - this.FS_DROPDOWN_DIV.clientHeight + 3);
+            // if(top < 0){
+            //     top = 0;
+            // }
+            // this.FS_DROPDOWN_DIV.style.top = top + 'px';
 
             var selectedNodes = this.FS_TREE.getSelectedNodes();
 
@@ -314,13 +318,23 @@ class FILESYSTEM{
         for(var nodeKey in fsNode){
             if(!isNaN(nodeKey)){                                                                // Check if number (false means number inside string)
                 var fileOrDir = Object.keys(fsNode[nodeKey])[0];                                // Get string key that's either FILE or DIR
-                if(fileOrDir == "F"){
+                if (fileOrDir == "F") {
                     if(fsNode[nodeKey][fileOrDir] == "main.py" && window.SHOWMAIN == false){
                         // pass
 
                     }
-                    else{                                                   // Found file, just add name to tree
-                        var newFileTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir]);             // Make child node
+                    else{       
+                                                                    // Found file, just add name to tree
+                        var  icon_file = "<img class='tj_icon' src='images/light/file-solid-light.svg' alt='python file' uk-img></img>"                                        
+                        if (fsNode[nodeKey][fileOrDir].endsWith(".py")){
+                            icon_file = "<img class='tj_icon' src='images/light/python-light.svg' alt='python file' uk-img></img>"                                        
+                        }
+                        else if (fsNode[nodeKey][fileOrDir].endsWith(".blocks")){
+                            icon_file = "<img class='tj_icon' src='images/light/cube-solid-light.svg' alt='python file' uk-img></img>"                                        
+
+                        }
+                        var newFileTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir],
+                            {icon: icon_file});             // Make child node
 
                         // Assign event so that left clicked nodes can be opened in webpage
                         newFileTreeNode.on("dblclick", (event, node) => {
@@ -345,14 +359,19 @@ class FILESYSTEM{
                         newFileTreeNode.on("contextmenu", (event, node) => {
                             // Show menu for renaming, moving, deleting files and move to cursor.
                             this.FS_DROPDOWN_UL.children[1].hidden = false; //for the root contextmenu this is disabled. Make sure it is enabled for files.
-                            this.FS_DROPDOWN_DIV.style.display = "block";
-                            this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
 
-                            let top = (event.clientY - this.FS_DROPDOWN_DIV.clientHeight + 3);
-                            if(top < 0){
-                                top = 0;
-                            }
-                            this.FS_DROPDOWN_DIV.style.top = top + 'px';
+                            this.FS_DROPDOWN_DIV.style.display = "block";
+                            this.FS_DROPDOWN_DIV.style.left = '50px';
+                            this.FS_DROPDOWN_DIV.style.top = (event.clientY + 10) + 'px';
+
+                            // this.FS_DROPDOWN_DIV.style.display = "block";
+                            // this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
+
+                            // let top = (event.clientY - this.FS_DROPDOWN_DIV.clientHeight + 3);
+                            // if(top < 0){
+                            //     top = 0;
+                            // }
+                            // this.FS_DROPDOWN_DIV.style.top = top + 'px';
 
                             var selectedNodes = this.FS_TREE.getSelectedNodes();
 
@@ -370,7 +389,7 @@ class FILESYSTEM{
                         treeNode.addChild(newFileTreeNode);
                     }                                                                           // Add file name as child node
                 }else if(fileOrDir == "D"){                                                     // Found dir, add name to tree and make recursive call
-                    var dirTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir],{expanded:false});                 // Make FS tree node for dir
+                    var dirTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir], { expanded: false });                 // Make FS tree node for dir
 
                     // Assign event so that right clicked nodes bring up a menu
                     // to rename, copy, cut, paste, open, or delete file on-board
@@ -380,13 +399,16 @@ class FILESYSTEM{
 
                         // Show menu for renaming, moving, deleting files and move to cursor.
                         this.FS_DROPDOWN_DIV.style.display = "block";
-                        this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
+                        this.FS_DROPDOWN_DIV.style.left = '50px';
+                        this.FS_DROPDOWN_DIV.style.top = (event.clientY + 10) + 'px';
+                        // this.FS_DROPDOWN_DIV.style.display = "block";
+                        // this.FS_DROPDOWN_DIV.style.left = (event.clientX - 15) + 'px';
 
-                        let top = (event.clientY - this.FS_DROPDOWN_DIV.clientHeight + 3);
-                        if(top < 0){
-                            top = 0;
-                        }
-                        this.FS_DROPDOWN_DIV.style.top = top + 'px';
+                        // let top = (event.clientY - this.FS_DROPDOWN_DIV.clientHeight + 3);
+                        // if(top < 0){
+                        //     top = 0;
+                        // }
+                        // this.FS_DROPDOWN_DIV.style.top = top + 'px';
 
                         var selectedNodes = this.FS_TREE.getSelectedNodes();
 

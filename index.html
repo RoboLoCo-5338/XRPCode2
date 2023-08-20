@@ -26,7 +26,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
-        <link rel="icon" type="image/png" href="favicon.png">
+        <link rel="icon" type="image/png" href="images/favicon.png">
 
         <link rel="stylesheet" href="css/custom/custom-styling.css?">
     </head>
@@ -80,10 +80,7 @@
 
                     <div class="uk-button-group uk-height-1-1 uk-text-left">
 
-                        <img id="logo" class="xrp_logo" src="css/XRP_Logo.svg" alt="XRP Logo" uk-img>
-
-                        <!-- testing -->
-                        <!-- <div id="editor_header_toolbar" class="editor_header_toolbar"></div> -->
+                        <img id="logo" class="xrp_logo" src="images/xrpstickerbot.png" alt="XRP Logo" title="Hello world, I'm XRP!" uk-img>
 
                         <!-- <button
                             id="IDConnectThumbyBTN"
@@ -98,41 +95,41 @@
                         <div class="editor_header_toolbar">
 
                             <!-- FILE Menu-->
-                            <button 
-                                id="IDFileBTN" 
-                                class = "uk-button-xmenu uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap view-options" 
+                            <button
+                                id="IDFileBTN"
+                                class = "uk-button-xmenu uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap view-options"
                                 title =  "File operations for PC and XRP" >
                                 File&#x25BE
                             </button>
                             <div id="IDFile" uk-dropdown = "mode: click; offset: 0; delay-hide: 200">
                                 <ul id="IDFileDrop" class="uk-nav uk-dropdown-nav uk-dark">
-                                    <li><button 
-                                        id="IDFileAdd" 
+                                    <li><button
+                                        id="IDFileAdd"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
-                                        title = "Add a new Blockly or MicroPython file">
+                                        title = "Add a new Blockly or Python file">
                                         New File
                                     </button></li>
-                                    <li><button 
-                                        id = "IDFileUpload" 
+                                    <li><button
+                                        id = "IDFileUpload"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
                                         title =  "Uploads files to the XRP">
                                         Upload to XRP
                                     </button></li>
-                                    <li><button 
-                                        id = "IDFileExport" 
+                                    <li><button
+                                        id = "IDFileExport"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
                                         title =  "Export editor contents to file on PC">
                                         Export to PC
                                     </button></li>
                                     <li class =  "uk-nav-divider"></li>
-                                    <li><button 
-                                        id = "IDFileSave" 
+                                    <li><button
+                                        id = "IDFileSave"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
                                         title =  "Save editor contents to file on XRP (ctrl-s)">
                                         Save to XRP
                                     </button></li>
-                                    <li><button 
-                                        id = "IDFileSaveAs" 
+                                    <li><button
+                                        id = "IDFileSaveAs"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
                                         title =  "Save editor contents to file on XRP under a specific path">
                                         Save As to XRP
@@ -140,8 +137,8 @@
                                 </ul>
                             </div>
                             <!-- VIEW Menu-->
-                            <button 
-                                id="IDViewBTN" 
+                            <button
+                                id="IDViewBTN"
                                 class = "uk-button-xmenu uk-button-primary uk-height-1-1 uk-text-small uk-text-nowrap view-options"
                                 title = "Operations of currently selected file">
                                 View&#x25BE
@@ -149,43 +146,43 @@
                             <div id="IDView" uk-dropdown = "mode: click; offset: 0; delay-hide: 200">
                                 <!-- VIEW Menu Blockly-->
                                 <ul id="blockly_dropdown" class="uk-nav uk-dropdown-nav uk-dark" style="display:block">
-                                    <li><button 
-                                        id = "IDViewVM" 
+                                    <li><button
+                                        id = "IDViewVM"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
-                                        title =  "View the micropython code generated from this Blockly">
+                                        title =  "View the Python code generated from this Blockly">
                                         View Python
                                     </button></li>
-                                    <li><button 
-                                        id = "IDViewCM" 
+                                    <li><button
+                                        id = "IDViewCM"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
-                                        title =  "Convert this blocks program to a micropython program">
+                                        title =  "Convert this blocks program to a Python program">
                                         Convert To Python
                                     </button></li>
                                 </ul>
                                 <!-- VIEW Menu ACE-->
                                 <ul id="micropython_dropdown" class="uk-nav uk-dropdown-nav uk-dark" style="display:none">
-                                    <li><button 
-                                        id = "IDViewIncF" 
+                                    <li><button
+                                        id = "IDViewIncF"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
                                         title =  "Increase editor font size">
                                         Increase Font
                                     </button></li>
-                                    <li><button 
-                                        id = "IDViewDecF" 
+                                    <li><button
+                                        id = "IDViewDecF"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
                                         title =  "Decrease editor font size">
                                         Decrease Font
                                     </button></li>
                                     <!--
-                                    <li><button 
-                                        id = "IDViewResetF" 
+                                    <li><button
+                                        id = "IDViewResetF"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
                                         title =  "Reset font to default">
                                         Reset Font Size
                                     </button></li>
                                     -->
-                                    <li><button 
-                                        id = "IDViewAutoComplete" 
+                                    <li><button
+                                        id = "IDViewAutoComplete"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
                                         title =  "When turned off, basic autocomplete can be accessed using left-ctrl + space. Affects all editors">
                                         Turn live autocomplete off
@@ -214,7 +211,7 @@
                             uk-icon="file-edit" dir="rtl">
                             New File
                         </button>
-                    
+
                         <button
                             title="Opens link in new tab"
                             alt="Link to open User Guide"
@@ -253,9 +250,9 @@
         </div>
 
         <div id="view-python-code" uk-modal>
-          <div class="uk-modal-dialog uk-modal-body">
-              <button id="view-python-button"  class="uk-modal-close-default" type="button" uk-close></button>
-              <div id="view-python-ace" style="height: 500px; width: 100%; "></div>
+          <div class="uk-modal-dialog uk-modal-body python-code">
+              <button id="view-python-button" title="Close dialog" class="uk-modal-close-default" type="button" uk-close></button>
+              <div id="view-python-ace" style="padding-top: 3px; height: 100%; width: 100%;"></div>
           </div>
         </div>
 

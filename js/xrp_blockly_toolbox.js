@@ -249,6 +249,11 @@ var blocklyToolbox = {
                     "type": "xrp_ws_start_server",
                     "blockxml": "<block type=\"xrp_ws_start_server\"><value name=\"server_ssid\">\n<shadow type=\"text\">\n<field name=\"TEXT\">xrp_1</field>\n</shadow>\n</value>\n      <value name=\"server_pwd\">\n<shadow type=\"text\">\n<field name=\"TEXT\"></field>\n</shadow>\n</value>\n</block>",
                 },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_ws_connect_server",
+                    "blockxml": "<block type=\"xrp_ws_connect_server\"><value name=\"server_ssid\">\n<shadow type=\"text\">\n<field name=\"TEXT\">xrp_1</field>\n</shadow>\n</value>\n      <value name=\"server_pwd\">\n<shadow type=\"text\">\n<field name=\"TEXT\"></field>\n</shadow>\n</value>\n</block>",
+                },
             ]
         },
          {
