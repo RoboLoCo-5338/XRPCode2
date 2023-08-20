@@ -445,6 +445,7 @@ class ReplJS{
             this.RUN_ERROR = result[i];
         }
        }
+
         // Get back into normal mode and omit the 3 lines from the normal message,
         // don't want to repeat (assumes already on a normal prompt)
         this.SPECIAL_FORCE_OUTPUT_FLAG = false;
@@ -463,7 +464,11 @@ class ReplJS{
             this.STOP = false
             //We were hammering on ctrl-c up to get the program to stop (because timer routines don't stop).
             //Meaning finally did not run. We will run the resetbot routine
-            var cmd = "import XRPLib.resetbot\n"
+            var cmd = "import sys\n"+
+                        "if 'XRPLib.resetbot' in sys.modules:\n" +
+                        "   del sys.modules['XRPLib.resetbot']\n" +
+                        "from XRPLib.resetbot import reset_hard\n" +
+                        "reset_hard()\n"
             await this.writeUtilityCmdRaw(cmd, true, 1);
         }
 
@@ -857,6 +862,8 @@ class ReplJS{
             //[TODO] Need to notifiy user
             return;
         }
+        UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+
         window.setPercent(1, "Saving files...");
         let percent_per = 99 / fileHandles.length;
         let cur_percent = 1 + percent_per;
@@ -869,13 +876,15 @@ class ReplJS{
             const bytes = new Uint8Array(await file.arrayBuffer());
             //[TODO] Should we be doing this check?
             if(file.name.indexOf(".py") != -1 || file.name.indexOf(".txt") != -1 || file.name.indexOf(".text") != -1 || file.name.indexOf(".cfg") != -1){
-                await this.uploadFile(path + file.name, await file.text(), false, false);
+                await this.uploadFile(path + file.name, await file.text(), true);
             }else{
-                await this.uploadFile(path + file.name, new Uint8Array(await file.arrayBuffer()), false, true);
+                await this.uploadFile(path + file.name, new Uint8Array(await file.arrayBuffer()), true);
             }
         }
 
         window.resetPercentDelay();
+        UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
+
         await this.getOnBoardFSTree();
     }
 
