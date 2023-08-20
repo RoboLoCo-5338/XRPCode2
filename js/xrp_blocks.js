@@ -33,7 +33,7 @@ Blockly.Blocks['xrp_motor_speed'] = {
     this.appendValueInput("speed")
       .setCheck("Number");
     this.appendDummyInput()
-      .appendField("cm/s")
+      .appendField("RPM")
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -175,10 +175,10 @@ Blockly.Blocks['xrp_speed'] = {
       .appendField("Left:");
     this.appendValueInput("RIGHT")
       .setCheck(null)
-      .appendField("RPM")
+      .appendField("cm/s")
       .appendField("Right:");
     this.appendDummyInput()
-      .appendField("RPM");
+      .appendField("cm/s");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
