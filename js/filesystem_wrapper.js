@@ -100,6 +100,8 @@ class FILESYSTEM{
 
         this._container.element.appendChild(this.FS_ALL_DIV);
 
+        TreeConfig.leaf_icon = "<img class='tj_icon' src='images/light/file-solid-light.svg' alt='python file' uk-img></img>";
+        TreeConfig.parent_icon = "<img class='tj_icon' src='images/light/folder-open-solid-light.svg' alt='open folder' uk-img></img>";
 
         this.FS_ROOT = new TreeNode("\\");                               // Create the root-node
         this.FS_TREE = new TreeView(this.FS_ROOT, this.FS_AREA_DIV);     // Create the tree
@@ -321,8 +323,18 @@ class FILESYSTEM{
                         // pass
 
                     }
-                    else{                                                   // Found file, just add name to tree
-                        var newFileTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir]);             // Make child node
+                    else{       
+                                                                    // Found file, just add name to tree
+                        var  icon_file = "<img class='tj_icon' src='images/light/file-solid-light.svg' alt='python file' uk-img></img>"                                        
+                        if (fsNode[nodeKey][fileOrDir].endsWith(".py")){
+                            icon_file = "<img class='tj_icon' src='images/light/python-light.svg' alt='python file' uk-img></img>"                                        
+                        }
+                        else if (fsNode[nodeKey][fileOrDir].endsWith(".blocks")){
+                            icon_file = "<img class='tj_icon' src='images/light/cube-solid-light.svg' alt='python file' uk-img></img>"                                        
+
+                        }
+                        var newFileTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir],
+                            {icon: icon_file});             // Make child node
 
                         // Assign event so that left clicked nodes can be opened in webpage
                         newFileTreeNode.on("dblclick", (event, node) => {
