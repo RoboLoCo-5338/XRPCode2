@@ -961,7 +961,7 @@ class ReplJS{
         let info = await this.getVersionInfo();
 
         //if no library or the library is out of date
-        if(Number.isNaN(info[1]) || this.isVersionNewer(window.latestLibraryVersion, info[1])){
+        if(Number.isNaN(parseFloat(info[1])) || this.isVersionNewer(window.latestLibraryVersion, info[1])){
             await this.updateLibrary(info[1]);
         }
 
