@@ -1,45 +1,23 @@
 
-# Version 1.0.0
+# Version 1.0.1
 
-This version has a lot of UX updates. 
+This update has a few bug fixes 
 
-#### UI updates
-* A new look with menus just at the top.
-* Change in how the CONNECT / RUN / STOP buttons work. They now guide the user through the process.
-* Colors header modified to match other XRP assets.
-* Improved wording in many dialogs messages.
-* Blockly updates **These updates may cause problems with existing .blocks files**.
-* Pop up progress bars for items that take a longer time.
+#### Fixed
+* A timing error caused the update of MicroPython to occasionally look like it was stuck updating even though the update had finished.
+* Handled the case if an XRP was unplugged or the reset button had been pushed while running a program in XRPCode.
+* Fixed the case if Cancel was chosen in the dialog asking the user to turn on the XRP power switch.
+* Fixed a bug for uploading binary files such as .mpy files to the XRP.
 
-#### Fixes in the areas of CONNECT / RUN / STOP
-Work to make these areas work consistently.
+
+#### XRPLib fixes
+* Fixed a divide by zero error with DriveTrain Arcade mode.
+* Fixed problems with the motors and servos when using the MicroPython release 1.21.0
+
 
 #### Getting help
-* There are support forums now. To find them click on the USER GUIDE
-button and scroll to the bottom of the introduction page.
+* There are support forums. To find them click on 'User Guide' from the 'Help' menu and scroll to the bottom of the introduction page.
 
-## Fixes to the XRPLib
-
-#### Rangefinder
-* Fixed a bug where programs that used both the rangefinder and a sleep
-timer would hang.
-
-#### Webserver 
-* A user can now setup a `secrets.json` file to feed the parameters for
-the Network Name(SSID) and Password
-* Webserver log file is now called `webserverLog.txt` instead
-of log.txt
-* For the latest changes to the API click the XRP API button at
-the top of XRPCode.
-
-#### DifferentialDrive now has an `arcade` function
-The arcade function can independently control the direction and
-speed of the robot. This is ideal for writing programs that use
-proportional control for driving and turning.
-
-#### Improvements to the gyro accuracy
-
-#### Other general bug fixes
 
 
 
