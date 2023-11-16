@@ -359,11 +359,11 @@ document.getElementById("IDAPI").onclick = (event) =>{
     window.open("https://open-stem.github.io/XRP_MicroPython/", "_blank")
 }
 
-disableMenuItems(); 
+disableMenuItems();
 
 document.getElementById("IDRunBTN").onclick = async (event) =>{
     document.getElementById("IDRunBTN").disabled = true;
-    let id = getActiveId(); 
+    let id = getActiveId();
     EDITORS[id].runXRPCode();
     document.getElementById("IDRunBTN").disabled = false;
 
@@ -614,7 +614,7 @@ function registerShell(_container, state){
         ATERM.writeln("Waiting for connection... (plug in the XRP and click 'Connect XRP')");
         FS.clearToWaiting();
         window.disableMenuItems();
-        
+
         //FS.removeUpdate();
 
         //FS.disableButtons();
@@ -713,47 +713,49 @@ function registerEditor(_container, state) {
                     editor.onSaveToThumby();
                 }
             }
-        } else{
-            //check if name is untitled
-            if(editor.EDITOR_TITLE.search("untitled") != -1){
+        } else {
+            //check to see if filename is untitled
+            if (editor.EDITOR_TITLE.search("untitled") != -1) {
                 await editor.onSaveAsToThumby();
-                return;
-            }
-            console.log('Saved');
+            } else {
+                console.log('Saved');
+                editor.setSaved();
+                editor.updateTitleSaved();
 
-            editor.setSaved();
+                // show progress bar to show saving progress
+                UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+                document.getElementById("IdProgress_TitleText").innerText = "Saving...";
 
-            editor.updateTitleSaved();
-
-            // show progress bar to show saving progress
-            UIkit.modal(document.getElementById("IDProgressBarParent")).show();
-            document.getElementById("IdProgress_TitleText").innerText = "Saving...";
-
-            if(editor.isBlockly){
-                var blockData = editor.getValue() + '\n\n\n## ' + getTimestamp() + '\n##XRPBLOCKS ' + editor.getBlockData();
-                var busy = await REPL.uploadFile(
-                    editor.EDITOR_PATH, blockData, true, false);
-                if(busy != true){
-                    await REPL.getOnBoardFSTree();
+                if(editor.isBlockly){
+                    var blockData = editor.getValue() + '\n\n\n## ' + getTimestamp() + '\n##XRPBLOCKS ' + editor.getBlockData();
+                    var busy = await REPL.uploadFile(
+                        editor.EDITOR_PATH, blockData, true, false);
+                    if(busy != true){
+                        await REPL.getOnBoardFSTree();
+                    }
+                }else{
+                    var busy = await REPL.uploadFile(editor.EDITOR_PATH, editor.getValue(), true, false);
+                    if(busy != true){
+                        await REPL.getOnBoardFSTree();
+                    }
                 }
-            }else{
-                var busy = await REPL.uploadFile(editor.EDITOR_PATH, editor.getValue(), true, false);
-                if(busy != true){
-                    await REPL.getOnBoardFSTree();
-                }
+
+                // close progress bar modal after done saving to XRP
+                UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
             }
-
-            // close progress bar modal after done saving to XRP
-            UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
-
         }
     }
+
     editor.onSaveAsToThumby = async () => {
         console.log('Pick a folder');
         var path = await DIR.getPathFromUser(SAVEAS_ELEMENT, false, editor.EDITOR_TITLE.split('/').at(-1));
         if(path != undefined){
             if(path == "/main.py" && window.SHOWMAIN == false){
                 window.alertMessage("You can not save a file named 'main.py'<br>Please save again and select a different name");
+                return;
+            }
+            else if (path.search("untitled") === 1) {
+                window.alertMessage('You cannot save a file as Untitled. Please save again and provide a different file name.');
                 return;
             }
             editor.setPath(path);
@@ -835,7 +837,7 @@ function registerEditor(_container, state) {
         // show STOP button and hide RUN button when program is running
         document.getElementById('IDRunBTN').style.display = "none";
         document.getElementById('IDStopBTN').style.display = "block";
-        
+
         addFSOverlay();
         disableMenuItems();
 
@@ -858,7 +860,7 @@ function registerEditor(_container, state) {
 
         removeFSOverlay();
         enableMenuItems();
-        
+
         // after code finishes running, show RUN button and hide STOP button
         document.getElementById("IDRunBTN").disabled = false;
         document.getElementById('IDRunBTN').style.display = "block";
@@ -1016,7 +1018,7 @@ function getActiveId(){
             foundId = id; //keep track of the Active ones just in case non are in focus
         }
     }
-    
+
     //console.log("active is " + foundId);
     localStorage.setItem("activeTabId", foundId);
     if(EDITORS[foundId].isBlockly){
