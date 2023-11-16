@@ -5,7 +5,7 @@ import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-l
          VERSION NUMBERS
 */
 
-const showChangelogVersion = "1.0.0";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
+const showChangelogVersion = "1.0.1";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
 window.latestMicroPythonVersion = [1, 20, 0];
 
 
@@ -365,6 +365,8 @@ document.getElementById("IDRunBTN").onclick = async (event) =>{
     document.getElementById("IDRunBTN").disabled = true;
     let id = getActiveId(); 
     EDITORS[id].runXRPCode();
+    document.getElementById("IDRunBTN").disabled = false;
+
 };
 
 /*
@@ -1015,7 +1017,7 @@ function getActiveId(){
         }
     }
     
-    console.log("active is " + foundId);
+    //console.log("active is " + foundId);
     localStorage.setItem("activeTabId", foundId);
     if(EDITORS[foundId].isBlockly){
         document.getElementById("blockly_dropdown").style.display = "block"

@@ -438,13 +438,23 @@ class ReplJS{
         /*
                 This is where errors can be checked for that were returned incase we want to give a better explanation
                 The error information is put into a global variable for end processing if needed.
+
+                If we get an exception here it means that the unplugged or reset the XRP while the program was running.
         */
         this.RUN_ERROR = undefined;
-        for (let i=0;i<result.length;i++){
-            if(result[i].includes("[Errno",0)){
-            this.RUN_ERROR = result[i];
+        try{
+            for (let i=0;i<result.length;i++){
+                if(result[i].includes("[Errno",0)){
+                this.RUN_ERROR = result[i];
+                }
+            }
         }
-       }
+        catch{
+            this.SPECIAL_FORCE_OUTPUT_FLAG = false;
+            this.BUSY = false;
+            this.RUN_BUSY = false;
+            return;
+        }
 
         // Get back into normal mode and omit the 3 lines from the normal message,
         // don't want to repeat (assumes already on a normal prompt)
@@ -684,6 +694,7 @@ class ReplJS{
                                 "import sys\n" +
                                 "import time\n" +
                                 "micropython.kbd_intr(-1)\n" +
+                                "print('started')\n" +
                                 "w = open('" + filePath + "','wb')\n" +
 
                                 "byte_count_to_read = -1\n" +
@@ -697,6 +708,8 @@ class ReplJS{
                                 "    if byte_count_to_read == -1:\n" +
                                 "        time.sleep(0.025)\n" +
                                 "        byte_count_to_read = int(read_buffer[0:7].decode('utf-8'))\n" +
+                                // "        print(byte_count_to_read)\n" +
+                                // "        sys.stdout.write('EOF')\n" +
                                 "        specialIndex = 7\n" +
 
                                 "    if read_byte_count >= byte_count_to_read:\n" +
@@ -715,7 +728,7 @@ class ReplJS{
 
 
 
-        await this.writeUtilityCmdRaw(writeFileScript, true, 1, "OK");
+        await this.writeUtilityCmdRaw(writeFileScript, true, 1, "started");  //we wait until we print started, otherwise we may write a binary ctl character before the micropython.kbd_intr(-1)
 
         // https://stackoverflow.com/a/1127966
         var bytesLenStr = "" + bytes.length;
@@ -874,7 +887,7 @@ class ReplJS{
             const file = await fileHandles[i].getFile();
 
             const bytes = new Uint8Array(await file.arrayBuffer());
-            //[TODO] Should we be doing this check?
+            //[TODO] Should we be doing this check? - it seems yes so that .mpy files get binary encoded.
             if(file.name.indexOf(".py") != -1 || file.name.indexOf(".txt") != -1 || file.name.indexOf(".text") != -1 || file.name.indexOf(".cfg") != -1){
                 await this.uploadFile(path + file.name, await file.text(), true);
             }else{
@@ -1076,21 +1089,26 @@ class ReplJS{
             console.log(err);
             UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
             window.alertMessage("Error updating MicroPython. Please try again.");
+            this.BUSY = false;
             return;                                                                     // If the user doesn't allow tab to save to opened file, don't edit file
         }
-        window.setPercent(35);
 
+        window.setPercent(35);
         let data = await (await fetch("micropython/firmware.uf2")).arrayBuffer();
         window.setPercent(85);
         //message to click on Edit Files
         await writable.write(data);
+        //at some point after this write the PICO will reboot
         window.resetPercentDelay();
         this.HAS_MICROPYTHON = true;
-
-        await writable.close();
+        try{
+            await writable.close();
+        }
+        catch{
+            console.log("PICO rebooted before close - this is ok");
+        }
 
         this.BUSY = false;
-
         // hide modal after installation is complete
         UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
     }

@@ -36,8 +36,8 @@ class EditorWrapper{
         this._container.element.appendChild(this.EDITOR_DIV);
 
         this.defaultCode =   "from XRPLib.defaults import *\n\n" +
-                             "# available variables frm defaults: left_motor, right_motor, drivetrain,\n" +
-                             "#      imu, rangefinder, reflectance, servo_one, boad, webserver\n" +
+                             "# available variables from defaults: left_motor, right_motor, drivetrain,\n" +
+                             "#      imu, rangefinder, reflectance, servo_one, board, webserver\n" +
                              "# Write your code Here\n";
 
         // If this is the first time loading the website (with the default
@@ -405,8 +405,11 @@ class EditorWrapper{
             this.FONT_SIZE = lastEditorFontSize;
         }
 
-        // Get live autocomplete state, true if 'true' or undefined, affects all editors
-        this.AUTOCOMPLETE_STATE = (localStorage.getItem("EditorAutocompleteState") === 'true' || localStorage.getItem("EditorAutocompleteState") == undefined);
+        // Get live autocomplete state, affects all editors
+        this.AUTOCOMPLETE_STATE = localStorage.getItem("EditorAutocompleteState");
+        if(this.AUTOCOMPLETE_STATE == undefined){ 
+            this.AUTOCOMPLETE_STATE = false;  //if no state then off by default.
+        }
         this.setAutocompleteButtonText();
 
         // Set the options that were restored
