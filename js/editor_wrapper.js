@@ -13,7 +13,7 @@ class EditorWrapper{
         // spawn on first page creation or button click, all or no editors should exist
         // by now
         this.ID = 0;
-        if(state.id == -1 || state.id == undefined){
+        if (state.id == -1 || state.id == undefined) {
             while(this.ID in this.EDITORS){
                 this.ID = this.ID + 1;
             }
@@ -65,11 +65,17 @@ class EditorWrapper{
             micropython_button.onclick = () => {
                 cleanUp();
                 this.initEditorPanelUI(state["value"]);
+                if (localStorage.getItem('projectPath')) { // only call automatic save if user created a new project
+                    this.onSaveToThumby(); // call save after user selects a file type
+                }
             };
             blockly_button.onclick = () => {
                 cleanUp();
                 this.state['isBlockly'] = true;
                 this.initEditorPanelUI(state["value"]);
+                if (localStorage.getItem('projectPath')) { // only call automatic save if user created a new project
+                    this.onSaveToThumby(); // call save after user selects a file type
+                }
             };
         }else{
             this.initEditorPanelUI(state["value"]);
@@ -156,12 +162,12 @@ class EditorWrapper{
         delete this.EDITORS[this.ID];
         this.clearStorage();
 
-        //console.log("Cleared info for Editor: " + this._container.title);
-
         this._container.close();
     }
 
     initEditorPanelUI(data) {
+
+
         this.makeBlocklyPythonHeaderOptions();
 
         var isBlockly = localStorage.getItem("isBlockly" + this.ID) || this.state.isBlockly;
@@ -175,7 +181,7 @@ class EditorWrapper{
             console.log("INIT CODE VIEWER");
             localStorage.setItem("isBlockly" + this.ID, false);
             this.turnIntoCodeViewer(data);
-        }else if(data != undefined){
+        } else if (data != undefined) {
             // Check if the decoded data contains binary replacement letters (could also check that most characters only equal ascii chars)
             var text = typeof data == "string" ? data : new TextDecoder().decode(new Uint8Array(data));
             //We know there is data, so save it to the localstorage for this editor ID
@@ -228,6 +234,8 @@ class EditorWrapper{
             this.SAVED_TO_THUMBY = (lastEditorSavedToThumby === 'true');
         }
         this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
+
+
     }
 
     makeBlocklyPythonHeaderOptions() {

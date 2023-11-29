@@ -10,6 +10,18 @@ class FILESYSTEM{
         this.FS_ALL_DIV = document.createElement("div");
         this.FS_ALL_DIV.classList.add("fs");
 
+        this.FS_HEADER_DIV = document.createElement("div");
+        this.FS_HEADER_DIV.classList = "fs_header uk-button-group";
+        this.FS_ALL_DIV.appendChild(this.FS_HEADER_DIV);
+
+        this.FS_NEW_PROJECT_BTN = document.createElement("button");
+        this.FS_NEW_PROJECT_BTN.classList = "uk-margin uk-margin-top uk-button uk-button-primary uk-button-small uk-width-1-1";
+        this.FS_NEW_PROJECT_BTN.id = "CreateNewProjectBTN";
+        this.FS_NEW_PROJECT_BTN.onclick = () => {this.onCreateNewProjectAndFile()};
+        this.FS_NEW_PROJECT_BTN.innerText = "Create New Project";
+        this.FS_NEW_PROJECT_BTN.title = "Creates a new project for the XRP";
+        this.FS_HEADER_DIV.appendChild(this.FS_NEW_PROJECT_BTN);
+
         this.FS_STORAGE_BAR_PARENT_DIV = document.createElement("div");
         this.FS_STORAGE_BAR_PARENT_DIV.classList = "fs_storage_bar_parent";
         this.FS_ALL_DIV.appendChild(this.FS_STORAGE_BAR_PARENT_DIV);
@@ -18,14 +30,6 @@ class FILESYSTEM{
         this.FS_STORAGE_BAR_DIV.classList = "fs_storage_bar";
         this.FS_STORAGE_BAR_DIV.innerHTML = "&nbsp;Storage:";
         this.FS_STORAGE_BAR_PARENT_DIV.appendChild(this.FS_STORAGE_BAR_DIV);
-
-        this.FS_AREA_DIV = document.createElement("div");
-        this.FS_AREA_DIV.classList.add("fs_area");
-        this.FS_ALL_DIV.appendChild(this.FS_AREA_DIV);
-
-        // this.FS_FOOTER_DIV = document.createElement("div");
-        // this.FS_FOOTER_DIV.classList = "fs_footer uk-button-group";
-        // this.FS_ALL_DIV.appendChild(this.FS_FOOTER_DIV);
 
         // this.FS_UPLOAD_BTN = document.createElement("button");
         // this.FS_UPLOAD_BTN.classList = "uk-button uk-button-primary uk-button-small uk-width-1-1";
@@ -41,6 +45,12 @@ class FILESYSTEM{
         // this.FS_REFRESH_BTN.title = "Refresh filesystem";
         // this.FS_FOOTER_DIV.appendChild(this.FS_REFRESH_BTN);
 
+        this.FS_AREA_DIV = document.createElement("div");
+        this.FS_AREA_DIV.classList.add("fs_area");
+        this.FS_ALL_DIV.appendChild(this.FS_AREA_DIV);
+
+        // show or hide the filesystem tree
+        // this.FS_AREA_DIV.style.display = "none";
 
         this.FS_DROPDOWN_DIV = document.createElement("div");
         this.FS_DROPDOWN_DIV.setAttribute("uk-dropdown", "mode: click; offset: 0; delay-hide: 200; toggle: null;");
@@ -53,7 +63,10 @@ class FILESYSTEM{
         var li = document.createElement("li");
         this.FS_DROPDOWN_DELETE_BTN = document.createElement("button");
         this.FS_DROPDOWN_DELETE_BTN.classList = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1";
-        this.FS_DROPDOWN_DELETE_BTN.onclick = () => {this.onDelete(this.getSelectedNodePath(true)); this.FS_DROPDOWN_DIV.style.display = "none";};
+        this.FS_DROPDOWN_DELETE_BTN.onclick = () => {
+            this.onDelete(this.getSelectedNodePath(true));
+            this.FS_DROPDOWN_DIV.style.display = "none";
+        };
         this.FS_DROPDOWN_DELETE_BTN.innerText = "Delete";
         this.FS_DROPDOWN_DELETE_BTN.title = "Deletes selected file or directory on XRP";
         li.appendChild(this.FS_DROPDOWN_DELETE_BTN);
@@ -101,7 +114,8 @@ class FILESYSTEM{
         this._container.element.appendChild(this.FS_ALL_DIV);
 
         TreeConfig.leaf_icon = "<img class='tj_icon' src='images/light/file-solid-light.svg' alt='python file' uk-img></img>";
-        TreeConfig.parent_icon = "<img class='tj_icon' src='images/light/folder-open-solid-light.svg' alt='open folder' uk-img></img>";
+        TreeConfig.parent_icon_close = "<img class='tj_icon' src='images/light/folder-solid-light.svg' alt='close folder' uk-img></img>";
+        TreeConfig.parent_icon_open = "<img class='tj_icon' src='images/light/folder-open-solid-light.svg' alt='open folder' uk-img></img>";
 
         this.FS_ROOT = new TreeNode("\\");                               // Create the root-node
         this.FS_TREE = new TreeView(this.FS_ROOT, this.FS_AREA_DIV);     // Create the tree
@@ -137,8 +151,6 @@ class FILESYSTEM{
             this._container.focus();
         });
 
-
-        // TESTING ONLY --> why does the bar not show/hide appropriately
         // Add events for FS button parent and the buttons themselves
         this.FS_DROPDOWN_DIV.addEventListener("mouseover", () => {
             this.FS_DROPDOWN_DIV.style.display = "block";
@@ -323,14 +335,14 @@ class FILESYSTEM{
                         // pass
 
                     }
-                    else{       
+                    else{
                                                                     // Found file, just add name to tree
-                        var  icon_file = "<img class='tj_icon' src='images/light/file-solid-light.svg' alt='python file' uk-img></img>"                                        
+                        var  icon_file = "<img class='tj_icon' src='images/light/file-solid-light.svg' alt='python file' uk-img></img>"
                         if (fsNode[nodeKey][fileOrDir].endsWith(".py")){
-                            icon_file = "<img class='tj_icon' src='images/light/python-light.svg' alt='python file' uk-img></img>"                                        
+                            icon_file = "<img class='tj_icon' src='images/light/python-light.svg' alt='python file' uk-img></img>"
                         }
                         else if (fsNode[nodeKey][fileOrDir].endsWith(".blocks")){
-                            icon_file = "<img class='tj_icon' src='images/light/cube-solid-light.svg' alt='python file' uk-img></img>"                                        
+                            icon_file = "<img class='tj_icon' src='images/light/cube-solid-light.svg' alt='python file' uk-img></img>"
 
                         }
                         var newFileTreeNode = new TreeNode(fsNode[nodeKey][fileOrDir],

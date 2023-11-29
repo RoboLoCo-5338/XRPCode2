@@ -8,8 +8,9 @@ import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-l
 const showChangelogVersion = "1.0.1";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
 window.latestMicroPythonVersion = [1, 20, 0];
 
-
 const layoutSaveKey = "layout";
+
+localStorage.removeItem("projectPath"); // reset at the beginning of a page load
 
 var myLayout = new GoldenLayout(document.getElementById("IDLayoutContainer"));
 var DIR = new DIRCHOOSER();
@@ -129,14 +130,18 @@ var defaultConfig = {
     },
 
 
-    content: [{
+    // where the webpage is build out using golden layout
+    content: [
+        {
         type: 'column',
         id: 'rootcolumn',
         content: [{
             type: 'row',
             isClosable: false,
             id: 'rootrow',
-            content:[{
+            content: [
+            // hiding filesystem
+            {
                 type: 'stack',
                 width: 18,
                 id: 'justFS',
@@ -148,7 +153,8 @@ var defaultConfig = {
                     title: 'Filesystem',
                     id: "aFilesystem"
                 }]
-            },{
+            },
+            {
                 type: 'column',
                 content:[{
                     type: 'stack',
@@ -496,21 +502,53 @@ function registerFilesystem(_container, state){
     }
     FS.onFormat = () => REPL.format();
     FS.onUpdate = () => REPL.update();
-    // FS.onUploadFiles = async () => {
-    //     if(REPL.PORT != undefined){
-    //         console.log("Pick files to upload");
-    //         const fileHandles = await window.showOpenFilePicker({multiple: true});
-    //         if(fileHandles && fileHandles.length > 0){
-    //             var path = await DIR.getPathFromUser(SAVEAS_ELEMENT, true, fileHandles[0].name);
-    //             if(path != undefined){
-    //                 path = path.substring(1,path.lastIndexOf("/")+1);  //strip off the file name to get just the path.
-    //                 REPL.uploadFiles(path, fileHandles);
-    //             }
-    //         }
-    //     }else{
-    //         window.alertMessage("No XRP is connected. Files can not be uploaded. Double-check that the XRP is connected before attempting to upload a file.");
-    //     }
-    // }
+    FS.onUploadFiles = async () => {
+        if(REPL.PORT != undefined){
+            console.log("Pick files to upload");
+            const fileHandles = await window.showOpenFilePicker({multiple: true});
+            if(fileHandles && fileHandles.length > 0){
+                var path = await DIR.getPathFromUser(SAVEAS_ELEMENT, true, fileHandles[0].name);
+                if(path != undefined){
+                    path = path.substring(1,path.lastIndexOf("/")+1);  //strip off the file name to get just the path.
+                    REPL.uploadFiles(path, fileHandles);
+                }
+            }
+        }else{
+            window.alertMessage("No XRP is connected. Files can not be uploaded. Double-check that the XRP is connected before attempting to upload a file.");
+        }
+    }
+
+    // for creating a new project and file
+    FS.onCreateNewProjectAndFile = async () => {
+
+        if (REPL.DISCONNECT == true) {
+            window.alertMessage("No XRP is connected. Double-check that the XRP is connected before attempting to create a new project.");
+            return;
+        } else { // only continue if the XRP is connected
+            //immediately after the new file is opened,let the user create a new "project" aka folder and add to filesystem
+            var [response, newFolderName] = await window.promptMessage("What would you like to name your new project?");
+
+            let id1 = getActiveId();
+            console.log('id getActiveId: ', id1);
+            let id = localStorage.getItem("activeTabId");
+            if (!id) {
+                id = 0;
+            }
+
+            if (response == false) {
+                return;
+            } else if (newFolderName != null) {
+                await REPL.buildPath(newFolderName);
+                await REPL.getOnBoardFSTree();
+                //immediately after the new project/folder is made, open a new editor
+                var path = newFolderName;
+                localStorage.setItem("projectPath", path);
+                // FS.updateProjectName();
+                EDITORS[id].addNewEditor();
+            }
+        }
+    } // end of FS.onCreateNewProjectAndFile
+
     FS.onRefresh = async () => {
         if(REPL.PORT != undefined){
             window.setPercent(1, "Refreshing filesystem panel");
@@ -576,6 +614,8 @@ function registerFilesystem(_container, state){
     FS.onDownloadFiles = async (fullFilePaths) => {
         await downloadFileFromPath(fullFilePaths);
     }
+
+    // FS.hideFilesystem();
 
 }
 
@@ -690,24 +730,47 @@ function registerEditor(_container, state) {
             window.alertMessage("No XRP is connected. Any changes made were not saved. Double-check that the XRP is connected before attempting to save the program.");
             return;
         }
+
         // Not sure that this code will ever happen.
-        if(editor.EDITOR_PATH == undefined || editor.EDITOR_PATH == ""){
+        if (editor.EDITOR_PATH == undefined || editor.EDITOR_PATH == "") {
             if(editor.EDITOR_TITLE == "Choose Mode"){
                 //pass
             }
-            else{
-                console.log('Pick a folder');
-                var path = await DIR.getPathFromUser(SAVEAS_ELEMENT);
-                if (path != undefined) {
-                    // Make sure no editors with this file path already exist
-                    for (const [id, editor] of Object.entries(EDITORS)) {
-                        if(editor.EDITOR_PATH == path){
-                            editor._container.parent.focus();
-                            this.alertMessage("This file is already open in Editor" + id + "! Please close it first");
-                            return;
+            else {
+
+                let existingProjectPath = localStorage.getItem("projectPath");
+
+                if (existingProjectPath == undefined) {
+                    console.log('Pick a folder - onSave');
+                    var path = await DIR.getPathFromUser(SAVEAS_ELEMENT);
+                    if (path != undefined) {
+                        // Make sure no editors with this file path already exist
+                        for (const [id, editor] of Object.entries(EDITORS)) {
+                            if (editor.EDITOR_PATH == path) {
+                                editor._container.parent.focus();
+                                this.alertMessage("This file is already open in Editor" + id + "! Please close it first");
+                                return;
+                            }
                         }
+                        editor.setPath(path);
+                        editor.setSaved();
+                        editor.updateTitleSaved();
+                        editor.onSaveToThumby();
                     }
-                    editor.setPath(path);
+                } else if (existingProjectPath) {
+                    let editorPath = 'EditorPath' + localStorage.getItem('activeTabId');
+                    let editorPathValue = localStorage.getItem(editorPath);
+                    let fileType = '';
+                    if (editorPathValue.endsWith(".blocks")) {
+                        fileType = '.blocks';
+                    } else if (editorPathValue.endsWith(".py")) {
+                        fileType = '.py';
+                    }
+
+                    let filePath = localStorage.getItem("filePath");
+                    newProjectFilePath = projectPath + "/" + filePath + fileType;
+
+                    editor.setPath(newProjectFilePath);
                     editor.setSaved();
                     editor.updateTitleSaved();
                     editor.onSaveToThumby();
@@ -742,26 +805,66 @@ function registerEditor(_container, state) {
 
                 // close progress bar modal after done saving to XRP
                 UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
+                localStorage.removeItem("filePath"); // remove path now that it has been used to save
+                localStorage.removeItem("projectPath"); // remove path now that it has been used to save
             }
         }
     }
 
     editor.onSaveAsToThumby = async () => {
-        console.log('Pick a folder');
-        var path = await DIR.getPathFromUser(SAVEAS_ELEMENT, false, editor.EDITOR_TITLE.split('/').at(-1));
-        if(path != undefined){
-            if(path == "/main.py" && window.SHOWMAIN == false){
+        let existingProjectPath = localStorage.getItem("projectPath");
+        if (existingProjectPath) {
+            var [response_Name, newFileName] = await window.promptMessage("What would you like to name this file?");
+
+            if (response_Name == false) {
+                return;
+            } else if (newFileName === '') {
+                window.alertMessage('You cannot save a file as Untitled. Please save again and provide a different file name.');
+                return;
+            } else {
+                localStorage.setItem("filePath", newFileName);
+            }
+        }
+
+        if (existingProjectPath != undefined) {
+            path = existingProjectPath;
+        } else {
+            var path = await DIR.getPathFromUser(SAVEAS_ELEMENT, false, editor.EDITOR_TITLE.split('/').at(-1));
+            console.log('Pick a folder - onSaveAs');
+        }
+
+        if (path != undefined) {
+            if (path == "/main.py" && window.SHOWMAIN == false) {
                 window.alertMessage("You can not save a file named 'main.py'<br>Please save again and select a different name");
                 return;
             }
             else if (path.search("untitled") === 1) {
                 window.alertMessage('You cannot save a file as Untitled. Please save again and provide a different file name.');
                 return;
+            } else if (newFileName == '' || newFileName == null) {
+                // if user cancels from providing name, don't save OR no project clicked on
+                editor.setPath(path);
+                editor.setSaved();
+                editor.updateTitleSaved();
+                await editor.onSaveToThumby();
+            } else {
+                let editorPath = 'EditorPath' + localStorage.getItem('activeTabId');
+                let editorPathValue = localStorage.getItem(editorPath);
+                let fileType = '';
+                if (editorPathValue.endsWith(".blocks")) {
+                    fileType = '.blocks';
+                } else if (editorPathValue.endsWith(".py")) {
+                    fileType = '.py';
+                }
+
+                let filePath = localStorage.getItem("filePath");
+                let newProjectFilePath = existingProjectPath + "/" + filePath + fileType;
+
+                editor.setPath(newProjectFilePath);
+                editor.setSaved();
+                editor.updateTitleSaved();
+                await editor.onSaveToThumby();
             }
-            editor.setPath(path);
-            editor.setSaved();
-            editor.updateTitleSaved();
-            await editor.onSaveToThumby();
         }
     }
 
