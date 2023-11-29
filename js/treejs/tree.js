@@ -150,7 +150,7 @@ function TreeView(root, container, options){
 			node.setExpanded(false);
 			node.setSelected(false);
 		}
-		
+
 		if(node.isSelected()){
 			span_desc.classList.add("selected");
 		}
@@ -293,8 +293,13 @@ function TreeView(root, container, options){
 				ret += '<span class="tj_icon">' + icon + '</span>';
 			}else if((icon = TreeUtil.getProperty(options, "parent_icon", "")) != ""){
 				ret += '<span class="tj_icon">' + icon + '</span>';
-			}else{
-				ret += '<span class="tj_icon">' + TreeConfig.parent_icon + '</span>';
+			} else {
+				if(node.isExpanded()){
+					ret += '<span class="tj_icon">' + TreeConfig.parent_icon_open + '</span>';
+				}else{
+					ret+= '<span class="tj_icon">' + TreeConfig.parent_icon_close + '</span>';
+				}
+				// ret += '<span class="tj_icon">' + TreeConfig.parent_icon + '</span>';
 			}
 
 			span_desc.innerHTML = ret + node.toString() + '</span>';
