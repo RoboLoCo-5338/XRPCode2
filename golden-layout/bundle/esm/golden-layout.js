@@ -2929,45 +2929,12 @@ class Tab {
         }
     }
 
-    // this method will update the EditorHeaderToolbar
-    updateEditorHeaderToolbar() {
-        return;
-        let tabId = this._componentItem._container._state.id;
-        let tabTitle = this._componentItem._title;
-
-        if (tabTitle.startsWith('untitled-')) {
-            tabTitle = tabTitle.slice(0, -2); // "untitled-1.blocks •" <-- brand new files save as this otherwise
-        }
-
-        let tabFileType_blockly = tabTitle.endsWith(".blocks");
-        let tabFileType_python = tabTitle.endsWith(".py");
-
-        if (tabFileType_blockly == true) {
-            localStorage.setItem("activeTabFileType", "blockly");
-            // hide micropython dropdown options since this is a blockly file
-            document.getElementById("file_options").style.display = "block";
-            //document.getElementById("IDAddEditorBTN").style.display = "none";
-            document.getElementById("micropython_dropdown").style.display = "none";
-            document.getElementById("blockly_dropdown").style.display = "inline-block";
-        } else if (tabFileType_python == true) {
-            localStorage.setItem("activeTabFileType", "micropython");
-            // hide blockly dropdown options since this is a micropython file
-            document.getElementById("file_options").style.display = "block";
-            //document.getElementById("IDAddEditorBTN").style.display = "none";
-            document.getElementById("blockly_dropdown").style.display = "none";
-            document.getElementById("micropython_dropdown").style.display = "inline-block";
-        }
-        localStorage.setItem("activeTabId", tabId);
-        localStorage.setItem('activeTabFileName', tabTitle);
-    }
-
     /** @internal */
     notifyFocus() {
         if (this._focusEvent === undefined) {
             throw new _errors_internal_error__WEBPACK_IMPORTED_MODULE_0__.UnexpectedUndefinedError('TNA15007');
         }
         else {
-            this.updateEditorHeaderToolbar();
             this._focusEvent(this._componentItem);
         }
     }
