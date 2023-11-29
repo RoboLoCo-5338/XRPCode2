@@ -11,10 +11,10 @@
   margin: 0%;
   padding-top: 3px;
 }
-.lm_header {
+/* hide the tabs in the Edito */
+/* .lm_header {
   display:none;
-  /* hiding the tabs in the Editor for project-based focus */
-}
+} */
 .header_logo_space {
   background-color: #2980b9;
   height: 50%;

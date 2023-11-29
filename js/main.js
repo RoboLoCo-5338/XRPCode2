@@ -814,7 +814,7 @@ function registerEditor(_container, state) {
     editor.onSaveAsToThumby = async () => {
         let existingProjectPath = localStorage.getItem("projectPath");
         if (existingProjectPath) {
-            var [response_Name, newFileName] = await window.promptMessage("What would you like to name this file?");
+            var [response_Name, newFileName] = await window.promptMessage("What would you like to name this file? <br> *Note: This file will be saved in the project you just created (" + existingProjectPath + ")");
 
             if (response_Name == false) {
                 return;
@@ -841,8 +841,10 @@ function registerEditor(_container, state) {
             else if (path.search("untitled") === 1) {
                 window.alertMessage('You cannot save a file as Untitled. Please save again and provide a different file name.');
                 return;
-            } else if (newFileName == '' || newFileName == null) {
-                // if user cancels from providing name, don't save OR no project clicked on
+            } else if ((existingProjectPath) && (newFileName == '' || newFileName == null)) {
+                // if user cancels from providing name, don't save
+            } else if (existingProjectPath == undefined) {
+                // if user is not creating a new project/file
                 editor.setPath(path);
                 editor.setSaved();
                 editor.updateTitleSaved();
@@ -1021,7 +1023,7 @@ function registerEditor(_container, state) {
             if(ed.EDITOR_PATH == newFile){
                 ed.onSaveToThumby();
             }
-            }
+        }
     }
 
     editor.onDownloadFile = async () => {
