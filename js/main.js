@@ -7,6 +7,7 @@ import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-l
 
 const showChangelogVersion = "1.0.1";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
 window.latestMicroPythonVersion = [1, 20, 0];
+window.xprID = "";
 
 
 const layoutSaveKey = "layout";
@@ -628,6 +629,7 @@ function registerShell(_container, state){
         document.getElementById("IDRunBTN").disabled = false;
         document.getElementById('IDRunBTN').style.display = "block";
         document.getElementById('IDConnectThumbyBTN').style.display = "none";
+        //ID this would be a good spot to send window.xrpID to the database
         //FS.enableButtons();
     }
     REPL.onFSData = (jsonStrData, fsSizeData) => {

@@ -807,6 +807,7 @@ class ReplJS{
 
         var cmd =   "import os\n" +
                     "import sys\n" +
+                    "import machine\n" +
 
                     "print(sys.implementation[1])\n" +
                     "try:\n" +
@@ -820,7 +821,9 @@ class ReplJS{
                     "            print(line.split('\\\'')[1])\n" +
                     "            break\n" +
                     "except:\n" +
-                    "    print(\"ERROR EX\")\n";
+                    "    print(\"ERROR EX\")\n" +
+                    "print(''.join(['{:02x}'.format(b) for b in machine.unique_id()]));";
+                   
 
         var hiddenLines = await this.writeUtilityCmdRaw(cmd, true, 1);
 
@@ -828,10 +831,9 @@ class ReplJS{
         this.BUSY = false;
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: out of getVerionINfo");
 
-
         if(hiddenLines != undefined){
             if(hiddenLines[0].substring(2) != "ERROR"){
-                return [hiddenLines[0].substring(2), hiddenLines[1]];
+                return [hiddenLines[0].substring(2), hiddenLines[1], hiddenLines[2]];
             }else{
                 console.error("Error getting version information");
             }
@@ -972,6 +974,8 @@ class ReplJS{
 
         //get version information from the XRP
         let info = await this.getVersionInfo();
+
+        window.xrpID = info[2]; //store off the unique ID for this XRP
 
         //if no library or the library is out of date
         if(Number.isNaN(parseFloat(info[1])) || this.isVersionNewer(window.latestLibraryVersion, info[1])){
