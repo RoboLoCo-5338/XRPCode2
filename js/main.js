@@ -6,7 +6,7 @@ import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-l
 */
 
 const showChangelogVersion = "1.0.1";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
-window.latestMicroPythonVersion = [1, 20, 0];
+window.latestMicroPythonVersion = [1, 22, 0];
 window.xprID = "";
 
 
@@ -816,6 +816,12 @@ function registerEditor(_container, state) {
                         });
                     });
                     break;
+                case "-debug":
+                    REPL.DEBUG_CONSOLE_ON = false;
+                    break;
+                case "+debug":
+                        REPL.DEBUG_CONSOLE_ON = true;
+                        break;
                 default:
                     break;
             }
