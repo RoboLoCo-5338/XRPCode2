@@ -54,6 +54,8 @@ class ReplJS{
         this.SPECIAL_FORCE_OUTPUT_FLAG = false;
         this.CATCH_OK = false;
 
+        this.buffer = []; //buffer of read values to catch escape sequences.
+
         // Use to disable auto connect if manual connecting in progress
         this.MANNUALLY_CONNECTING = false;
 
@@ -198,7 +200,35 @@ class ReplJS{
         }
     }
 
-
+    HandleEsc(value){
+        this.buffer = this.buffer.concat(Array.from(value));
+        var temp = [];
+        var x = this.buffer.lastIndexOf(27); //is there an escape in this string
+        if(x == -1){
+            temp = this.buffer;
+            this.buffer = [];
+            return temp;
+        }
+        else{
+            var escEnded = false;
+            x++;
+            for(x;x<this.buffer.length;x++){
+                var char = this.buffer[x];
+                if (char >= 65 && char <= 90 || char >= 97 && char <= 122) {
+                    escEnded = true;
+                    break;
+                }
+            }
+            if(escEnded){
+                temp = this.buffer;
+                this.buffer = [];
+            }
+            else{
+                temp = [];
+            }
+            return temp;
+        }
+    }
     async readLoop(){
         // Everytime the readloop is started means a device was connect/reconnected, reset variables states in case of reconnect
         this._CHUNKS = "";
@@ -224,7 +254,12 @@ class ReplJS{
 
                         // Collect lines when read until active, otherwise, output to terminal
                         if(this.READ_UNTIL_STRING == ""){
-                            this.onData(this.TEXT_DECODER.decode(value));
+                            //We need to handle the case where esc sequences are broken up into multiple reads.
+                            var tempValue = value;
+                            tempValue = this.HandleEsc(tempValue);
+                            if(tempValue.length > 0){
+                                this.onData(this.TEXT_DECODER.decode(new Uint8Array(tempValue)));
+                            }
                         }else{
                             // There are two things going on here.
                             //     1 - When we are running a program, we want all incoming lines to be pushed to the terminal
@@ -319,7 +354,7 @@ class ReplJS{
             this.startReaduntil(customWaitForStr);
             await this.writeToDevice("\x04");
             if(customWaitForStr == ">") await this.waitUntilOK();
-            return await this.haltUntilRead(omitAmount);
+            return await this.haltUntilRead(omitAmount, 50); //added timeout since micropython 1.19 sometimes will not get the soft reset and hang
         }else{
             await this.writeToDevice("\x04");
         }
@@ -977,18 +1012,17 @@ class ReplJS{
 
         window.xrpID = info[2]; //store off the unique ID for this XRP
 
-        //if no library or the library is out of date
-        if(Number.isNaN(parseFloat(info[1])) || this.isVersionNewer(window.latestLibraryVersion, info[1])){
-            await this.updateLibrary(info[1]);
-        }
-
         info[0]= info[0].replace(/[\(\)]/g, "").replace(/,\s/g, "."); //convert to a semantic version
         //if the microPython is out of date
         if(this.isVersionNewer(window.latestMicroPythonVersion, info[0])){
             // Need to update MicroPython
             //alert("Need to update Micropython")
             await this.showMicropythonUpdate();
-            return;
+        }
+
+        //if no library or the library is out of date
+        if(Number.isNaN(parseFloat(info[1])) || this.isVersionNewer(window.latestLibraryVersion, info[1])){
+            await this.updateLibrary(info[1]);
         }
     }
 
@@ -1035,6 +1069,7 @@ class ReplJS{
         await this.deleteFileOrDir("/lib/XRPLib");  //delete all the files first to avoid any confusion.
         for(let i=0; i<urls.length; i++){
             window.setPercent(cur_percent, "Updating XRPLib...");
+            //console.log("percent = " + cur_percent);
             //added a version number to ensure that the browser does not cache it.
             let next = urls[i];
             var parts = next[0];
@@ -1051,6 +1086,7 @@ class ReplJS{
         await this.deleteFileOrDir("/lib/phew");  //delete all the files first to avoid any confusion.
         for(let i=0; i<window.phewList.length; i++){
             window.setPercent(cur_percent, "Updating XRPLib...");
+            //console.log("percent = " + cur_percent);
             //added a version number to ensure that the browser does not cache it.
             await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i] + "?version=" + window.latestLibraryVersion[2]));
             cur_percent += percent_per;
