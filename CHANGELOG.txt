@@ -6,7 +6,6 @@ This update has a few bug fixes
 #### Fixed
 * A timing error that caused the XRPLib update to get stuck at 34% or 64%
 * XRPCode now updates the MicroPython and then XRPLib
-* Updated the version of MicroPython to 1.22.0
 * Fixed escape sequences getting lost while using the keyboard commands with the REPL in the Shell window 
 
 
