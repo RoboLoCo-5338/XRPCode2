@@ -1,25 +1,16 @@
 
-# Version 1.0.1
+# Version 1.0.2
 
 This update has a few bug fixes 
 
 #### Fixed
-* A timing error caused the update of MicroPython to occasionally look like it was stuck updating even though the update had finished.
-* Handled the case if an XRP was unplugged or the reset button had been pushed while running a program in XRPCode.
-* Fixed the case if Cancel was chosen in the dialog asking the user to turn on the XRP power switch.
-* Fixed a bug for uploading binary files such as .mpy files to the XRP.
-
-
-#### XRPLib fixes
-* Fixed a divide by zero error with DriveTrain Arcade mode.
-* Fixed problems with the motors and servos when using the MicroPython release 1.21.0
+* A timing error that caused the XRPLib update to get stuck at 34% or 64%
+* XRPCode now updates the MicroPython and then XRPLib
+* Fixed escape sequences getting lost while using the keyboard commands with the REPL in the Shell window 
 
 
 #### Getting help
 * There are support forums. To find them click on 'User Guide' from the 'Help' menu and scroll to the bottom of the introduction page.
-
-
-
 
 
 
