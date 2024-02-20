@@ -15,7 +15,7 @@ class ReplJS{
         this.THUMBY_SEND_BLOCK_SIZE = 255;  // How many bytes to send to Thumby at a time when uploading a file to it
 
         // Set true so most terminal output gets passed to javascript terminal
-        this.DEBUG_CONSOLE_ON = false;
+        this.DEBUG_CONSOLE_ON = true;
 
         this.COLLECT_RAW_DATA = false;
         this.COLLECTED_RAW_DATA = [];
@@ -352,11 +352,11 @@ class ReplJS{
 
         if(waitForCmdEnd){
             this.startReaduntil(customWaitForStr);
-            await this.writeToDevice("\x04");
+            await this.writeToDevice(this.CTRL_CMD_SOFTRESET);
             if(customWaitForStr == ">") await this.waitUntilOK();
             return await this.haltUntilRead(omitAmount, 50); //added timeout since micropython 1.19 sometimes will not get the soft reset and hang
         }else{
-            await this.writeToDevice("\x04");
+            await this.writeToDevice(this.CTRL_CMD_SOFTRESET);
         }
     }
 
@@ -464,7 +464,7 @@ class ReplJS{
 
         this.RUN_BUSY  = true;
         this.startReaduntil(">");
-        await this.writeToDevice(lines + "\x04");
+        await this.writeToDevice(lines + this.CTRL_CMD_SOFTRESET);
         this.SPECIAL_FORCE_OUTPUT_FLAG = true;  //you see the OK, but also get any fast output
         this.CATCH_OK = true;
         await this.waitUntilOK();
@@ -963,7 +963,7 @@ class ReplJS{
         // but is needed to only grab the FS lines/data
         this.startCollectRawData();
         this.startReaduntil("###DONE READING FILE###");
-        await this.writeToDevice(cmd + "\x04");
+        await this.writeToDevice(cmd + this.CTRL_CMD_SOFTRESET);
 
         // fielcontents only used for case of script ascii, otherwise use COLLECTED_RAW_DATA to get raw binary data to save
         var fileContents = undefined;
@@ -1116,7 +1116,7 @@ class ReplJS{
             await this.getToRaw();
 
             this.startReaduntil("OK");
-            await this.writeToDevice(cmd + "\x04");
+            await this.writeToDevice(cmd + this.CTRL_CMD_SOFTRESET);
         }
         var writable;
         window.setPercent(3);
@@ -1331,6 +1331,8 @@ class ReplJS{
             this.MANNUALLY_CONNECTING = true;
             if(this.DEBUG_CONSOLE_ON) console.log("%cTrying manual connect..", "color: yellow");
 
+            //var device = await navigator.bluetooth.requestDevice({acceptAllDevices :true});
+
             await navigator.serial.requestPort({filters: [{ usbVendorId, usbProductId }, { usbVendorId, usbProductMacId }]}).then(async (port) => {
                 this.PORT = port;
                 if(this.DEBUG_CONSOLE_ON) console.log("%cManually connected!", "color: lime");
@@ -1338,7 +1340,7 @@ class ReplJS{
             }).catch((err) => {
                 if (this.DEBUG_CONSOLE_ON)
                     console.log("%cNot manually connected...", "color: yellow");
-                    document.getElementById('IDConnectThumbyBTN').style.display = "block";
+                document.getElementById('IDConnectThumbyBTN').style.display = "block";
                 //alert("Didn't see XRP?\n\nCheck the following:\n* XRP is on\n* MicroUSB cable is plugged into XRP and computer\n* MicroUSB cable has data lines (some cables only transfer power)");
             });
             this.MANNUALLY_CONNECTING = false;

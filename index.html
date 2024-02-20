@@ -82,16 +82,6 @@
 
                         <img id="logo" class="xrp_logo" src="images/xrpstickerbot.png" alt="XRP Logo" title="Hello world, I'm XRP!" uk-img>
 
-                        <!-- <button
-                            id="IDConnectThumbyBTN"
-                            title="Connect XRP to page manually, or automatically if connected before"
-                            alt="Connect XRP button"
-                            class="uk-button uk-text-small uk-width-1-4 uk-height-1-1 uk-text-nowrap"
-                            uk-icon="shrink"
-                            dir="rtl">
-                            Connect XRP
-                        </button> -->
-
                         <div class="editor_header_toolbar">
 
                             <!-- FILE Menu-->
@@ -173,14 +163,7 @@
                                         title =  "Decrease editor font size">
                                         Decrease Font
                                     </button></li>
-                                    <!--
-                                    <li><button
-                                        id = "IDViewResetF"
-                                        class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
-                                        title =  "Reset font to default">
-                                        Reset Font Size
-                                    </button></li>
-                                    -->
+                                    
                                     <li><button
                                         id = "IDViewAutoComplete"
                                         class = "uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1"
@@ -202,34 +185,6 @@
                                 </ul>
                             </div>
                         </div>
-                    <!--
-                        <button
-                            title="Adds a code editor panel"
-                            alt="Add a new file button"
-                            id="IDAddEditorBTN"
-                            class="uk-button uk-text-small uk-width-1-1 uk-margin-medium-left uk-height-1-1 uk-text-nowrap"
-                            uk-icon="file-edit" dir="rtl">
-                            New File
-                        </button>
-
-                        <button
-                            title="Opens link in new tab"
-                            alt="Link to open User Guide"
-                            onclick="window.open('https://xrpusersguide.readthedocs.io/en/latest/course/introduction.html', '_blank');"
-                            class="uk-button uk-text-small uk-width-1-1 uk-margin-medium-left uk-height-1-1 uk-text-nowrap"
-                            uk-icon="info" dir="rtl">
-                            User Guide
-                        </button>
-
-                        <button
-                            title="Opens link in new tab"
-                            alt="Link to open XRP API homepage"
-                            onclick="window.open('https://open-stem.github.io/XRP_MicroPython/', '_blank');"
-                            class="uk-button uk-text-small uk-width-1-1 uk-margin-medium-left uk-height-1-1 uk-text-nowrap"
-                            uk-icon="home" dir="rtl">
-                            XRP API
-                        </button>
-                    -->
                     </div>
 
                     <!-- BELOW LOGO -->
@@ -254,6 +209,34 @@
               <button id="view-python-button" title="Close dialog" class="uk-modal-close-default" type="button" uk-close></button>
               <div id="view-python-ace" style="padding-top: 3px; height: 100%; width: 100%;"></div>
           </div>
+        </div>
+
+        <!-- User Item Template -->
+        <div class="user-view" style="display: none;">
+            <img class="file-type" src="images/micropython.png"></img>
+
+            <span class="user-name">
+            Project Name</span>
+            <button id="openUser" class="uk-button-xmenu uk-button-secondary-xmenu uk-button-small uk-width-1-1">Open</button>
+            <p class="user-full-name"></p>
+        </div>
+        <!-- New File Template -->
+        <div class="new-file" id="new-file" style="display: none;">
+            <div class="file-head">New File</div>
+
+            <label for="user-dropdown">User:</label>
+            <select id="user-dropdown"></select>
+            <button id="add-user-btn">+</button><br><br>
+        
+            <label for="file-name">Project Name:</label>
+            <input type="text" id="file-name"><br><br>
+        
+            <div id="platform-icons">
+                <img id="blockly" class="platform-icon" src="images/blockly.svg"></img>
+                <img id="micropython" class="platform-icon" src="images/micropython.png">
+            </div><br>
+        
+            <button id="create-btn" disabled>Create</button>
         </div>
 
 
