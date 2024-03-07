@@ -66,7 +66,7 @@ class ActiveTerminal{
         this.onType = undefined;
 
         this.writeln("XRPCode Development Environment");
-        this.writeln("Waiting for connection... (plug in the XRP and click 'Connect XRP')");
+        this.writeln("Waiting for connection...");
 
         this.AUTO_RESIZING = true;
     }

@@ -11,11 +11,21 @@ class ReplJS{
         this.USB_PRODUCT_ID = 5;        // For filtering ports during auto or manual selection
         this.USB_PRODUCT_MAC_ID = 10;   // For filtering ports during auto or manual selection
 
-        // https://github.com/micropython/micropython/blob/master/tools/pyboard.py#L444 need to only send 256 bytes each time
-        this.THUMBY_SEND_BLOCK_SIZE = 255;  // How many bytes to send to Thumby at a time when uploading a file to it
+        //bluetooth information
+        this.BLE_DEVICE = undefined;
+        this.btService = undefined;
+        this.READBLE = undefined;
+        this.WRITEBLE = undefined;
+        this.LASTBLEREAD = undefined
+         // UUIDs for standard NORDIC UART service and characteristics
+         this.UART_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"; 
+         this.TX_CHARACTERISTIC_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+         this.RX_CHARACTERISTIC_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"; 
+
+        this.XRP_SEND_BLOCK_SIZE = 250;  // wired can handle 255 bytes, but BLE 5.0 is only 250
 
         // Set true so most terminal output gets passed to javascript terminal
-        this.DEBUG_CONSOLE_ON = false;
+        this.DEBUG_CONSOLE_ON = true;
 
         this.COLLECT_RAW_DATA = false;
         this.COLLECTED_RAW_DATA = [];
@@ -95,13 +105,13 @@ class ReplJS{
             }
         });
 
-        document.getElementById("IDConnectThumbyBTN").addEventListener("click", async (event) => {
+        document.getElementById("IDConnectBTN").addEventListener("click", async (event) => {
             if (REPL.DISCONNECT == false) {
                 await this.disconnect();
             }
-            document.getElementById("IDConnectThumbyBTN").disabled = true;
+            document.getElementById("IDConnectBTN").disabled = true;
             await this.connect();
-            document.getElementById("IDConnectThumbyBTN").disabled = false;
+            document.getElementById("IDConnectBTN").disabled = false;
 
         });
 
@@ -233,29 +243,35 @@ class ReplJS{
         // Everytime the readloop is started means a device was connect/reconnected, reset variables states in case of reconnect
         this._CHUNKS = "";
 
-        while (this.PORT != undefined && this.PORT.readable && this.DISCONNECT == false) {
+        while ( this.DISCONNECT == false) {   //this.PORT != undefined && this.PORT.readable &&
             // Check if reader locked (can be locked if try to connect again and port was already open but reader wasn't released)
-            if(!this.PORT.readable.locked){
+            if(this.PORT != undefined && !this.PORT.readable.locked){
                 this.READER = this.PORT.readable.getReader();
             }
 
             try {
                 while (true) {
+                    var values = undefined;
                     // https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader/read
-                    const { value, done } = await this.READER.read();
-                    if (done) {
-                        // Allow the serial port to be closed later.
-                        this.READER.releaseLock();
-                        break;
+                    if(this.READER != undefined){
+                        const { value, done } = await this.READER.read();
+                        values = value;
+                        if (done) {
+                            // Allow the serial port to be closed later.
+                            this.READER.releaseLock();
+                            break;
+                        }
+                    }else{
+                        values = await this.waitForBLEData();
                     }
-                    if (value) {
+                    if (values) {
                         // Reading from serial is done in chunks of a inconsistent/non-guaranteed size,
-                        if(this.DEBUG_CONSOLE_ON) console.log(this.TEXT_DECODER.decode(value));
+                        if(this.DEBUG_CONSOLE_ON) console.log(this.TEXT_DECODER.decode(values));
 
                         // Collect lines when read until active, otherwise, output to terminal
                         if(this.READ_UNTIL_STRING == ""){
                             //We need to handle the case where esc sequences are broken up into multiple reads.
-                            var tempValue = value;
+                            var tempValue = values;
                             tempValue = this.HandleEsc(tempValue);
                             if(tempValue.length > 0){
                                 this.onData(this.TEXT_DECODER.decode(new Uint8Array(tempValue)));
@@ -267,23 +283,24 @@ class ReplJS{
                             //            This makes the user output look a lot nicer with out the 'OK' showing up.
                             if(this.SPECIAL_FORCE_OUTPUT_FLAG){
                                 if (this.CATCH_OK){
-                                    let v = this.TEXT_DECODER.decode(value)
-                                    if(v.includes("OK")){
+                                    let v = this.TEXT_DECODER.decode(values)
+                                    if(v.startsWith("OK")){
                                         this.CATCH_OK = false;
+                                        this.onData(v.slice(2));
                                     }else{
-                                        this.onData(this.TEXT_DECODER.decode(value));
+                                        this.onData(this.TEXT_DECODER.decode(values));
                                     }
                                 }else{
-                                    this.onData(this.TEXT_DECODER.decode(value));
+                                    this.onData(this.TEXT_DECODER.decode(values));
                                 }
                             }
 
-                            this.COLLECTED_DATA += this.TEXT_DECODER.decode(value);
+                            this.COLLECTED_DATA += this.TEXT_DECODER.decode(values);
 
                             // If raw flag set true, collect raw data for now
                             if(this.COLLECT_RAW_DATA == true){
                                 for(var i=0; i<value.length; i++){
-                                    this.COLLECTED_RAW_DATA.push(value[i]);
+                                    this.COLLECTED_RAW_DATA.push(values[i]);
                                 }
                             }
                         }
@@ -300,16 +317,105 @@ class ReplJS{
         this.BUSY = false;
     }
 
+// BLE functions
+    str2ab(str) {
+        var buf = new ArrayBuffer(str.length);
+        var bufView = new Uint8Array(buf);
+        for (var i=0, strLen=str.length; i<strLen; i++)
+        bufView[i] = str.charCodeAt(i);
+        return buf;
+    }
 
+    waitForBLEData() {
+        return new Promise((resolve, reject) => {
+            // Set up the event listener for the RX characteristic
+            this.READBLE.addEventListener('characteristicvaluechanged', event => {
+                let value = event.target.value;
+                //let str = arrayBufferToString(value.buffer); // Convert ArrayBuffer to string
+                resolve(new Uint8Array(value.buffer)); // Resolve the promise with the received string
+            }, { once: true }); // The 'once' option auto-removes the listener after it fires once
+    
+            // Optional: Reject the promise on some condition, e.g., timeout or error
+        });
+    }
+
+    bleDisconnect(){
+        if(REPL.DEBUG_CONSOLE_ON) console.log("BLE Disconnected");
+        REPL.WRITEBLE = undefined;
+        REPL.READBLE = undefined;
+        REPL.DISCONNECT = true; // Will stop certain events and break any EOT waiting functions
+        REPL.onDisconnect();
+        REPL.BUSY = false; 
+        REPL.bleReconnect();
+    }
+
+    async bleReconnect(){
+        if(this.DISCONNECT){
+            try {
+                if(this.DEBUG_CONSOLE_ON) console.log("Trying ble auto reconnect...");
+                const server = await this.connectWithTimeout(this.BLE_DEVICE, 50000);
+                //const server = await this.BLE_DEVICE.gatt.connect();
+                this.btService = await server.getPrimaryService(this.UART_SERVICE_UUID);
+                //console.log('Getting TX Characteristic...');
+                this.WRITEBLE =  await this.btService.getCharacteristic(this.TX_CHARACTERISTIC_UUID);
+                this.READBLE = await this.btService.getCharacteristic(this.RX_CHARACTERISTIC_UUID);
+                this.READBLE.startNotifications();
+                this.finishConnect();
+                if (this.DEBUG_CONSOLE_ON) console.log("fcg: out of tryAutoConnect");
+                return true;
+                // Perform operations after successful connection
+            } catch (error) {
+                console.log('timed out: ', error);
+                this.BLE_DEVICE = undefined;
+            }
+        }
+    }
+
+    connectWithTimeout(device, timeoutMs) {
+        return new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => {
+                reject(new Error("Connection timed out"));
+            }, timeoutMs);
+    
+            device.gatt.connect()
+                .then(server => {
+                    clearTimeout(timeoutId);
+                    resolve(server);
+                })
+                .catch(err => {
+                    clearTimeout(timeoutId);
+                    reject(err);
+                });
+        });
+    }
+    
     async writeToDevice(str){
         if(this.WRITER != undefined){
-            await this.WRITER.write(this.TEXT_ENCODER.encode(str));
+            if(typeof str == "string"){
+                await this.WRITER.write(this.TEXT_ENCODER.encode(str));
+            }
+            else{
+                await this.WRITER.write(str);
+            }
+        }else if(this.WRITEBLE != undefined){
+            try{
+                if(typeof str == "string"){
+                    //console.log("writing: " + str);
+                    await this.WRITEBLE.writeValue(this.str2ab(str));
+                }else{
+                    //console.log("writing: " + this.TEXT_DECODER.decode(str));
+                    await this.WRITEBLE.writeValue(str);
+                }
+            }catch(error){
+                console.log(error);
+            }
         }else{
             if(this.DEBUG_CONSOLE_ON) console.log("%cNot writing to device, none connected", "color: red");
         }
     }
 
     async softReset(){
+        return;
         this.startReaduntil("MPY: soft reboot");
         await this.writeToDevice(this.CTRL_CMD_SOFTRESET);
         await this.haltUntilRead(3);
@@ -342,21 +448,20 @@ class ReplJS{
         await this.getToRaw();
 
         // Send the cmd string
-        var numberOfChunks = Math.ceil(cmdStr.length/this.THUMBY_SEND_BLOCK_SIZE)+1;
+        var numberOfChunks = Math.ceil(cmdStr.length/this.XRP_SEND_BLOCK_SIZE)+1;
         for(var b=0; b < numberOfChunks; b++){
-            var writeDataCMD = cmdStr.slice(b*this.THUMBY_SEND_BLOCK_SIZE, (b+1)*this.THUMBY_SEND_BLOCK_SIZE);
+            var writeDataCMD = cmdStr.slice(b*this.XRP_SEND_BLOCK_SIZE, (b+1)*this.XRP_SEND_BLOCK_SIZE);
             if(this.DEBUG_CONSOLE_ON) console.log(writeDataCMD);
             await this.writeToDevice(writeDataCMD);
         }
-
 
         if(waitForCmdEnd){
             this.startReaduntil(customWaitForStr);
             await this.writeToDevice("\x04");
             if(customWaitForStr == ">") await this.waitUntilOK();
-            return await this.haltUntilRead(omitAmount, 50); //added timeout since micropython 1.19 sometimes will not get the soft reset and hang
+            return await this.haltUntilRead(omitAmount, 300); //added timeout since micropython 1.19 sometimes will not get the soft reset and hang
         }else{
-            await this.writeToDevice("\x04");
+            //await this.writeToDevice("\x04");
         }
     }
 
@@ -396,11 +501,9 @@ class ReplJS{
         //window.setPercent(1, "Fetching filesystem...");
 
         var getFilesystemCmd =
-        "import machine\n" +
-        "#machine.freq(250000000)\n" +   // Speed up the process
-
         "import os\n" +
         "import ujson\n" +
+        "import gc\n" +
 
         "def walk(top, structure, dir):\n" +
 
@@ -419,6 +522,7 @@ class ReplJS{
         "            structure[dir][item_index] = {\"D\": dirent}\n" +
         "            item_index = item_index + 1\n" +
         "            walk(top + extend + dirent, structure[dir], dirent)\n" +
+        "        gc.collect()\n" +  //this is needed for the ble it seems like we run out of memory otherwise
         "    return structure\n" +
         "struct = {}\n" +
         "print(ujson.dumps(walk(\"\", struct, \"\")))\n";
@@ -464,10 +568,19 @@ class ReplJS{
 
         this.RUN_BUSY  = true;
         this.startReaduntil(">");
-        await this.writeToDevice(lines + "\x04");
+
+        // Send the cmd string
+        var numberOfChunks = Math.ceil(lines.length/this.XRP_SEND_BLOCK_SIZE)+1;
+        for(var b=0; b < numberOfChunks; b++){
+            var writeDataCMD = lines.slice(b*this.XRP_SEND_BLOCK_SIZE, (b+1)*this.XRP_SEND_BLOCK_SIZE);
+            if(this.DEBUG_CONSOLE_ON) console.log(writeDataCMD);
+            await this.writeToDevice(writeDataCMD);
+        }
+
+        await this.writeToDevice("\x04");
         this.SPECIAL_FORCE_OUTPUT_FLAG = true;  //you see the OK, but also get any fast output
         this.CATCH_OK = true;
-        await this.waitUntilOK();
+        //await this.waitUntilOK();
         var result = await this.haltUntilRead(1);
 
         /*
@@ -728,35 +841,38 @@ class ReplJS{
         var writeFileScript =   "import micropython\n" +
                                 "import sys\n" +
                                 "import time\n" +
+                                "blocksize = " + this.XRP_SEND_BLOCK_SIZE + "\n" +
                                 "micropython.kbd_intr(-1)\n" +
+                                "time.sleep(0.035)\n" +
                                 "print('started')\n" +
                                 "w = open('" + filePath + "','wb')\n" +
 
-                                "byte_count_to_read = -1\n" +
-                                "read_byte_count = -7\n" +
-                                "read_buffer = bytearray(255)\n" +
+                                "byte_count_to_read = " + bytes.length + "\n" +
+                                "read_byte_count = 0\n" +
+                                "read_buffer = bytearray(blocksize)\n" +
                                 "specialStartIndex = 0\n" +
-                                "specialEndIndex = 255\n" +
+                                "specialEndIndex = blocksize \n" +
                                 "while True:\n" +
-                                "    read_byte_count = read_byte_count + sys.stdin.buffer.readinto(read_buffer, 255)\n" +
+                                "    read_byte_count = read_byte_count + sys.stdin.buffer.readinto(read_buffer, blocksize)\n" +
 
-                                "    if byte_count_to_read == -1:\n" +
-                                "        time.sleep(0.025)\n" +
-                                "        byte_count_to_read = int(read_buffer[0:7].decode('utf-8'))\n" +
-                                // "        print(byte_count_to_read)\n" +
+                                //"    if byte_count_to_read == -1:\n" +
+                                //"        byte_count_to_read = int(read_buffer[0:7].decode('utf-8'))\n" +
+                                //"        print(byte_count_to_read)\n" +
                                 // "        sys.stdout.write('EOF')\n" +
-                                "        specialIndex = 7\n" +
+                                //"        specialIndex = 7\n" +
 
                                 "    if read_byte_count >= byte_count_to_read:\n" +
-                                "        specialEndIndex = 255 - (read_byte_count - byte_count_to_read)\n" +
-                                "        read_byte_count = read_byte_count - 255 + specialEndIndex\n" +
+                                "        specialEndIndex = blocksize - (read_byte_count - byte_count_to_read)\n" +
+                                "        read_byte_count = read_byte_count - blocksize + specialEndIndex\n" +
 
-                                "    w.write(bytearray(read_buffer[specialIndex:specialEndIndex]))\n" +
-                                "    specialIndex = 0\n" +
+                                "    w.write(bytearray(read_buffer[0:specialEndIndex]))\n" +
+                                //"    specialIndex = 0\n" +
                                 // "    print(read_byte_count)\n" +
                                 // "    sys.stdout.write('EOF')\n" +
+                                //"    print('counts ' + str(read_byte_count) + ' of ' + str(byte_count_to_read))\n" +
                                 "    if read_byte_count >= byte_count_to_read:\n" +
                                 "        break\n" +
+                                "print('upload file done')\n" +
                                 "w.close()\n" +
 
                                 "micropython.kbd_intr(0x03)\n";
@@ -766,16 +882,16 @@ class ReplJS{
         await this.writeUtilityCmdRaw(writeFileScript, true, 1, "started");  //we wait until we print started, otherwise we may write a binary ctl character before the micropython.kbd_intr(-1)
 
         // https://stackoverflow.com/a/1127966
-        var bytesLenStr = "" + bytes.length;
-        while (bytesLenStr.length < 7) {
-            bytesLenStr = "0" + bytesLenStr;
-        }
-        await this.writeToDevice(bytesLenStr);
+        //var bytesLenStr = "" + bytes.length;
+        //while (bytesLenStr.length < 7) {
+        //    bytesLenStr = "0" + bytesLenStr;
+        //}
+        //await this.writeToDevice(bytesLenStr);
 
 
         if(usePercent) window.setPercent(3);
 
-        var numberOfChunks = Math.ceil(bytes.length/this.THUMBY_SEND_BLOCK_SIZE)+1;
+        var numberOfChunks = Math.ceil(bytes.length/this.XRP_SEND_BLOCK_SIZE);
         var currentPercent = 3;
         var endingPercent = 98;
         var percentStep = (endingPercent - currentPercent) / numberOfChunks;
@@ -783,12 +899,12 @@ class ReplJS{
 
         var bytesSent = 0;
         for(var b=0; b < numberOfChunks; b++){
-            var writeDataCMD = bytes.slice(b*this.THUMBY_SEND_BLOCK_SIZE, (b+1)*this.THUMBY_SEND_BLOCK_SIZE);
+            var writeDataCMD = bytes.slice(b*this.XRP_SEND_BLOCK_SIZE, (b+1)*this.XRP_SEND_BLOCK_SIZE);
 
             bytesSent = bytesSent + writeDataCMD.length;
-
-            if(bytesSent == bytes.length && writeDataCMD.length < this.THUMBY_SEND_BLOCK_SIZE){
-                var fillerArray = new Uint8Array(this.THUMBY_SEND_BLOCK_SIZE - writeDataCMD.length);
+            
+            if(bytesSent == bytes.length && writeDataCMD.length < this.XRP_SEND_BLOCK_SIZE){
+                var fillerArray = new Uint8Array(this.XRP_SEND_BLOCK_SIZE - writeDataCMD.length);
                 for(var i = 0; i < fillerArray.length; i++){
                     fillerArray[i] = 255;
                 }
@@ -799,6 +915,9 @@ class ReplJS{
                 writeDataCMD = finalArray;
             }
 
+            await this.writeToDevice(writeDataCMD);
+
+/*
             if(this.WRITER != undefined){
                 // this.startReaduntil("EOF");
                 await this.WRITER.write(writeDataCMD);
@@ -807,6 +926,7 @@ class ReplJS{
             }else{
                 if(this.DEBUG_CONSOLE_ON) console.log("%cNot writing to device, none connected", "color: red");
             }
+*/
 
             currentPercent = currentPercent + percentStep;
             if(usePercent) window.setPercent(currentPercent);
@@ -892,7 +1012,20 @@ class ReplJS{
             fileToEx2 = fileToEx.slice(1);
         }
         
-        var value = "try:\n" +
+        var value = "import os\n" +
+                    "import sys\n" +
+                    "from machine import Pin\n" +
+                    "import time\n" +
+                    "x = os.dupterm(None, 0)\n" +
+                    "if(x == None):\n" +
+                    "   import ble.blerepl\n" +
+                    "else:\n" +
+                    "   os.dupterm(x,0)\n" +
+                    "button = Pin(22, Pin.IN, Pin.PULL_UP)\n" +
+                    "time.sleep(0.1)\n" +
+                    "if(button.value() == 0):\n" +
+                    "   sys.exit()\n" +
+                    "try:\n" +
                     "   with open('"+fileToEx+"', mode='r') as exfile:\n" +
                     "       code = exfile.read()\n"+
                     "   execCode = compile(code, '" +fileToEx2+"', 'exec')\n" +
@@ -901,6 +1034,11 @@ class ReplJS{
                     "   import sys\n" +
                     "   sys.print_exception(e)\n"+
                     "finally:\n"+
+                    "   import gc\n" +
+                    "   gc.collect()\n" +
+                    "   if 'XRPLib.resetbot' in sys.modules:\n" +
+                    "      del sys.modules['XRPLib.resetbot']\n" +
+                    "   Pin('LED', Pin.OUT).on()\n" +
                     "   import XRPLib.resetbot";
         await this.uploadFile("//main.py", value, true, false);
         window.resetPercentDelay();
@@ -946,7 +1084,7 @@ class ReplJS{
         this.BUSY = true;
 
         var cmd =   "import sys\n" +
-                    "chunk_size = 256\n" +
+                    "chunk_size = 200\n" +
                     "onboard_file = open('" + filePath + "', 'rb')\n" +
                     "while True:\n" +
                     "    data = onboard_file.read(chunk_size)\n" +
@@ -957,6 +1095,14 @@ class ReplJS{
                     "sys.stdout.write('###DONE READING FILE###')\n";
 
         // Get into raw mode
+        this.startReaduntil("###DONE READING FILE###");
+        var hiddenLines = await this.writeUtilityCmdRaw(cmd, true, 1);
+        hiddenLines = hiddenLines.join('\r\n');
+        hiddenLines = hiddenLines.slice(2, hiddenLines[0].length-27);  // Get rid of 'OK' and '###DONE READING FILE###'
+        this.BUSY = false;
+        await this.getToNormal(3);
+        return Array.from(new TextEncoder().encode(hiddenLines));    
+
         await this.getToRaw();
 
         // Not really needed for hiding output to terminal since raw does not echo
@@ -1215,9 +1361,10 @@ class ReplJS{
         }
 
         // do a softreset, but time out if no response
-        this.startReaduntil("MPY: soft reboot");
-        await this.writeToDevice(this.CTRL_CMD_SOFTRESET);
-        await this.haltUntilRead(3, 20);  //FCG - is this the right amount of delay to always work?
+        //this.softReset();
+        //this.startReaduntil("MPY: soft reboot");
+        //await this.writeToDevice(this.CTRL_CMD_SOFTRESET);
+        //await this.haltUntilRead(3, 20);  //FCG - is this the right amount of delay to always work?
 
         this.HAS_MICROPYTHON = true;
         return true;
@@ -1269,7 +1416,23 @@ class ReplJS{
         }
     }
 
+    async finishConnect(){
+        this.DISCONNECT  = false;
+        this.readLoop(); 
+        if(await this.checkIfMP()){
+            if(this.HAS_MICROPYTHON == false){    //something went wrong, just get out of here
+                return;
+            }
+            this.BUSY = false;
+            await this.getToNormal();
+            await this.getOnBoardFSTree();
+            this.onConnect();
+        }
 
+        this.BUSY = false;
+        this.checkIfNeedUpdate();
+            
+    }
     async tryAutoConnect(){
         if(this.BUSY == true){
             return;
@@ -1304,7 +1467,7 @@ class ReplJS{
         }
         if (this.DEBUG_CONSOLE_ON)
             console.log("%cNot Auto connected...", "color: yellow");
-            document.getElementById('IDConnectThumbyBTN').style.display = "block";
+            document.getElementById('IDConnectBTN').style.display = "block";
             this.BUSY = false;
 
         if (this.DEBUG_CONSOLE_ON)
@@ -1329,18 +1492,59 @@ class ReplJS{
 
             this.BUSY = true;
             this.MANNUALLY_CONNECTING = true;
-            if(this.DEBUG_CONSOLE_ON) console.log("%cTrying manual connect..", "color: yellow");
+            if(this.DEBUG_CONSOLE_ON) console.log("Trying manual connect..");
 
-            await navigator.serial.requestPort({filters: [{ usbVendorId, usbProductId }, { usbVendorId, usbProductMacId }]}).then(async (port) => {
-                this.PORT = port;
-                if(this.DEBUG_CONSOLE_ON) console.log("%cManually connected!", "color: lime");
-                await this.openPort();
-            }).catch((err) => {
-                if (this.DEBUG_CONSOLE_ON)
-                    console.log("%cNot manually connected...", "color: yellow");
-                    document.getElementById('IDConnectThumbyBTN').style.display = "block";
-                //alert("Didn't see XRP?\n\nCheck the following:\n* XRP is on\n* MicroUSB cable is plugged into XRP and computer\n* MicroUSB cable has data lines (some cables only transfer power)");
+            // Function to connect to the device
+            await navigator.bluetooth.requestDevice({
+                filters: [{
+                    namePrefix: 'XRP'
+                    }], optionalServices: [ this.UART_SERVICE_UUID ]
+            })
+            .then(device => {
+                //console.log('Connecting to device...');
+                this.BLE_DEVICE = device;
+                return device.gatt.connect();
+            })
+            .then(servers => {
+                //console.log('Getting UART Service...');
+                return servers.getPrimaryService(this.UART_SERVICE_UUID);
+            })
+            .then(btService => {
+                this.btService = btService;
+                //console.log('Getting TX Characteristic...');
+                return btService.getCharacteristic(this.TX_CHARACTERISTIC_UUID);
+            })
+            .then(characteristic => {
+                //console.log('Connected to TX Characteristic');
+                this.WRITEBLE = characteristic;
+                //console.log('Getting RX Characteristic...');
+                return this.btService.getCharacteristic(this.RX_CHARACTERISTIC_UUID); 
+                // Now you can use the characteristic to send data
+            }) .then (characteristic => {
+                this.READBLE = characteristic;
+                //this.READBLE.addEventListener('characteristicvaluechanged', this.readloopBLE);
+                this.READBLE.startNotifications();
+                this.BLE_DEVICE.addEventListener('gattserverdisconnected', this.bleDisconnect);
+                this.finishConnect();
+            })
+            .catch(error => {
+                console.log('Error: ' + error);
             });
+
+            if(this.BLE_DEVICE == undefined){     
+                await navigator.serial.requestPort({filters: [{ usbVendorId, usbProductId }, { usbVendorId, usbProductMacId }]}).then(async (port) => {
+                    this.PORT = port;
+                    if(this.DEBUG_CONSOLE_ON) console.log("%cManually connected!", "color: lime");
+                    await this.openPort();
+                }).catch((err) => {
+                    if (this.DEBUG_CONSOLE_ON)
+                        console.log("Not manually connected...");
+                        document.getElementById('IDConnectBTN').style.display = "block";
+                    //alert("Didn't see XRP?\n\nCheck the following:\n* XRP is on\n* MicroUSB cable is plugged into XRP and computer\n* MicroUSB cable has data lines (some cables only transfer power)");
+                });
+            }
+
+
             this.MANNUALLY_CONNECTING = false;
             this.BUSY = false;
             if (this.DEBUG_CONSOLE_ON)
