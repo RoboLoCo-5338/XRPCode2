@@ -5,7 +5,7 @@ import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-l
          VERSION NUMBERS
 */
 
-const showChangelogVersion = "1.0.2";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
+const showChangelogVersion = "1.0.3";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
 window.latestMicroPythonVersion = [1, 22, 1];
 window.xprID = "";
 
@@ -60,10 +60,8 @@ let v = jresp.version
 // This should match what is in /lib/XRPLib/version.py as '__version__'
 window.latestLibraryVersion = v.split(".");
 
-
-
-
 window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
+window.bleList = ["__init__.py","blerepl.py", "ble_uart_peripheral.py", "isrunning"]
 
 window.SHOWMAIN = false;
 
@@ -80,7 +78,6 @@ if(localStorage.getItem("version") == null || localStorage.getItem("version") !=
     localStorage.setItem("version", showChangelogVersion);       // Set this show not shown on next page load
    // }
 }
-
 
 // Want the dropdown to disappear if mouse leaves it (doesn't disappear if mouse leaves button that starts it though)
 //document.getElementById("IDUtilitesDropdown").addEventListener("mouseleave", () => {
@@ -615,14 +612,17 @@ function registerShell(_container, state){
         ATERM.writeln("Waiting for connection... (click 'Connect XRP')");
         FS.clearToWaiting();
         window.disableMenuItems();
-        
-        //FS.removeUpdate();
 
-        //FS.disableButtons();
         // when XRP is disconnected, show the CONNECT XRP button and hide the RUN button
         document.getElementById('IDRunBTN').style.display = "none";
         const connect = document.getElementById('IDConnectBTN');
         connect.style.display = "block";
+        if(REPL.BLE_DEVICE == undefined){
+            document.getElementById('IDConnectBTN_text').innerText = "Connect XRP";
+        }else{
+            document.getElementById('IDConnectBTN_text').innerText = "Re-Connect XRP";
+            connect.disabled = true;
+        }
     }
     REPL.onConnect = () => {
         window.enableMenuItems();

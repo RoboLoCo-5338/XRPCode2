@@ -16,7 +16,12 @@ class ReplJS{
         this.btService = undefined;
         this.READBLE = undefined;
         this.WRITEBLE = undefined;
-        this.LASTBLEREAD = undefined
+        this.LASTBLEREAD = undefined;
+        this.BLE_DATA = null;
+        this.BLE_DATA_RESOLVE = null;
+        this.BLE_STOP_MSG  = "##XRPSTOP##"
+
+
          // UUIDs for standard NORDIC UART service and characteristics
          this.UART_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"; 
          this.TX_CHARACTERISTIC_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
@@ -25,7 +30,7 @@ class ReplJS{
         this.XRP_SEND_BLOCK_SIZE = 250;  // wired can handle 255 bytes, but BLE 5.0 is only 250
 
         // Set true so most terminal output gets passed to javascript terminal
-        this.DEBUG_CONSOLE_ON = true;
+        this.DEBUG_CONSOLE_ON = false;
 
         this.COLLECT_RAW_DATA = false;
         this.COLLECTED_RAW_DATA = [];
@@ -247,6 +252,8 @@ class ReplJS{
             // Check if reader locked (can be locked if try to connect again and port was already open but reader wasn't released)
             if(this.PORT != undefined && !this.PORT.readable.locked){
                 this.READER = this.PORT.readable.getReader();
+            }else{
+                this.startBLEData();
             }
 
             try {
@@ -262,7 +269,7 @@ class ReplJS{
                             break;
                         }
                     }else{
-                        values = await this.waitForBLEData();
+                        values = await this.getBLEData();
                     }
                     if (values) {
                         // Reading from serial is done in chunks of a inconsistent/non-guaranteed size,
@@ -326,25 +333,43 @@ class ReplJS{
         return buf;
     }
 
-    waitForBLEData() {
-        return new Promise((resolve, reject) => {
+    startBLEData() {
             // Set up the event listener for the RX characteristic
             this.READBLE.addEventListener('characteristicvaluechanged', event => {
-                let value = event.target.value;
+                const value = event.target.value;
+                //if(this.DEBUG_CONSOLE_ON) console.log(this.TEXT_DECODER.decode(value));
+                if(this.BLE_DATA == undefined){
+                    this.BLE_DATA = new Uint8Array(value.buffer); //just in case the resolve is not ready
+                }else{
+                    this.BLE_DATA += new Uint8Array(value.buffer); //just in case the resolve is not ready
+                }
+                if (this.BLE_DATA_RESOLVE) {
+                    this.BLE_DATA_RESOLVE(this.BLE_DATA);
+                    this.BLE_DATA_RESOLVE = null;
+                    this.BLE_DATA = undefined;
+                }
                 //let str = arrayBufferToString(value.buffer); // Convert ArrayBuffer to string
-                resolve(new Uint8Array(value.buffer)); // Resolve the promise with the received string
-            }, { once: true }); // The 'once' option auto-removes the listener after it fires once
-    
+                //resolve(new Uint8Array(value.buffer)); // Resolve the promise with the received string
+            }); 
             // Optional: Reject the promise on some condition, e.g., timeout or error
-        });
     }
+
+    async getBLEData() {
+        return new Promise(resolve => this.BLE_DATA_RESOLVE = resolve);
+    }
+
 
     bleDisconnect(){
         if(REPL.DEBUG_CONSOLE_ON) console.log("BLE Disconnected");
         REPL.WRITEBLE = undefined;
         REPL.READBLE = undefined;
         REPL.DISCONNECT = true; // Will stop certain events and break any EOT waiting functions
-        REPL.onDisconnect();
+        if(!REPL.STOP){ //If they pushed the STOP button then don't make it look disconnected it will be right back
+            REPL.onDisconnect();
+        }
+        REPL.SPECIAL_FORCE_OUTPUT_FLAG = false;
+        REPL.RUN_BUSY = false;
+        REPL.STOP = false;
         REPL.BUSY = false; 
         REPL.bleReconnect();
     }
@@ -353,7 +378,7 @@ class ReplJS{
         if(this.DISCONNECT){
             try {
                 if(this.DEBUG_CONSOLE_ON) console.log("Trying ble auto reconnect...");
-                const server = await this.connectWithTimeout(this.BLE_DEVICE, 50000);
+                const server = await this.connectWithTimeout(this.BLE_DEVICE, 10000); //wait for 10seconds to see if it reconnects
                 //const server = await this.BLE_DEVICE.gatt.connect();
                 this.btService = await server.getPrimaryService(this.UART_SERVICE_UUID);
                 //console.log('Getting TX Characteristic...');
@@ -367,6 +392,8 @@ class ReplJS{
             } catch (error) {
                 console.log('timed out: ', error);
                 this.BLE_DEVICE = undefined;
+                REPL.onDisconnect();
+                document.getElementById('IDConnectBTN').disabled = false;
             }
         }
     }
@@ -426,6 +453,7 @@ class ReplJS{
         await this.getToRaw();  // Get to raw first so that unwanted messages are not printed (like another intro message)
 
         this.startReaduntil("Raspberry Pi Pico W with RP2040");
+        //this.startReaduntil("information.");
         // https://github.com/micropython/micropython/blob/master/tools/pyboard.py#L360 for "\r"
         await this.writeToDevice("\r" + this.CTRL_CMD_NORMALMODE);
         await this.haltUntilRead(omitOffset);
@@ -461,7 +489,7 @@ class ReplJS{
             if(customWaitForStr == ">") await this.waitUntilOK();
             return await this.haltUntilRead(omitAmount, 300); //added timeout since micropython 1.19 sometimes will not get the soft reset and hang
         }else{
-            //await this.writeToDevice("\x04");
+            await this.writeToDevice("\x04");
         }
     }
 
@@ -852,7 +880,8 @@ class ReplJS{
                                 "read_buffer = bytearray(blocksize)\n" +
                                 "specialStartIndex = 0\n" +
                                 "specialEndIndex = blocksize \n" +
-                                "while True:\n" +
+                                "if byte_count_to_read > 0:\n" +
+                                "  while True:\n" +
                                 "    read_byte_count = read_byte_count + sys.stdin.buffer.readinto(read_buffer, blocksize)\n" +
 
                                 //"    if byte_count_to_read == -1:\n" +
@@ -872,7 +901,7 @@ class ReplJS{
                                 //"    print('counts ' + str(read_byte_count) + ' of ' + str(byte_count_to_read))\n" +
                                 "    if read_byte_count >= byte_count_to_read:\n" +
                                 "        break\n" +
-                                "print('upload file done')\n" +
+                                //"print('upload file done')\n" +
                                 "w.close()\n" +
 
                                 "micropython.kbd_intr(0x03)\n";
@@ -1016,6 +1045,7 @@ class ReplJS{
                     "import sys\n" +
                     "from machine import Pin\n" +
                     "import time\n" +
+                    "FILE_PATH = '/lib/ble/isrunning'\n" +
                     "x = os.dupterm(None, 0)\n" +
                     "if(x == None):\n" +
                     "   import ble.blerepl\n" +
@@ -1026,19 +1056,31 @@ class ReplJS{
                     "if(button.value() == 0):\n" +
                     "   sys.exit()\n" +
                     "try:\n" +
+                    "   with open(FILE_PATH, 'r+b') as file:\n" +
+                    "      byte = file.read(1)\n" +
+                    "      if byte == b'\\x01':\n" +
+                    "         file.seek(0)\n" +
+                    "         file.write(b'\\x00')\n" +
+                    "         sys.exit()\n" +
+                    "      else:\n" +
+                    "         file.seek(0)\n" +
+                    "         file.write(b'\\x01')\n" +
                     "   with open('"+fileToEx+"', mode='r') as exfile:\n" +
                     "       code = exfile.read()\n"+
                     "   execCode = compile(code, '" +fileToEx2+"', 'exec')\n" +
                     "   exec(execCode)\n" +
+                    "   with open(FILE_PATH, 'r+b') as file:\n" +
+                    "      file.write(b'\\x00')\n" +
                     "except Exception as e:\n" +
                     "   import sys\n" +
                     "   sys.print_exception(e)\n"+
+                    "   with open(FILE_PATH, 'r+b') as file:\n" +
+                    "      file.write(b'\\x00')\n" +
                     "finally:\n"+
                     "   import gc\n" +
                     "   gc.collect()\n" +
                     "   if 'XRPLib.resetbot' in sys.modules:\n" +
                     "      del sys.modules['XRPLib.resetbot']\n" +
-                    "   Pin('LED', Pin.OUT).on()\n" +
                     "   import XRPLib.resetbot";
         await this.uploadFile("//main.py", value, true, false);
         window.resetPercentDelay();
@@ -1095,10 +1137,12 @@ class ReplJS{
                     "sys.stdout.write('###DONE READING FILE###')\n";
 
         // Get into raw mode
-        this.startReaduntil("###DONE READING FILE###");
-        var hiddenLines = await this.writeUtilityCmdRaw(cmd, true, 1);
+        //this.startReaduntil("###DONE READING FILE###");
+        var hiddenLines = await this.writeUtilityCmdRaw(cmd, true, 1, "###DONE READING FILE###");
         hiddenLines = hiddenLines.join('\r\n');
+        
         hiddenLines = hiddenLines.slice(2, hiddenLines[0].length-27);  // Get rid of 'OK' and '###DONE READING FILE###'
+        
         this.BUSY = false;
         await this.getToNormal(3);
         return Array.from(new TextEncoder().encode(hiddenLines));    
@@ -1209,13 +1253,13 @@ class ReplJS{
         let jresp = JSON.parse(response);
         var urls = jresp.urls;
         window.setPercent(1, "Updating XRPLib...");
-        let percent_per = Math.round(99 / (urls.length + window.phewList.length));
+        let percent_per = Math.round(99 / (urls.length + window.phewList.length + window.bleList.length));
         let cur_percent = 1 + percent_per;
 
         await this.deleteFileOrDir("/lib/XRPLib");  //delete all the files first to avoid any confusion.
+        //BUGBUG: should we delete the /XRPExamples?
         for(let i=0; i<urls.length; i++){
             window.setPercent(cur_percent, "Updating XRPLib...");
-            //console.log("percent = " + cur_percent);
             //added a version number to ensure that the browser does not cache it.
             let next = urls[i];
             var parts = next[0];
@@ -1228,11 +1272,17 @@ class ReplJS{
         await this.uploadFile("lib/XRPLib/version.py", "__version__ = '" + window.latestLibraryVersion[0] + "." + window.latestLibraryVersion[1] + "." + window.latestLibraryVersion[2] + "'\n" );
         cur_percent += percent_per;
 
+        await this.deleteFileOrDir("/lib/ble");  //delete all the files first to avoid any confusion.
+        for(let i=0; i<window.bleList.length; i++){
+            window.setPercent(cur_percent, "Updating XRPLib...");
+            //added a version number to ensure that the browser does not cache it.
+            await this.uploadFile("lib/ble/" + window.bleList[i], await window.downloadFile("lib/ble/" + window.bleList[i] + "?version=" + window.latestLibraryVersion[2]));
+            cur_percent += percent_per;
+        }
 
         await this.deleteFileOrDir("/lib/phew");  //delete all the files first to avoid any confusion.
         for(let i=0; i<window.phewList.length; i++){
             window.setPercent(cur_percent, "Updating XRPLib...");
-            //console.log("percent = " + cur_percent);
             //added a version number to ensure that the browser does not cache it.
             await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i] + "?version=" + window.latestLibraryVersion[2]));
             cur_percent += percent_per;
@@ -1311,6 +1361,8 @@ class ReplJS{
         //       3 - It took the ctrl-c but since the program was in a different thread (timers are the most likely) it didn't stop the program
         //          For this one we need to try a few more times in hopes the program will be in a state we can interrupt. If not ask the user to
         //             reset and try again.
+        //
+        //  3 - We are connecting via Bluetooth. In that case we will use the Bluetooth STOP if not at the REPL
 
 
         this.startReaduntil(">>>");
@@ -1318,6 +1370,11 @@ class ReplJS{
         var result = await this.haltUntilRead(1, 10); //this should be fast
 
         if (result == undefined){
+
+            if(this.BLE_DEVICE != undefined){
+                await this.writeToDevice(this.BLE_STOP_MSG);
+                return true;  //BUGBUG: not sure what happens if it now doesn't connect.
+            }
 
             this.startReaduntil("KeyboardInterrupt:");
             await this.writeToDevice("\r" + this.CTRL_CMD_KINTERRUPT);  // ctrl-C to interrupt any running program
@@ -1494,6 +1551,8 @@ class ReplJS{
             this.MANNUALLY_CONNECTING = true;
             if(this.DEBUG_CONSOLE_ON) console.log("Trying manual connect..");
 
+            this.BLE_DEVICE = undefined; //just in case we were connected before.
+
             // Function to connect to the device
             await navigator.bluetooth.requestDevice({
                 filters: [{
@@ -1561,6 +1620,11 @@ class ReplJS{
         if(this.RUN_BUSY){  //if the program is running do ctrl-c until we know it has stopped
             this.STOP = true;  //let the executeLines code know when it stops, it stopped because the STOP button was pushed
             this.SPECIAL_FORCE_OUTPUT_FLAG = false; //turn off showing output so they don't see the keyboardInterrupt and stack trace.
+            if(this.BLE_DEVICE != undefined){
+                await this.writeToDevice(this.BLE_STOP_MSG);
+                return;
+            }
+            
             var count = 1;
             /*
                 We are BUSY, this means that there is another thread that started the program.

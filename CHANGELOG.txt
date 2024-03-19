@@ -1,12 +1,21 @@
 
-# Version 1.0.2
+# Version 1.0.3
 
-This update has a few bug fixes 
+This is the staging version for bluetooth
+
+#### Bluetooth
+* The XRP will need to be reset after the initial install of this software
+* When you click CONNECT it will bring up a list of XRPs that are near the computer
+    * If you want a cable instead, click cancel and it will go to the cable dialog
+* The Bluetooth XRP name is unique per XRP. The one closest should have the strongest signal
+* Once connected the IDE should be the same as if connected via a cable
+* If the XRP is reset / turned off / too far away the IDE will show RE-CONNECT XRP for 10 seconds and then switch to CONNECT.
+    * If the XRP is turned back on / brought closer the IDE will auto re-connect to the XRP within that 10 seconds
 
 #### Fixed
-* A timing error that caused the XRPLib update to get stuck at 34% or 64%
-* XRPCode now updates the MicroPython and then XRPLib
-* Fixed escape sequences getting lost while using the keyboard commands with the REPL in the Shell window 
+* Input is now accepted in XRP applications
+* The REPL stays live from run to run and has information from the last running program like globals and classes
+    *When STOP is used the REPL is reset.
 
 
 #### Getting help
