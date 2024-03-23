@@ -1253,7 +1253,7 @@ class ReplJS{
         let jresp = JSON.parse(response);
         var urls = jresp.urls;
         window.setPercent(1, "Updating XRPLib...");
-        let percent_per = Math.round(99 / (urls.length + window.phewList.length + window.bleList.length));
+        let percent_per = Math.round(99 / (urls.length + window.phewList.length + window.bleList.length + 1));
         let cur_percent = 1 + percent_per;
 
         await this.deleteFileOrDir("/lib/XRPLib");  //delete all the files first to avoid any confusion.
@@ -1287,6 +1287,12 @@ class ReplJS{
             await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i] + "?version=" + window.latestLibraryVersion[2]));
             cur_percent += percent_per;
         }
+
+        //needed for this BLE release. Replace the main.py file so that the BLE support will be available.
+        cur_percent = 100;
+        window.setPercent(cur_percent, "Updating XRPLib...");
+        await this.uploadFile("/main.py", await window.downloadFile("lib/main.py" + "?version=" + window.latestLibraryVersion[2]));
+
 
         window.resetPercentDelay();
         await this.getOnBoardFSTree();

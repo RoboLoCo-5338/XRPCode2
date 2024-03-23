@@ -8,7 +8,7 @@ This is the staging version for bluetooth
 
 * Connect your XRP with a cable
 * Let the IDE upgrade the Micropython and XRPLib
-* **You must run at least one program with the cable attached to get things started**
+* ** after installing XRPLib you will need to hit reset before using the bluetooth **
 * When you click CONNECT it will bring up a list of XRPs that are near the computer
     * If you want a cable instead, click cancel and it will go to the cable dialog
 * The Bluetooth XRP name is unique per XRP. The one closest should have the strongest signal
