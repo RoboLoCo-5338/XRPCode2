@@ -342,11 +342,70 @@ class EditorWrapper{
         // Listen for window resize event and re-fit terminal
         this.windowResizeListener = window.addEventListener('resize', this.resize.bind(this));
 
-        // Init the ace editor
-        this.ACE_EDITOR = ace.edit(this.EDITOR_DIV);
+        // Figure out if the editor should take on stored code, passed, code, or use default code
+        var lastEditorValue = localStorage.getItem("EditorValue" + this.ID);
+                
+        if(data != undefined){
+            localStorage.setItem("EditorValue" + this.ID, data);
+        }else if(lastEditorValue == null){
+            localStorage.setItem("EditorValue" + this.ID, this.defaultCode);
+            this.setPath("/untitled-" + this.ID + ".py");
+            this.setTitle("Editor" + this.ID + ' - ' + this.EDITOR_PATH);
+        }
 
-        this.ACE_EDITOR.session.setMode("ace/mode/python");
-        this.ACE_EDITOR.setKeyboardHandler("ace/keyboard/vscode");
+        // Make it so you can't undo the code paste into the editor
+        //this.ACE_EDITOR.session.getUndoManager().reset();
+
+
+        // Set the font size based on what's saved, if it exists
+        var lastEditorFontSize = localStorage.getItem("EditorFontSize" + this.ID);
+        this.FONT_SIZE = 12;
+        if(lastEditorFontSize != null){
+            this.FONT_SIZE = lastEditorFontSize;
+        }
+
+        // Get live autocomplete state, affects all editors
+        this.AUTOCOMPLETE_STATE = localStorage.getItem("EditorAutocompleteState");
+        if(this.AUTOCOMPLETE_STATE == undefined){ 
+            this.AUTOCOMPLETE_STATE = false;  //if no state then off by default.
+        }
+        this.setAutocompleteButtonText();
+
+
+
+        // Init the ace editor
+
+        this.editorReady = new Promise((resolve, reject) => {
+            require.config({ paths: { 'vs': 'js/Monaco/min/vs' }});
+
+            require(['vs/editor/editor.main'], () => {
+                var data = localStorage.getItem("EditorValue" + this.ID);
+                this.EDITOR_DIV.innerHTML = "";
+
+                this.ACE_EDITOR = monaco.editor.create(this.EDITOR_DIV, {
+                    value: data,
+                    theme: 'vs-dark',
+                    language: 'python',
+                    automaticLayout: true,
+                    fontSize: this.FONT_SIZE
+                });
+                resolve(this.ACE_EDITOR); // Resolve the promise with the editor instance
+            });
+        });
+
+        this.editorReady.then((editor) => {
+            // Listening for content changes in the editor
+            editor.onDidChangeModelContent((event) => {
+                localStorage.setItem("EditorValue" + this.ID, this.ACE_EDITOR.getValue());
+                this.SAVED_TO_THUMBY = false;
+                localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
+                this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
+            });
+        });
+        //this.ACE_EDITOR = ace.edit(this.EDITOR_DIV);
+
+        //this.ACE_EDITOR.session.setMode("ace/mode/python");
+        //this.ACE_EDITOR.setKeyboardHandler("ace/keyboard/vscode");
 
         localStorage.setItem("activeTabId", this.ID);
         localStorage.setItem("activeTabFileType", "micropython");
@@ -354,13 +413,14 @@ class EditorWrapper{
         document.getElementById("blockly_dropdown").style.display = "none";
         document.getElementById("micropython_dropdown").style.display = "inline-block";
 
-        this.setThemeDark();
+        //this.setThemeDark();
 
-        this.resize();
+        //this.resize();
 
-        this.INSERT_RESTORE = false;
+        //this.INSERT_RESTORE = false;
 
         // Save value when changes made and edit the title
+        /*
         this.ACE_EDITOR.session.on('change', (event) => {
             localStorage.setItem("EditorValue" + this.ID, this.ACE_EDITOR.getValue());
 
@@ -381,38 +441,11 @@ class EditorWrapper{
             }
         });
 
+        */
 
-        // Figure out if the editor should take on stored code, passed, code, or use default code
-        var lastEditorValue = localStorage.getItem("EditorValue" + this.ID);
-        if(data != undefined){
-            this.ACE_EDITOR.setValue(data, 1);
-        }else if(lastEditorValue != null){
-            this.ACE_EDITOR.setValue(lastEditorValue, 1);
-        }else{
-            this.ACE_EDITOR.setValue(this.defaultCode, 1);
-
-            this.setPath("/untitled-" + this.ID + ".py");
-            this.setTitle("Editor" + this.ID + ' - ' + this.EDITOR_PATH);
-        }
-
-        // Make it so you can't undo the code paste into the editor
-        this.ACE_EDITOR.session.getUndoManager().reset();
-
-        // Set the font size based on what's saved, if it exists
-        var lastEditorFontSize = localStorage.getItem("EditorFontSize" + this.ID);
-        this.FONT_SIZE = 10;
-        if(lastEditorFontSize != null){
-            this.FONT_SIZE = lastEditorFontSize;
-        }
-
-        // Get live autocomplete state, affects all editors
-        this.AUTOCOMPLETE_STATE = localStorage.getItem("EditorAutocompleteState");
-        if(this.AUTOCOMPLETE_STATE == undefined){ 
-            this.AUTOCOMPLETE_STATE = false;  //if no state then off by default.
-        }
-        this.setAutocompleteButtonText();
-
+        
         // Set the options that were restored
+        /*
         this.ACE_EDITOR.setOptions({
             fontSize: this.FONT_SIZE.toString() + "pt",
             enableBasicAutocompletion: true,
@@ -431,6 +464,7 @@ class EditorWrapper{
             },
             readOnly: true
         });
+        */
     }
 
     checkAllEditorsForPath(path){
@@ -524,13 +558,13 @@ class EditorWrapper{
     setThemeDark() {
         localStorage.setItem("lastTheme", "dark"); // set theme to dark
         if(this.ACE_EDITOR){
-            this.ACE_EDITOR.setTheme("ace/theme/tomorrow_night_bright");
+            //this.ACE_EDITOR.setTheme("ace/theme/tomorrow_night_bright");
         }
     }
 
     setTheme(theme){
         if(this.ACE_EDITOR){
-            this.ACE_EDITOR.setTheme(`ace/theme/${theme}`);
+            //this.ACE_EDITOR.setTheme(`ace/theme/${theme}`);
         }
     }
 
@@ -565,7 +599,7 @@ class EditorWrapper{
 
 
     async resize(){
-        if(this.ACE_EDITOR != undefined) this.ACE_EDITOR.resize();
+        //if(this.ACE_EDITOR != undefined) this.ACE_EDITOR.resize();
 
         if(this.isBlockly && this.BLOCKLY_WORKSPACE){
             // Position blocklyDiv over blocklyArea.
