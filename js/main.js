@@ -81,6 +81,9 @@ if(localStorage.getItem("version") == null || localStorage.getItem("version") !=
    // }
 }
 
+if(localStorage.getItem("dirView") == null){
+    localStorage.setItem("dirView", "project");
+}
 
 // Want the dropdown to disappear if mouse leaves it (doesn't disappear if mouse leaves button that starts it though)
 //document.getElementById("IDUtilitesDropdown").addEventListener("mouseleave", () => {
@@ -442,6 +445,7 @@ function removeFSOverlay() {
 var FS = undefined;
 function registerFilesystem(_container, state){
     FS = new FILESYSTEM(_container, state);
+    window.FS = FS;
 
     DIR.onRename = (path) => REPL.renameFile(path, prompt("Type a new name: ", path.substring(path.lastIndexOf("/") + 1)));
 
@@ -752,17 +756,31 @@ function registerEditor(_container, state) {
     }
     editor.onSaveAsToThumby = async () => {
         console.log('Pick a folder');
-        var path = await DIR.getPathFromUser(SAVEAS_ELEMENT, false, editor.EDITOR_TITLE.split('/').at(-1));
-        if(path != undefined){
-            if(path == "/main.py" && window.SHOWMAIN == false){
-                window.alertMessage("You can not save a file named 'main.py'<br>Please save again and select a different name");
+        var path = "";
+        var notDone = true;
+        while(notDone){
+            path = await DIR.getPathFromUser(SAVEAS_ELEMENT, false, editor.EDITOR_TITLE.split('/').at(-1));
+
+            if(path == undefined){
                 return;
             }
+            if(path == "/main.py" && window.SHOWMAIN == false){
+                window.alertMessage("You can not save a file named 'main.py'<br>Please save again and select a different name");
+                continue;
+            }
+            
+            if (path.search("untitled") === 1) {
+                window.alertMessage('You cannot save a file as Untitled. Please provide a different file name.');
+                continue;
+            }
+
+            notDone = false;
+        }
             editor.setPath(path);
             editor.setSaved();
             editor.updateTitleSaved();
             await editor.onSaveToThumby();
-        }
+        
     }
 
     editor.addNewEditor = async () => {
@@ -865,7 +883,9 @@ function registerEditor(_container, state) {
         // document.getElementById('IDRunBTN').disabled = false;
 
         removeFSOverlay();
-        enableMenuItems();
+        if(REPL.DISCONNECT == false){ //If the XRP was unplugged while running, don't enable the menus.
+            enableMenuItems();
+        }
         
         // after code finishes running, show RUN button and hide STOP button
         document.getElementById("IDRunBTN").disabled = false;
