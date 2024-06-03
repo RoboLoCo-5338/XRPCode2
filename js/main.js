@@ -1,4 +1,5 @@
 import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-layout.js";
+import { startPythonClient, createEditor, setKeyboardHandler } from "/js/monaco/src/main.ts";
 
 
 /*
@@ -295,18 +296,17 @@ VIEW_DROPDOWN.addEventListener("mouseleave", () => {
 });
 
 // View Menu Blockly Support
-var opAce;
-document.getElementById("IDViewVM").onclick = (event) =>{
+var tempMonaco;
+document.getElementById("IDViewVM").onclick = async (event) =>{
     UIkit.dropdown(VIEW_DROPDOWN).hide();
     document.getElementById("view-python-button").onclick = (ev) => {
-        opAce.destroy();
+        tempMonaco.dispose();
     };
-    opAce = ace.edit("view-python-ace");
-    opAce.session.setMode("ace/mode/python");
-    opAce.setReadOnly(true);
-    opAce.setTheme("ace/theme/tomorrow_night_bright");
     let id = localStorage.getItem("activeTabId");
-    opAce.setValue(EDITORS[id].getValue(), 1);
+    let data = EDITORS[id].getValue();
+    let path = "/html_view"
+    tempMonaco = await createEditor(document.getElementById("view-python-ace"), path, data);
+    tempMonaco.updateOptions({ readOnly: true });
     UIkit.modal(document.getElementById("view-python-code")).show();
 }
 document.getElementById("IDViewCM").onclick = async (event) =>{
@@ -372,6 +372,8 @@ document.getElementById("IDRunBTN").onclick = async (event) =>{
     document.getElementById("IDRunBTN").disabled = false;
 
 };
+
+await startPythonClient();
 
 /*
 // Add editor panel to layout
@@ -667,11 +669,28 @@ function registerShell(_container, state){
     };
 }
 
+const ctrls_handler = () => {
+    let id = getActiveId(); 
+    EDITORS[id].onSaveToThumby();
+}
+
+async function startEditor(editor){
+    if(!editor.isBlockly){
+        var data = localStorage.getItem("EditorValue" + editor.ID);
+        var path = editor.EDITOR_PATH;
+        editor.ACE_EDITOR =  await createEditor(editor.EDITOR_DIV, path, data);
+        setKeyboardHandler(editor.ACE_EDITOR, ctrls_handler);
+    }
+}
+
 // Editor module
 var EDITORS = {};
 var LAST_ACTIVE_EDITOR = undefined; // Each editor will set this to themselves on focus, bitmap builder uses this
 function registerEditor(_container, state) {
     var editor = new EditorWrapper(_container, state, EDITORS);
+    
+    startEditor(editor);
+    
     editor.onFocus = () => { LAST_ACTIVE_EDITOR = editor };
 
     editor.onUploadFiles = async () => {
@@ -940,11 +959,15 @@ function registerEditor(_container, state) {
         state.path = newFile;
         await myLayout.addComponent('Editor', state, 'Editor');
         //save the new file.
+
         for (const [id, ed] of Object.entries(EDITORS)) {
             if(ed.EDITOR_PATH == newFile){
+                while(ed.ACE_EDITOR == undefined){ //wait until the editor has been created.
+                    await sleep(10)
+                }
                 ed.onSaveToThumby();
             }
-            }
+        }
     }
 
     editor.onDownloadFile = async () => {

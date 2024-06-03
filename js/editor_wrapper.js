@@ -8,6 +8,8 @@ class EditorWrapper{
 
         this.EDITORS = EDITORS;
         this._container = _container;
+        this.ACE_EDITOR = undefined;
+        this.isBlockly = false;
 
         // New editor, find a unique ID for it. At this point, a new editor can only
         // spawn on first page creation or button click, all or no editors should exist
@@ -461,12 +463,13 @@ class EditorWrapper{
 
 
 
-        // Init the ace editor
+        // Init the monaco editor
 
+/*
         this.editorReady = new Promise((resolve, reject) => {
-            require.config({ paths: { 'vs': 'js/Monaco/min/vs' }});
+            require.config({ paths: { 'vs': '/js/monaco/src' }});
 
-            require(['vs/editor/editor.main'], () => {
+            require(['main.ts'], () => {
                 var data = localStorage.getItem("EditorValue" + this.ID);
                 this.EDITOR_DIV.innerHTML = "";
 
@@ -481,7 +484,10 @@ class EditorWrapper{
             });
         });
 
+        this.model = null;
+
         this.editorReady.then((editor) => {
+
             // Listening for content changes in the editor
             editor.onDidChangeModelContent((event) => {
                 localStorage.setItem("EditorValue" + this.ID, this.ACE_EDITOR.getValue());
@@ -489,7 +495,36 @@ class EditorWrapper{
                 localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
                 this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
             });
+
+            //const model = monaco.editor.createModel('', 'python');
+            const worker = new Worker('js/monaco/pyright.worker.js');
+            const model = editor.getModel();
+            //const serverInfo = pyright.createServer({});
+
+            /*
+            monaco.languages.registerHoverProvider('python', {
+                provideHover: (model, position) => {
+                  // Use Pyright to provide hover information
+                  return serverInfo.getHoverInfo(model.getValue(), position);
+                },
+              });
+            */
+/*
+            worker.onerror =  (event) => {
+                console.log(event.message);
+            }
+            
+            worker.postMessage({
+                type: 'browser/boot',
+                mode: 'foreground'
+            });
+
+            
+
         });
+*/
+        
+
         //this.ACE_EDITOR = ace.edit(this.EDITOR_DIV);
 
         //this.ACE_EDITOR.session.setMode("ace/mode/python");
