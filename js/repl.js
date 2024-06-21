@@ -1221,6 +1221,10 @@ class ReplJS{
         //get version information from the XRP
         let info = await this.getVersionInfo();
 
+        if(info == undefined){
+            return; //this happens if the XRP is rebooting we are under BLE and no other way to stop it.
+        }
+
         window.xrpID = info[2]; //store off the unique ID for this XRP
 
         info[0]= info[0].replace(/[\(\)]/g, "").replace(/,\s/g, "."); //convert to a semantic version
@@ -1637,7 +1641,7 @@ class ReplJS{
             this.MANNUALLY_CONNECTING = false;
             this.BUSY = false;
             if (this.DEBUG_CONSOLE_ON)
-                console.log("fcg: out of tryAutoConnect");
+                console.log("fcg: out of Connect");
         }
     }
 
