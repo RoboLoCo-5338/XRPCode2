@@ -66,7 +66,8 @@ class BLEUART:
             conn_handle, value_handle = data
             if conn_handle in self._connections and value_handle == self._rx_handle:
                 self._rx_buffer += self._ble.gatts_read(self._rx_handle)
-                if(self._rx_buffer == "##XRPSTOP##"):
+                if(self._rx_buffer.find(b'##XRPSTOP##') != -1):
+                    self._rx_buffer = bytearray()
                     import machine
                     machine.reset()
         elif event == _IRQ_GATTS_INDICATE_DONE:
