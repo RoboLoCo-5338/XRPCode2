@@ -5,17 +5,20 @@ import io
 import os
 import micropython
 from micropython import const
-import machine
+from machine import Timer, Pin, disable_irq, enable_irq, unique_id
 import time
+                    
 
 from ble.ble_uart_peripheral import BLEUART
 
 _MP_STREAM_POLL = const(3)
 _MP_STREAM_POLL_RD = const(0x0001)
 
-_timer = machine.Timer(-1)
+_timer = Timer(-1)
 
 waitingForTimer = False
+
+#_led = Pin("LED", Pin.OUT) //for debugging
 
 # Batch writes into 50ms intervals.
 def schedule_in(handler, delay_ms):
@@ -23,7 +26,7 @@ def schedule_in(handler, delay_ms):
         handler()
     #using PERIODIC vs ONE_SHOT because sometimes ONE_SHOT didn't fire when IMU timer was going
     #We deinit() once the timer goes off. So for all means a ONE_SHOT.
-    _timer.init(mode=machine.Timer.PERIODIC, period=delay_ms, callback=_wrap)
+    _timer.init(mode=Timer.PERIODIC, period=delay_ms, callback=_wrap)
 
 # Simple buffering stream to support the dupterm requirements.
 class BLEUARTStream(io.IOBase):
@@ -31,6 +34,7 @@ class BLEUARTStream(io.IOBase):
         self._uart = uart
         self._tx_buf = bytearray()
         self._uart.irq(self._indicate_handler)
+        self._tx_buf_index = 0
 
 
     def _indicate_handler(self):
@@ -63,37 +67,29 @@ class BLEUARTStream(io.IOBase):
         return 0
 
     def _flush(self):
-        data = self._tx_buf[0:200]
-        self._tx_buf = self._tx_buf[200:]
+        data = self._tx_buf[self._tx_buf_index:self._tx_buf_index + 200]
+        self._tx_buf_index += 200
+        if self._tx_buf_index >= len(self._tx_buf):
+            self._tx_buf = bytearray()
+            self._tx_buf_index = 0
         self._uart.write(data)
-        #if self._tx_buf:
-            #schedule_in(self._flush, 50)
 
     def write(self, buf):
-        #machine.Pin("LED",Pin.OUT).on()
+        state = disable_irq()
         empty = not self._tx_buf
         self._tx_buf += buf
+        enable_irq(state)
+
         if empty:
             waitingForTimer = True
             schedule_in(self._timer_handler, 50)
 
-            #self._flush()
-        '''
-            if len(self._tx_buf) == 1:
-                schedule_in(self._indicate_handler, 80)
-            else:
-                self._flush()
-        '''
-
 def background_task():
     ble = bluetooth.BLE()
-    x = (''.join(['{:02x}'.format(b) for b in machine.unique_id()]))
+    x = (''.join(['{:02x}'.format(b) for b in unique_id()]))
     uart = BLEUART(ble, name="XRP-" + x[11:], rxbuf = 250)
     stream = BLEUARTStream(uart)
-    oldst = os.dupterm(stream,0)
-    #while(True):
-        #stream.write("hello world")
-        #time.sleep(1)
+    os.dupterm(stream,0)
 
 # Start the background task
 background_task()

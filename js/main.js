@@ -678,7 +678,7 @@ function registerEditor(_container, state) {
     editor.onFocus = () => { LAST_ACTIVE_EDITOR = editor };
 
     editor.onUploadFiles = async () => {
-        if(REPL.PORT != undefined){
+        if(REPL.DISCONNECT == false){
             console.log("Pick files to upload");
             const fileHandles = await window.showOpenFilePicker({multiple: true});
             if(fileHandles && fileHandles.length > 0){

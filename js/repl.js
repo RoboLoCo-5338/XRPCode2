@@ -493,7 +493,27 @@ class ReplJS{
         }
     }
 
-    // Given a path, delete it on RP2040
+    // if we attached via the cable then make sure we are not trying to output to via the BLE
+    async resetTerminal(path){
+        if(this.BUSY == true){
+            return;
+        }
+        this.BUSY = true;
+
+        var cmd =   "import os\n" +
+                    "os.dupterm(None)\n";
+
+
+        var hiddenLines = await this.writeUtilityCmdRaw(cmd, true, 1);
+
+        await this.getToNormal(3);
+        this.BUSY = false;
+    }
+
+
+    // Check to see if the power switch is on otherwise users can wonder why their program is not running correctly.
+    // Note: this is only with the cable attached. If in BLE mode they have to have the power on:
+    // TODO: if in BLE mode see if there is enough power to have a successful run or if their batteries are too low.
     async isPowerSwitchOn(path){
         if(this.BUSY == true){
             return;
@@ -1133,6 +1153,7 @@ class ReplJS{
                     "    if not data:\n" +
                     "        break\n" +
                     "    sys.stdout.buffer.write(data)\n" +
+                    //"    sys.stdout.write('read more')\n" +
                     "onboard_file.close()\n" +
                     "sys.stdout.write('###DONE READING FILE###')\n";
 
@@ -1481,6 +1502,9 @@ class ReplJS{
 
     async finishConnect(){
         this.DISCONNECT  = false;
+        if(this.PORT != undefined){ //if we connected via USB then we can release the BLE terminal
+            this.resetTerminal();
+        }
         this.readLoop(); 
         if(await this.checkIfMP()){
             if(this.HAS_MICROPYTHON == false){    //something went wrong, just get out of here
