@@ -1,7 +1,6 @@
 // ##### ACTIVE_TERMINAL_WRAPPER.js #####
 // Wraps the Xterm.js class into a class that handles making
-// the terminal look active. Only implements functions of
-// Xterm.js that are relevant to the Thumby Manager project
+// the terminal look active. 
 
 class ActiveTerminal{
 
