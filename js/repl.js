@@ -50,10 +50,14 @@ class ReplJS{
         // Functions defined outside this module but used inside
         this.onData = undefined;
         this.onConnect = undefined;
+        this.IDSet = undefined;
         this.onDisconnect = undefined;
         this.onFSData = undefined;
         this.doPrintSeparator = undefined;
         this.forceTermNewline = undefined;
+        this.startJoyPackets = undefined;
+        this.stopJoyPackets = undefined;
+
         //this.onShowUpdate = undefined;
         this.showMicropythonUpdate = undefined;
 
@@ -250,8 +254,10 @@ class ReplJS{
 
         while ( this.DISCONNECT == false) {   //this.PORT != undefined && this.PORT.readable &&
             // Check if reader locked (can be locked if try to connect again and port was already open but reader wasn't released)
-            if(this.PORT != undefined && !this.PORT.readable.locked){
-                this.READER = this.PORT.readable.getReader();
+            if(this.PORT != undefined){ 
+                if(!this.PORT.readable.locked){
+                    this.READER = this.PORT.readable.getReader();
+                }
             }else{
                 this.startBLEData();
             }
@@ -275,12 +281,34 @@ class ReplJS{
                         // Reading from serial is done in chunks of a inconsistent/non-guaranteed size,
                         if(this.DEBUG_CONSOLE_ON) console.log(this.TEXT_DECODER.decode(values));
 
+                        //We need to handle the case where esc sequences are broken up into multiple reads.
+                                // look for esc sequences that mean something to us:
+                                // Data to be graphed
+                                // Switch input modes:
+                                //     controller (keyboard or joystick)
+                                //     standard keyboard input
+                        var tempValue = values;
+                        tempValue = this.HandleEsc(tempValue);
+                        if(tempValue.length > 0){
+                            const index = tempValue.lastIndexOf(27);
+                            if(index != -1 && this.RUN_BUSY == true){  //ignore these escapes if not in run mode.
+                                if(tempValue[index+1] == 101){
+                                    //start getting Joystick packets on the input stream
+                                    this.startJoyPackets();
+                                    values = tempValue = [];
+                                }
+                                if(tempValue[index+1] == 102){
+                                    //Stop Joystick packets on the input stream
+                                    this.stopJoyPackets();
+                                    values = tempValue = [];
+                                }
+                            }
+                        }
+
                         // Collect lines when read until active, otherwise, output to terminal
                         if(this.READ_UNTIL_STRING == ""){
-                            //We need to handle the case where esc sequences are broken up into multiple reads.
-                            var tempValue = values;
-                            tempValue = this.HandleEsc(tempValue);
                             if(tempValue.length > 0){
+                            
                                 this.onData(this.TEXT_DECODER.decode(new Uint8Array(tempValue)));
                             }
                         }else{
@@ -678,11 +706,12 @@ class ReplJS{
             await this.writeUtilityCmdRaw(cmd, true, 1);
         }
 
+        this.stopJoyPackets(); //just incase they were running.
+
         this.BUSY = false;
         this.RUN_BUSY = false;
         if(this.DEBUG_CONSOLE_ON) console.log("fcg: out of executeLines");
-
-
+        
         // Make sure to update the filesystem after modifying it
         this.SPECIAL_FORCE_OUTPUT_FLAG = false;
         await this.getOnBoardFSTree();
@@ -1055,7 +1084,7 @@ class ReplJS{
     }
 
     async updateMainFile(fileToEx){
-       
+       //BUGBUG - Need to write the isrunning file to 0 since we know we are running from the IDE
         var fileToEx2 = fileToEx;
         if (fileToEx.startsWith('/')) {
             fileToEx2 = fileToEx.slice(1);
@@ -1476,6 +1505,7 @@ class ReplJS{
 
                 this.BUSY = false;
                 await this.checkIfNeedUpdate();
+                this.IDSet();
 
             }catch(err){
                 if(err.name == "InvalidStateError"){
@@ -1493,6 +1523,7 @@ class ReplJS{
 
                     this.BUSY = false;
                     await this.checkIfNeedUpdate();
+                    this.IDSet();
 
                 }else if(err.name == "NetworkError"){
                     alert("Opening port failed, is another application accessing this device/port?");
@@ -1521,7 +1552,8 @@ class ReplJS{
         }
 
         this.BUSY = false;
-        this.checkIfNeedUpdate();
+        await this.checkIfNeedUpdate();
+        this.IDSet();
             
     }
     async tryAutoConnect(){

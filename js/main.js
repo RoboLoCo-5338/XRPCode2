@@ -7,7 +7,7 @@ import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-l
 
 const showChangelogVersion = "1.0.3";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
 window.latestMicroPythonVersion = [1, 22, 1];
-window.xprID = "";
+window.xrpID = "";
 
 
 const layoutSaveKey = "layout";
@@ -170,7 +170,8 @@ var defaultConfig = {
                         id: "aShell"
                     }],
                     height: 20
-                }]
+                }
+            ]
             }],
         }],
     }],
@@ -366,20 +367,6 @@ document.getElementById("IDRunBTN").onclick = async (event) =>{
     document.getElementById("IDRunBTN").disabled = false;
 
 };
-
-/*
-// Add editor panel to layout
-document.getElementById("IDAddEditorBTN").onclick = (event) =>{
-    var id1;
-    for (const [id] of Object.entries(EDITORS)) {
-        id1 = id;
-        break;
-    }
-
-    EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
-    myLayout.addComponent('Editor', {"value":undefined, choose:true}, 'Editor');
-}
-*/
 
 // Return true if a panel with this title exists, false otherwise
 function recursiveFindTitle(content, title){
@@ -593,6 +580,15 @@ async function downloadFileFromPath(fullFilePaths) {
     }
 }
 
+// init Joystick class when window initializes
+var JOY = undefined;
+function registerJoy(_container, state){
+    JOY = new Joystick(_container, state);
+    JOY.writeToDevice = (data) => REPL.writeToDevice(data);
+    REPL.startJoyPackets = () => JOY.startJoyPackets();
+    REPL.stopJoyPackets = () => JOY.stopJoyPackets();
+}
+
 // Terminal module
 var ATERM = undefined;
 function registerShell(_container, state){
@@ -623,6 +619,10 @@ function registerShell(_container, state){
             document.getElementById('IDConnectBTN_text').innerText = "Re-Connect XRP";
             connect.disabled = true;
         }
+
+        // handle the XRP Name and ID
+        document.getElementById('IDXRPName').style.display = "none";
+        window.xrpID = "";
     }
     REPL.onConnect = () => {
         window.enableMenuItems();
@@ -630,8 +630,17 @@ function registerShell(_container, state){
         document.getElementById("IDRunBTN").disabled = false;
         document.getElementById('IDRunBTN').style.display = "block";
         document.getElementById('IDConnectBTN').style.display = "none";
-        //ID this would be a good spot to send window.xrpID to the database
+       
         //FS.enableButtons();
+    }
+
+    REPL.IDSet = () => {
+         //ID this would be a good spot to send window.xrpID to the database
+         if(window.xrpID != ""){
+            document.getElementById('IDXRPName').innerHTML = "XRP-" + window.xrpID.slice(-5);
+            document.getElementById('IDXRPName').style.display = "block";
+         }
+
     }
     REPL.onFSData = (jsonStrData, fsSizeData) => {
         FS.updateTree(jsonStrData);
@@ -946,7 +955,8 @@ function registerEditor(_container, state) {
 myLayout.registerComponentConstructor("Filesystem", registerFilesystem);
 myLayout.registerComponentConstructor("Editor", registerEditor);
 myLayout.registerComponentConstructor("Shell", registerShell);
-
+//myLayout.registerComponentConstructor("Joy", registerJoy);
+registerJoy();
 
 // Restore from previous layout if it exists, otherwise default
 var savedLayout = localStorage.getItem(layoutSaveKey);
