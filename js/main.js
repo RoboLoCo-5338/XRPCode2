@@ -709,8 +709,11 @@ async function startEditor(editor){
     if(!editor.isBlockly){
         var data = localStorage.getItem("EditorValue" + editor.ID);
         var path = editor.EDITOR_PATH;
-        editor.ACE_EDITOR =  await createEditor(editor.EDITOR_DIV, path, data);
-        setKeyboardHandler(editor.ACE_EDITOR, ctrls_handler);
+        editor.EDITOR =  await createEditor(editor.EDITOR_DIV, path, data);
+        setKeyboardHandler(editor.EDITOR, ctrls_handler);
+        editor.EDITOR.onDidChangeModelContent(e => {
+            editor.handleEditorContentChange();
+        });
     }
 }
 
@@ -993,7 +996,7 @@ function registerEditor(_container, state) {
 
         for (const [id, ed] of Object.entries(EDITORS)) {
             if(ed.EDITOR_PATH == newFile){
-                while(ed.ACE_EDITOR == undefined){ //wait until the editor has been created.
+                while(ed.EDITOR == undefined){ //wait until the editor has been created.
                     await sleep(10)
                 }
                 ed.onSaveToThumby();

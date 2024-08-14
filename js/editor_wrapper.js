@@ -8,7 +8,7 @@ class EditorWrapper{
 
         this.EDITORS = EDITORS;
         this._container = _container;
-        this.ACE_EDITOR = undefined;
+        this.EDITOR = undefined;
         this.isBlockly = false;
 
         // New editor, find a unique ID for it. At this point, a new editor can only
@@ -336,7 +336,7 @@ class EditorWrapper{
         document.getElementById("blockly_dropdown").style.display = "inline-block";
 
         this.isBlockly = true;
-        if (this.ACE_EDITOR) this.ACE_EDITOR.destroy();
+        if (this.EDITOR) this.EDITOR.destroy();
 
         if(this.BLOCKLY_WORKSPACE && data != undefined){
             console.log("loaded workspace early notice");
@@ -461,133 +461,19 @@ class EditorWrapper{
         }
         this.setAutocompleteButtonText();
 
-
-
-        // Init the monaco editor
-
-/*
-        this.editorReady = new Promise((resolve, reject) => {
-            require.config({ paths: { 'vs': '/js/monaco/src' }});
-
-            require(['main.ts'], () => {
-                var data = localStorage.getItem("EditorValue" + this.ID);
-                this.EDITOR_DIV.innerHTML = "";
-
-                this.ACE_EDITOR = monaco.editor.create(this.EDITOR_DIV, {
-                    value: data,
-                    theme: 'vs-dark',
-                    language: 'python',
-                    automaticLayout: true,
-                    fontSize: this.FONT_SIZE
-                });
-                resolve(this.ACE_EDITOR); // Resolve the promise with the editor instance
-            });
-        });
-
-        this.model = null;
-
-        this.editorReady.then((editor) => {
-
-            // Listening for content changes in the editor
-            editor.onDidChangeModelContent((event) => {
-                localStorage.setItem("EditorValue" + this.ID, this.ACE_EDITOR.getValue());
-                this.SAVED_TO_THUMBY = false;
-                localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
-                this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
-            });
-
-            //const model = monaco.editor.createModel('', 'python');
-            const worker = new Worker('js/monaco/pyright.worker.js');
-            const model = editor.getModel();
-            //const serverInfo = pyright.createServer({});
-
-            /*
-            monaco.languages.registerHoverProvider('python', {
-                provideHover: (model, position) => {
-                  // Use Pyright to provide hover information
-                  return serverInfo.getHoverInfo(model.getValue(), position);
-                },
-              });
-            */
-/*
-            worker.onerror =  (event) => {
-                console.log(event.message);
-            }
-            
-            worker.postMessage({
-                type: 'browser/boot',
-                mode: 'foreground'
-            });
-
-            
-
-        });
-*/
-        
-
-        //this.ACE_EDITOR = ace.edit(this.EDITOR_DIV);
-
-        //this.ACE_EDITOR.session.setMode("ace/mode/python");
-        //this.ACE_EDITOR.setKeyboardHandler("ace/keyboard/vscode");
-
         localStorage.setItem("activeTabId", this.ID);
         localStorage.setItem("activeTabFileType", "micropython");
-        // hide micropython dropdown options since this is a blockly file
+        // hide micropython dropdown options since this is a python file
         document.getElementById("blockly_dropdown").style.display = "none";
         document.getElementById("micropython_dropdown").style.display = "inline-block";
 
-        //this.setThemeDark();
+    }
 
-        //this.resize();
-
-        //this.INSERT_RESTORE = false;
-
-        // Save value when changes made and edit the title
-        /*
-        this.ACE_EDITOR.session.on('change', (event) => {
-            localStorage.setItem("EditorValue" + this.ID, this.ACE_EDITOR.getValue());
-
-            // The first change is always an insert, don't change saved  to thumby flag for first change
-            if(this.INSERT_RESTORE == true){
-                if(this.SAVED_TO_THUMBY == true || this.SAVED_TO_THUMBY == undefined){
-                    if(this.EDITOR_PATH != undefined){
-                        this.setTitle("Editor" + this.ID + ' - ' + this.EDITOR_PATH);
-                    }else{
-                        this.setTitle("*Editor" + this.ID);
-                    }
-                    this.SAVED_TO_THUMBY = false;
-                    localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
-                    this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
-                }
-            }else{
-                this.INSERT_RESTORE = true;
-            }
-        });
-
-        */
-
-        
-        // Set the options that were restored
-        /*
-        this.ACE_EDITOR.setOptions({
-            fontSize: this.FONT_SIZE.toString() + "pt",
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: this.AUTOCOMPLETE_STATE,
-            enableSnippets: true
-        });
-
-        // When the editor has focus capture ctrl-s and do save file function
-        this.ACE_EDITOR.commands.addCommand({
-            name: 'SaveCurrentTab',
-            bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
-            exec: () => {
-                //let id = localStorage.getItem("activeTabId");
-                this.onSaveToThumby();
-                //console.log('Saving File for Tab Id: ', id);
-            },
-            readOnly: true
-        });
-        */
+    handleEditorContentChange(){
+        localStorage.setItem("EditorValue" + this.ID, this.EDITOR.getValue());
+        this.SAVED_TO_THUMBY = false;
+        localStorage.setItem("EditorSavedToThumby" + this.ID, this.SAVED_TO_THUMBY);
+        this.setTitle(this.EDITOR_TITLE); //call again to set the modified icon
     }
 
     checkAllEditorsForPath(path){
@@ -615,7 +501,7 @@ class EditorWrapper{
     }
 
     setAutocompleteState(state){
-        this.ACE_EDITOR.setOptions({
+        this.EDITOR.setOptions({
             enableLiveAutocompletion: state,
             enableSnippets: state
         });
@@ -673,20 +559,20 @@ class EditorWrapper{
 
     setThemeLight() {
         localStorage.setItem("lastTheme", "light"); // set theme to light
-        if(this.ACE_EDITOR){
-            this.ACE_EDITOR.setTheme("ace/theme/chrome");
+        if(this.EDITOR){
+            this.EDITOR.setTheme("ace/theme/chrome");
         }
     }
 
     setThemeDark() {
         localStorage.setItem("lastTheme", "dark"); // set theme to dark
-        if(this.ACE_EDITOR){
+        if(this.EDITOR){
             //this.ACE_EDITOR.setTheme("ace/theme/tomorrow_night_bright");
         }
     }
 
     setTheme(theme){
-        if(this.ACE_EDITOR){
+        if(this.EDITOR){
             //this.ACE_EDITOR.setTheme(`ace/theme/${theme}`);
         }
     }
@@ -739,7 +625,7 @@ class EditorWrapper{
 
     increaseFontSize(){
         this.FONT_SIZE++;
-        this.ACE_EDITOR.setOptions({
+        this.EDITOR.setOptions({
             fontSize: this.FONT_SIZE.toString() + "pt",
         });
         localStorage.setItem("EditorFontSize" + this.ID, this.FONT_SIZE);
@@ -747,7 +633,7 @@ class EditorWrapper{
     decreaseFontSize(){
         if(this.FONT_SIZE - 1 > 0){
             this.FONT_SIZE--;
-            this.ACE_EDITOR.setOptions({
+            this.EDITOR.setOptions({
                 fontSize: this.FONT_SIZE.toString() + "pt",
             });
             localStorage.setItem("EditorFontSize" + this.ID, this.FONT_SIZE);
@@ -755,7 +641,7 @@ class EditorWrapper{
     }
     resetFontSize(){
         this.FONT_SIZE = 10;
-        this.ACE_EDITOR.setOptions({
+        this.EDITOR.setOptions({
             fontSize: this.FONT_SIZE.toString() + "pt",
         });
         localStorage.setItem("EditorFontSize" + this.ID, this.FONT_SIZE);
@@ -766,7 +652,7 @@ class EditorWrapper{
         if(this.SAVED_TO_THUMBY == false && ! await window.confirmMessage('You have unsaved changes. Are you sure you want to overwrite this editor?')) {
             return;
         }
-        this.ACE_EDITOR.setValue(contents, 1);
+        this.EDITOR.setValue(contents, 1);
     }
 
 
@@ -821,13 +707,13 @@ class EditorWrapper{
                   Blockly.Python.workspaceToCode(this.BLOCKLY_WORKSPACE))
                    );
         }else{
-            return this.ACE_EDITOR.getValue();
+            return this.EDITOR.getValue();
         }
     }
 
     // Expose common Ace editor operation
     setValue(value, index){
-        return this.ACE_EDITOR.setValue(value, index);
+        return this.EDITOR.setValue(value, index);
     }
 
     // Wrapper for the ACE editor insert function, used for exporting custom bitmaps to editor
@@ -845,7 +731,7 @@ class EditorWrapper{
                 alert("Please select a [load sprite] block.")
             }
         }else{
-            this.ACE_EDITOR.insert(str);
+            this.EDITOR.insert(str);
         }
     }
 
@@ -855,7 +741,7 @@ class EditorWrapper{
             const sel = Blockly.getSelected();
             return (sel && (sel.type == 'load_sprite' || sel.type == 'load_anim_sprite') ? sel.data : "NO BLOCK");
         }else{
-            return this.ACE_EDITOR.getSelectedText();
+            return this.EDITOR.getSelectedText();
         }
     };
 
