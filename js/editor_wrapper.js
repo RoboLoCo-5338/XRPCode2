@@ -448,18 +448,11 @@ class EditorWrapper{
 
 
         // Set the font size based on what's saved, if it exists
-        var lastEditorFontSize = localStorage.getItem("EditorFontSize" + this.ID);
-        this.FONT_SIZE = 12;
+        var lastEditorFontSize = localStorage.getItem("EditorFontSize");
+        this.FONT_SIZE = 14;
         if(lastEditorFontSize != null){
             this.FONT_SIZE = lastEditorFontSize;
         }
-
-        // Get live autocomplete state, affects all editors
-        this.AUTOCOMPLETE_STATE = localStorage.getItem("EditorAutocompleteState");
-        if(this.AUTOCOMPLETE_STATE == undefined){ 
-            this.AUTOCOMPLETE_STATE = false;  //if no state then off by default.
-        }
-        this.setAutocompleteButtonText();
 
         localStorage.setItem("activeTabId", this.ID);
         localStorage.setItem("activeTabFileType", "micropython");
@@ -490,41 +483,6 @@ class EditorWrapper{
     // Need special function for this since constructor would come before onOpen def
     useOnOpen() {
         this.onOpen(this);
-    }
-
-    setAutocompleteButtonText(){
-        if(this.AUTOCOMPLETE_STATE){
-            document.getElementById("IDViewAutoComplete").textContent = "Turn live autocomplete OFF";
-        }else{
-            document.getElementById("IDViewAutoComplete").textContent = "Turn live autocomplete ON";
-        }
-    }
-
-    setAutocompleteState(state){
-        this.EDITOR.setOptions({
-            enableLiveAutocompletion: state,
-            enableSnippets: state
-        });
-        this.AUTOCOMPLETE_STATE = state;
-        this.setAutocompleteButtonText();
-    }
-
-    toggleAutocompleteStateForAll(){
-        if(this.AUTOCOMPLETE_STATE){
-            this.AUTOCOMPLETE_STATE = false;
-        }else{
-            this.AUTOCOMPLETE_STATE = true;
-        }
-
-        localStorage.setItem("EditorAutocompleteState", this.AUTOCOMPLETE_STATE);
-
-        // Apply to all editors, even this one
-        //[TODO] This should proably only apply to this editor since that is the way fonts work
-        for (const [id, editor] of Object.entries(this.EDITORS)) {
-            if(!editor.isBlockly) {
-                editor.setAutocompleteState(this.AUTOCOMPLETE_STATE);
-            }
-        }
     }
 
     setPath(path){
@@ -601,7 +559,6 @@ class EditorWrapper{
         localStorage.removeItem("EditorValue" + this.ID);
         localStorage.removeItem("EditorTitle" + this.ID);
         localStorage.removeItem("EditorPath" + this.ID);
-        localStorage.removeItem("EditorFontSize" + this.ID);
         localStorage.removeItem("EditorSavedToThumby" + this.ID);
         localStorage.removeItem("isBlockly" + this.ID);
     }
@@ -625,28 +582,22 @@ class EditorWrapper{
 
     increaseFontSize(){
         this.FONT_SIZE++;
-        this.EDITOR.setOptions({
-            fontSize: this.FONT_SIZE.toString() + "pt",
+
+        this.EDITOR.updateOptions({
+            "fontSize": this.FONT_SIZE,
         });
-        localStorage.setItem("EditorFontSize" + this.ID, this.FONT_SIZE);
+        localStorage.setItem("EditorFontSize", this.FONT_SIZE);
     }
     decreaseFontSize(){
         if(this.FONT_SIZE - 1 > 0){
             this.FONT_SIZE--;
-            this.EDITOR.setOptions({
-                fontSize: this.FONT_SIZE.toString() + "pt",
+            this.EDITOR.updateOptions({
+                "fontSize": this.FONT_SIZE,
             });
-            localStorage.setItem("EditorFontSize" + this.ID, this.FONT_SIZE);
+            localStorage.setItem("EditorFontSize", this.FONT_SIZE);
         }
     }
-    resetFontSize(){
-        this.FONT_SIZE = 10;
-        this.EDITOR.setOptions({
-            fontSize: this.FONT_SIZE.toString() + "pt",
-        });
-        localStorage.setItem("EditorFontSize" + this.ID, this.FONT_SIZE);
-    }
-
+    
 
     async openFileContents(contents){
         if(this.SAVED_TO_THUMBY == false && ! await window.confirmMessage('You have unsaved changes. Are you sure you want to overwrite this editor?')) {

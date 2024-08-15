@@ -317,30 +317,24 @@ document.getElementById("IDViewCM").onclick = async (event) =>{
     await EDITORS[id].onConvert(EDITORS[id].EDITOR_PATH, EDITORS[id].getValue(), id);
 }
 
-// View Menu ACE Support
+// View Menu for Python Editor Support
 
 
 document.getElementById("IDViewIncF").onclick = (event) =>{
     UIkit.dropdown(VIEW_DROPDOWN).hide();
-    let id = localStorage.getItem("activeTabId");
-    EDITORS[id].increaseFontSize();
+    for (const [id, editor] of Object.entries(EDITORS)) {
+        if(! EDITORS[id].isBlockly){
+            EDITORS[id].increaseFontSize();
+        }
+    }
 }
 document.getElementById("IDViewDecF").onclick = (event) =>{
     UIkit.dropdown(VIEW_DROPDOWN).hide();
-    let id = localStorage.getItem("activeTabId");
-    EDITORS[id].decreaseFontSize();
-}
-/*
-document.getElementById("IDViewResetF").onclick = (event) =>{
-    UIkit.dropdown(VIEW_DROPDOWN).hide();
-    let id = localStorage.getItem("activeTabId");
-    EDITORS[id].resetFontSize();
-}
-*/
-document.getElementById("IDViewAutoComplete").onclick = (event) =>{
-    UIkit.dropdown(VIEW_DROPDOWN).hide();
-    let id = localStorage.getItem("activeTabId");
-    EDITORS[id].toggleAutocompleteStateForAll();
+    for (const [id, editor] of Object.entries(EDITORS)) {
+        if(! EDITORS[id].isBlockly){
+            EDITORS[id].decreaseFontSize();
+        }
+    }
 }
 
 //Help Menu Support
@@ -717,6 +711,9 @@ async function startEditor(editor){
         var data = localStorage.getItem("EditorValue" + editor.ID);
         var path = editor.EDITOR_PATH;
         editor.EDITOR =  await createEditor(editor.EDITOR_DIV, path, data);
+        editor.EDITOR.updateOptions({
+            "fontSize": editor.FONT_SIZE,
+        });
         setKeyboardHandler(editor.EDITOR, ctrls_handler);
         editor.EDITOR.onDidChangeModelContent(e => {
             editor.handleEditorContentChange();
@@ -907,11 +904,22 @@ function registerEditor(_container, state) {
             return;
         }
 
-        //check if power switch is on.
-        if(! await REPL.isPowerSwitchOn()) {
-            if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
-                "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")) {
-                return;
+        //if Cable attached check to see that the power switch is on.
+        // if BLE make sure the voltage is high enough
+        if(REPL.BLE_DEVICE == undefined){
+            if(! await REPL.isPowerSwitchOn()) {
+                if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
+                    "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")) {
+                    return;
+                }
+            }
+        }else{
+            if(! await REPL.batteriesOK()) {
+                if(! await window.confirmMessage("The XRP battery power is low. Continuing may cause odd results or the XRP may disconnect from XRPCode." +
+                    "<br>It is suggested that you replace the batteries before continuing." +
+                    "<br>Continue?")) {
+                    return;
+                }
             }
         }
 
