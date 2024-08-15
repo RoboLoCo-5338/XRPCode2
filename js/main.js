@@ -496,8 +496,15 @@ function registerFilesystem(_container, state){
 
     //[TODO] - Don't let them pick main.py if it is not turned on
     FS.onRename = async (path) => {
-        var [ans, pathNew] = await window.promptMessage("Type a new name: ", path.substring(path.lastIndexOf("/")+1));
+
+        const parts = path.split('/').pop().split('.');
+        const extension = parts.length > 1 ? parts.pop() : undefined;
+        const filename = parts.join('.');
+        var [ans, pathNew] = await window.promptMessage("Type a new name: ", filename );
         if(ans == false) return;
+        if(extension != undefined){
+            pathNew = pathNew + "." + extension;
+        }
         REPL.renameFile(path, pathNew);
     }
     FS.onFormat = () => REPL.format();
@@ -929,6 +936,7 @@ function registerEditor(_container, state) {
         document.getElementById("IdProgress_TitleText").innerText = "Running Program...";
 
         // update the main file so if they unplug the robot and turn it on it will execute this program.
+        await REPL.clearIsRunning(); // since we know the user hit run, we want the isrunning bit to be 0 so the program will always run.
         lines = await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
         ATERM.TERM.scrollToBottom();
         UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
@@ -1140,11 +1148,13 @@ var val = "";
 var ans = false;
 async function promptMessage(message, input){
     await UIkit.modal.prompt(message, input).then(function (input) {
-        val = input;
-        ans = true;
-    }, function () {
-        ans = false;
-        val = "";
+        if(input == null){
+            val = "";
+            ans = false;
+        }else{
+            val = input;
+            ans = true;
+        }
     });
     return [ans,val];
 }

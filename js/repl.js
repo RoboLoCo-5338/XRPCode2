@@ -1083,8 +1083,34 @@ class ReplJS{
         window.resetPercentDelay();
     }
 
+    async clearIsRunning(){
+        if(this.BUSY == true){
+            return;
+        }
+        this.BUSY = true;
+        if(this.DEBUG_CONSOLE_ON) console.log("fcg: in clearIsRunning");;
+
+
+        // Got through and make sure entire path already exists
+        var cmd = "import sys\n" +
+                  "FILE_PATH = '/lib/ble/isrunning'\n" +
+                  "try:\n" +
+                  "   with open(FILE_PATH, 'r+b') as file:\n" +
+                  "      file.write(b'\\x00')\n" +
+                  "except Exception as err:\n" +
+                  "    print('Some kind of error clearing is running..' + err)\n";
+
+        await this.writeUtilityCmdRaw(cmd, true, 1);
+
+        // Get back into normal mode and omit the 3 lines from the normal message,
+        // don't want to repeat (assumes already on a normal prompt)
+        await this.getToNormal(3);
+
+        this.BUSY = false;
+        if(this.DEBUG_CONSOLE_ON) console.log("fcg: out of clearIsRunning");
+    }
+
     async updateMainFile(fileToEx){
-       //BUGBUG - Need to write the isrunning file to 0 since we know we are running from the IDE
         var fileToEx2 = fileToEx;
         if (fileToEx.startsWith('/')) {
             fileToEx2 = fileToEx.slice(1);

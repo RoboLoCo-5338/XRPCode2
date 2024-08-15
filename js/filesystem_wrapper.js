@@ -591,14 +591,34 @@ class FILESYSTEM{
                 te.src = "images/micropython.png";
 
             }
-            var projButton = template.querySelector("#openUser")
+            var projButton = template.querySelector("#openUser");
             projButton.onclick = (event) => {
-                var te = event.target;
-                var pfnNode = te.nextElementSibling;
-
+                const te = event.target;
+                var pfnNode = te.parentElement.querySelector("#fullNameUser");
                 var path = pfnNode.innerText;
 
                 this.onOpen(path);
+            };
+            projButton = template.querySelector("#renameUser");
+            projButton.onclick = (event) => {
+                const te = event.target;
+                var pfnNode = te.parentElement.querySelector("#fullNameUser");
+                var path = pfnNode.innerText;
+
+                this.onRename(path);
+            };
+            projButton = template.querySelector("#deleteUser");
+            projButton.onclick = async (event) => {
+                const te = event.target;
+                var pfnNode = te.parentElement.querySelector("#fullNameUser");
+                var path = pfnNode.innerText;
+
+                const parts = path.split('/').pop().split('.');
+                const filename = parts.join('.');
+                var ans = await window.confirmMessage("Are you sure you want to delete: " + fileName);
+                if(ans == false) return;
+
+                this.onDelete(path);
             };
             this.FS_AREA_DIV.appendChild(template);
             
