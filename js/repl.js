@@ -565,6 +565,29 @@ class ReplJS{
         }
     }
 
+    async batteriesOK(){
+        if(this.BUSY == true){
+            return;
+        }
+        this.BUSY = true;
+
+        var cmd =   "from machine import ADC, Pin\n" +
+                    "print(ADC(Pin(28)).read_u16())\n";
+
+
+        var hiddenLines = await this.writeUtilityCmdRaw(cmd, true, 1);
+
+        await this.getToNormal(3);
+        this.BUSY = false;
+        const value = parseInt(hiddenLines[0].substring(2)); //get the string after the OK
+        if(value > 23500){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 
     async getOnBoardFSTree(){
         if(this.BUSY == true){
