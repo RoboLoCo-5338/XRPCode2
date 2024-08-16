@@ -45,9 +45,9 @@ class EditorWrapper{
         // If this is the first time loading the website (with the default
         // GoldenLayout setup), load a choice selector between MicroPython
         // and Blockly.
-        if(state["value"] == undefined && state.choose){
+        
+        if((state["value"] == undefined && state.choose) || localStorage.getItem("EditorTitle" + this.ID) == "Choose Mode"){
             this.setTitle("Choose Mode");
-            // this.HEADER_TOOLBAR_DIV.innerHTML = "Please choose your Editor preference:";
 
             const clone = document.querySelector('#new-file');
 
@@ -56,12 +56,15 @@ class EditorWrapper{
 
             template.style.display = "block";
             this.EDITOR_DIV.appendChild(template);
-            const pUser = localStorage.getItem("projUser");
+            var pUser = localStorage.getItem("projUser");
             var users = [];
             if(REPL.DISCONNECT == true){
+                if(pUser == null){
+                    pUser = "not set"; //must me first time browser connected and no XRP connected.
+                }
                 users.push(pUser);
             }else {
-                users = FS.getUsers();
+                users = FS.updateUsers();
             }
 
             const userDropdown = template.querySelector("#user-dropdown");
@@ -89,7 +92,7 @@ class EditorWrapper{
                 }
             };
 
-            function updateCreateButtonState() {
+            async function updateCreateButtonState() {
                 const projectName = projectNameInput.value.trim();
                 const isUserSelected = userDropdown.value;
                 createButton.disabled = !(projectName && selectedPlatform && isUserSelected);
@@ -120,41 +123,22 @@ class EditorWrapper{
                     localStorage.setItem("isBlockly" + this.ID, true);      
                 } else{
                     this.EDITOR_PATH += ".py";
-                    localStorage.setItem("isBlockly" + this.ID, false);  
+                    localStorage.setItem("isBlockly" + this.ID, false); 
                 }
                 localStorage.setItem("EditorTitle" + this.ID, "Editor" + this.ID + ' - ' + this.EDITOR_PATH);
                 localStorage.setItem("EditorPath" + this.ID, this.EDITOR_PATH);
-                this.initEditorPanelUI(state["value"]);
+                await this.initEditorPanelUI(state["value"]);
 
                 this.onSaveToThumby();
             }
-
-
+            setTimeout(() => {
+                startTutorial(this.EDITOR_DIV)
+            }, 500);
             
-            var blockly_button = document.createElement("button");
-            blockly_button.classList = "uk-button uk-button-secondary uk-width-1-2 uk-height-1-1 uk-text-small";
-            blockly_button.innerHTML = '<img src="images/blockly.svg" class="uk-width-1-2"/><div><p>BLOCKLY</p><p>(visual block editor)<p/></div>';
-            blockly_button.title = "Load a Blockly Editor for visual block-based coding.";
-            //this.EDITOR_DIV.appendChild(blockly_button);
-
-            var micropython_button = document.createElement("button");
-            micropython_button.classList = "uk-button uk-button-secondary uk-width-1-2 uk-height-1-1 uk-text-small";
-            micropython_button.innerHTML = '<img src="images/micropython.png" class="micropython-icon"/><div class="micropython-text"><p>MICRO PYTHON</p><p>(text code editor)</p></div>';
-            micropython_button.title = "Load a MicroPython Editor for normal text-based coding.";
-            //this.EDITOR_DIV.appendChild(micropython_button);
-
             const cleanUp = ()=>{
                 localStorage.removeItem("EditorTitle" + this.ID);
             };
-            micropython_button.onclick = () => {
-                cleanUp();
-                this.initEditorPanelUI(state["value"]);
-            };
-            blockly_button.onclick = () => {
-                cleanUp();
-                this.state['isBlockly'] = true;
-                this.initEditorPanelUI(state["value"]);
-            };
+            
         }else{
             const path = state["path"]
             if(path != undefined && path.endsWith(".blocks")){
@@ -200,6 +184,7 @@ class EditorWrapper{
         this.onConvert = undefined;
         this.onDownloadFile = undefined;
         this.addNewEditor = undefined;
+        this.startCodeEditor = undefined;
 
         // Make sure mouse down anywhere on panel focuses the panel
         // Mouse down is used so New Tab, Open Python, etc can allow the focus out.
@@ -249,7 +234,7 @@ class EditorWrapper{
         this._container.close();
     }
 
-    initEditorPanelUI(data) {
+    async initEditorPanelUI(data) {
         this.makeBlocklyPythonHeaderOptions();
 
         var isBlockly = localStorage.getItem("isBlockly" + this.ID) || this.state.isBlockly;
@@ -415,7 +400,6 @@ class EditorWrapper{
             }else{
                 if(this.EDITOR_PATH == undefined){
                     // When adding default editors, give them a path but make each unique by looking at all other open editors
-                    this.setPath("/untitled-" + this.ID + ".blocks");
                     this.setTitle("Editor" + this.ID + ' - *' + this.EDITOR_PATH);
                 }
             }
@@ -427,7 +411,7 @@ class EditorWrapper{
 
     }
 
-    turnIntoCodeViewer(data){
+    async turnIntoCodeViewer(data){
 
         // Listen for window resize event and re-fit terminal
         this.windowResizeListener = window.addEventListener('resize', this.resize.bind(this));
@@ -439,7 +423,7 @@ class EditorWrapper{
             localStorage.setItem("EditorValue" + this.ID, data);
         }else if(lastEditorValue == null){
             localStorage.setItem("EditorValue" + this.ID, this.defaultCode);
-            this.setPath("/untitled-" + this.ID + ".py");
+            await this.startCodeEditor(this);
             this.setTitle("Editor" + this.ID + ' - ' + this.EDITOR_PATH);
         }
 
@@ -540,6 +524,8 @@ class EditorWrapper{
         if(!this.SAVED_TO_THUMBY){
             t = t + " \u2022";
         }
+
+        this.EDITOR_TITLE = title;
         this._container.setTitle(t);
 
         // Make the tab title show the full path
@@ -547,7 +533,7 @@ class EditorWrapper{
             this._container._tab._element.title = this.EDITOR_TITLE.split(" - ")[1];
         }
 
-        this.EDITOR_TITLE = title;
+        
         localStorage.setItem("EditorTitle" + this.ID, title);
     }
 
@@ -658,7 +644,14 @@ class EditorWrapper{
                   Blockly.Python.workspaceToCode(this.BLOCKLY_WORKSPACE))
                    );
         }else{
-            return this.EDITOR.getValue();
+            var data = null;
+            if(this.EDITOR != undefined){ //Has the editor been created yet?
+                data = this.EDITOR.getValue()
+            }
+            else{
+                data = localStorage.getItem("EditorValue" + this.ID);
+            }
+            return data;
         }
     }
 

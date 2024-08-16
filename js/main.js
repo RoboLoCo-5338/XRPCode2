@@ -725,11 +725,17 @@ async function startEditor(editor){
 var EDITORS = {};
 var LAST_ACTIVE_EDITOR = undefined; // Each editor will set this to themselves on focus, bitmap builder uses this
 function registerEditor(_container, state) {
-    var editor = new EditorWrapper(_container, state, EDITORS);
     
-    startEditor(editor);
+    
+    var editor = new EditorWrapper(_container, state, EDITORS);
+
+
+    if(editor.EDITOR_TITLE != "Choose Mode" && state.choose != true){
+        startEditor(editor);
+    }
     
     editor.onFocus = () => { LAST_ACTIVE_EDITOR = editor };
+    editor.startCodeEditor = startEditor;
 
     editor.onUploadFiles = async () => {
         if(REPL.DISCONNECT == false){

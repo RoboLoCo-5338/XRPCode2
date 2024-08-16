@@ -245,9 +245,20 @@ class FILESYSTEM{
 
         this.FS_STORAGE_BAR_DIV.innerHTML = "&nbsp;Storage: " + (usedBytes/1000000).toFixed(2) + "/" + (totalBytes/1000000).toFixed(1) + " MB";
 
-        // if in project mode update the user list
-        var dirNames = this.getUsers();
-        
+        // for project mode update the user list
+        this.updateUsers();
+    }
+
+    updateUsers(){
+        var dirNames = [];
+        for (const [key, value] of Object.entries(this.LAST_JSON_DATA[''])) {
+            if (value.hasOwnProperty('D')){
+                const dirName = value['D']
+                if (dirName !== "lib" && dirName !== "trash") {
+                    dirNames.push(dirName);
+                }
+            }
+        }
         this.FS_USER_DROPDOWN.innerHTML = ''; //reset the dropdown to no options
 
         var selUser = localStorage.getItem("projUser");
@@ -270,18 +281,6 @@ class FILESYSTEM{
         if(!nameFound){
             selUser = dirNames[0];
             localStorage.setItem("projUser", selUser);
-        }
-    }
-
-    getUsers(){
-        var dirNames = [];
-        for (const [key, value] of Object.entries(this.LAST_JSON_DATA[''])) {
-            if (value.hasOwnProperty('D')){
-                const dirName = value['D']
-                if (dirName !== "lib" && dirName !== "trash") {
-                    dirNames.push(dirName);
-                }
-            }
         }
         return dirNames;
     }
@@ -558,6 +557,10 @@ class FILESYSTEM{
 
     updateProjJD(jsonData){
         var user = localStorage.getItem("projUser");
+        if(user == null){
+            this.updateUsers();
+            user = localStorage.getItem("projUser");
+        }
         var dirObj = jsonData[''][user];
         var fileNames = [];
         for (const [key, value] of Object.entries(dirObj)) {
