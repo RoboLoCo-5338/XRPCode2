@@ -56,13 +56,21 @@ class EditorWrapper{
 
             setTimeout(() => {
                 startTutorial(this.EDITOR_DIV)
-            }, 500);
+            }, 500); //BUGBUG - will this fail on a slow computer
             
         }
 
         else if((state["value"] == undefined && state.choose) || localStorage.getItem("EditorTitle" + this.ID) == "New File"){
             this.setTitle("New File");
 
+            if(REPL.DISCONNECT){  //if there is no connected device then don't display a new file window
+                setTimeout(() => {
+                    delete this.EDITORS[this.ID];
+                    this.clearStorage();
+                    this._container.close();
+                }, 500); //BUGBUG - will this fail on a slow computer
+                
+            }
             const clone = document.querySelector('#new-file');
 
             const template = clone.cloneNode(true);
