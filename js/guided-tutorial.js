@@ -1,9 +1,9 @@
 // Define your tutorial steps
 const tutorialSteps = [
-  { target: '#IDEditorDiv0', content: 'Connect your XRP to your computer with a USB cable and then press this button.' + 
-    ' After you the XRP connects this button will become a RUN button and underneath it will be the name of your XRP. You should label your XRP with this name.', position: 'top' },
-  { target: '#IDEditorDiv0', content: 'This is where you will find your files', position: 'left' },
-  { target: '#IDEditorDiv0', content: 'This is where you will find any output from your XRP, including print statements from your code.', position: 'bottom' },
+  { target: '.welcome-view', content: 'Connect your XRP to your computer with a USB cable and then press this button.' + 
+    ' After the XRP connects this button will become a RUN button and underneath it will be the name of your XRP. You should label your XRP with this name.', position: 'top' },
+  { target: '.welcome-view', content: 'This is where you will find your files', position: 'left' },
+  { target: '.welcome-view', content: 'This is where you will find any output from your XRP, including print statements from your code.', position: 'bottom' },
   // Add more steps as needed
 ];
 
@@ -103,20 +103,20 @@ class GuidedTutorial {
       case 'bottom':
         arrowStart = {
           x: targetRect.left + targetRect.width / 2,
-          y: targetRect.bottom
+          y: popoverRect.top + popoverRect.height - 20
         };
         arrowEnd = {
           x: popoverRect.left + popoverRect.width / 2,
-          y: popoverRect.top + popoverRect.height + arrowOffset
+          y: popoverRect.top + popoverRect.height - 20 + arrowOffset
         };
         break;
       case 'left':
         arrowStart = {
-          x: targetRect.left,
+          x: popoverRect.left + arrowOffset,
           y: targetRect.top + targetRect.height / 2
         };
         arrowEnd = {
-          x: popoverRect.left - arrowOffset,
+          x: popoverRect.left,
           y: popoverRect.top + popoverRect.height / 2
         };
         break;

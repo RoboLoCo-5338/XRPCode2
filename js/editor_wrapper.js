@@ -46,8 +46,22 @@ class EditorWrapper{
         // GoldenLayout setup), load a choice selector between MicroPython
         // and Blockly.
         
-        if((state["value"] == undefined && state.choose) || localStorage.getItem("EditorTitle" + this.ID) == "Choose Mode"){
-            this.setTitle("Choose Mode");
+        if(state.welcome || localStorage.getItem("EditorTitle" + this.ID) == "Welcome"){
+            const clone = document.querySelector('.welcome-view');
+            const doc = clone.cloneNode(true);
+            doc.style.display = "block";
+            this.EDITOR_DIV.appendChild(doc);
+
+            this.setTitle("Welcome");
+
+            setTimeout(() => {
+                startTutorial(this.EDITOR_DIV)
+            }, 500);
+            
+        }
+
+        else if((state["value"] == undefined && state.choose) || localStorage.getItem("EditorTitle" + this.ID) == "New File"){
+            this.setTitle("New File");
 
             const clone = document.querySelector('#new-file');
 
@@ -131,9 +145,6 @@ class EditorWrapper{
 
                 this.onSaveToThumby();
             }
-            setTimeout(() => {
-                startTutorial(this.EDITOR_DIV)
-            }, 500);
             
             const cleanUp = ()=>{
                 localStorage.removeItem("EditorTitle" + this.ID);
@@ -223,7 +234,7 @@ class EditorWrapper{
 
         if(Object.keys(this.EDITORS).length == 1){      //this is the last editor, so open the choose file
             this._container.parent.focus();
-            await this.addNewEditor();
+            await this.addNewEditor(false);
         }
 
         delete this.EDITORS[this.ID];

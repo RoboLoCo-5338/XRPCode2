@@ -159,7 +159,7 @@ var defaultConfig = {
                     content:[{
                         type: 'component',
                         componentName: 'Editor',
-                        componentState: { label: 'Editor', editor: undefined, choose: true},
+                        componentState: { label: 'Editor', editor: undefined, welcome: true},
                         title: 'Editor',
                         id: "aEditor"
                     }],
@@ -258,7 +258,7 @@ FILE_DROPDOWN.addEventListener("mouseleave", () => {
 document.getElementById("IDFileAdd").onclick = (event) =>{
     UIkit.dropdown(FILE_DROPDOWN).hide();
     let id = localStorage.getItem("activeTabId");
-    EDITORS[id].addNewEditor();
+    EDITORS[id].addNewEditor(true);
 }
 
 document.getElementById("IDFileUpload").onclick = (event) =>{
@@ -730,7 +730,7 @@ function registerEditor(_container, state) {
     var editor = new EditorWrapper(_container, state, EDITORS);
 
 
-    if(editor.EDITOR_TITLE != "Choose Mode" && state.choose != true){
+    if(editor.EDITOR_TITLE != "New File" && state.choose != true && state.welcome != true && editor.EDITOR_TITLE != "Welcome"){
         startEditor(editor);
     }
     
@@ -761,7 +761,7 @@ function registerEditor(_container, state) {
         }
         // Not sure that this code will ever happen.
         if(editor.EDITOR_PATH == undefined || editor.EDITOR_PATH == ""){
-            if(editor.EDITOR_TITLE == "Choose Mode"){
+            if(editor.EDITOR_TITLE == "New File"){
                 //pass
             }
             else{
@@ -846,7 +846,7 @@ function registerEditor(_container, state) {
         
     }
 
-    editor.addNewEditor = async () => {
+    editor.addNewEditor = async (newFile) => {
         var id1;
         for (const [id] of Object.entries(EDITORS)) {
             id1 = id;
@@ -854,8 +854,15 @@ function registerEditor(_container, state) {
         }
 
         EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
-        myLayout.addComponent('Editor', { "value": undefined, choose: true }, 'Editor');
-        console.log('Creating a new file...');
+        var state = {};
+        state.value = undefined;
+        if(newFile){
+            state.choose = true;
+        }
+        else{
+            state.welcome = true;
+        }
+        myLayout.addComponent('Editor', state, 'Editor');
     }
 
     editor.onFastExecute = async (lines) => {
@@ -1097,15 +1104,18 @@ function getTimestamp() {
 
 function disableMenuItems(){
     document.getElementById('IDViewCM').disabled = true;
+    document.getElementById('IDFileAdd').disabled = true;
     document.getElementById('IDFileUpload').disabled = true;
     document.getElementById('IDFileExport').disabled = true;
     document.getElementById('IDFileSave').disabled = true;
     document.getElementById('IDFileSaveAs').disabled = true;
+
 }
 window.disableMenuItems = disableMenuItems;
 
 function enableMenuItems(){
     document.getElementById('IDViewCM').disabled = false;
+    document.getElementById('IDFileAdd').disabled = false;
     document.getElementById('IDFileUpload').disabled = false;
     document.getElementById('IDFileExport').disabled = false;
     document.getElementById('IDFileSave').disabled = false;

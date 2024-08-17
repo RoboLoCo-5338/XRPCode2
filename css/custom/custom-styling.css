@@ -177,6 +177,16 @@
   height: 15px;
   fill: white;
 }
+.welcome-view {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  align-content: space-around;
+  font-size:xx-large;
+  color:white;
+}
 .user-view {
   border: 1px solid #ddd;
   padding: 10px;
