@@ -51,6 +51,7 @@ class EditorWrapper{
             const doc = clone.cloneNode(true);
             doc.style.display = "block";
             this.EDITOR_DIV.appendChild(doc);
+            this.SAVED_TO_THUMBY = true;
 
             this.setTitle("Welcome");
 
@@ -78,6 +79,8 @@ class EditorWrapper{
 
             template.style.display = "block";
             this.EDITOR_DIV.appendChild(template);
+            this.SAVED_TO_THUMBY = true;
+
             var pUser = localStorage.getItem("projUser");
             var users = [];
             if(REPL.DISCONNECT == true){
