@@ -20,7 +20,8 @@ done
 
 echo "Starting Nginx..."
 cd ../..
-nginx -c ~/dev/github/XRPCode/nginx.conf
+current_dir=$(pwd)
 
+nginx -c $current_dir/nginx.conf
 
 wait
