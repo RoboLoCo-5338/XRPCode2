@@ -109,8 +109,8 @@ export const startPythonClient = async () => {
 
     let files1: { [id: string]: string } = {};
     let files2: { [id: string]: string } = {};
-    files1 = await readZipFile(new URL('/js/monaco/stdlib-source-with-typeshed-pyi.zip', window.location.href).href);
-    files2 = await readZipFile(new URL('/js/monaco/XRPLib.zip', window.location.href).href);
+    files1 = await readZipFile(new URL('./js/monaco/stdlib-source-with-typeshed-pyi.zip', window.location.href).href);
+    files2 = await readZipFile(new URL('./js/monaco/XRPLib.zip', window.location.href).href);
     files = Object.assign({}, files1, files2);
     console.log('starting initServices ...');
     // init vscode-api
@@ -185,7 +185,7 @@ export const startPythonClient = async () => {
         "workbench.colorTheme": "Default Dark Modern"
     }`);
 
-    const pythonWorkerUrl = new URL('/js/monaco/@typefox/pyright-browser/dist/pyright.worker.js', window.location.href).href;
+    const pythonWorkerUrl = new URL('./js/monaco/@typefox/pyright-browser/dist/pyright.worker.js', window.location.href).href;
     console.info(`main.ts, pythonWorkerUrl: ${pythonWorkerUrl}`);
     const worker = new Worker(pythonWorkerUrl);
     worker.postMessage({

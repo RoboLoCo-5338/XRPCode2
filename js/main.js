@@ -1,5 +1,5 @@
 import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-layout.js";
-import { startPythonClient, createEditor, setKeyboardHandler } from "/js/monaco/src/main.ts";
+import { startPythonClient, createEditor, setKeyboardHandler } from "./monaco/src/main.ts";
 
 
 /*
