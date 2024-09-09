@@ -412,9 +412,15 @@ function recursiveFindEditors(content, editors){
     }
 }
 
+// Setup telemetry module
+var TELEMETRY_DATA = new TelemetryData();
+window.TELEMETRY_DATA = TELEMETRY_DATA;
+
 // Setup REPL module
 var REPL = new ReplJS();
 window.REPL = REPL;
+
+
 
 
 // Filesystem module

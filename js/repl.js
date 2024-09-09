@@ -55,6 +55,7 @@ class ReplJS{
         this.CATCH_OK = false;
 
         this.buffer = []; //buffer of read values to catch escape sequences.
+        this.telemetryExtractor = new StreamExtractor(28, (data) => window.TELEMETRY_DATA.onData(data));
 
         // Use to disable auto connect if manual connecting in progress
         this.MANNUALLY_CONNECTING = false;
@@ -242,7 +243,7 @@ class ReplJS{
             try {
                 while (true) {
                     // https://developer.mozilla.org/en-US/docs/Web/API/ReadableStreamDefaultReader/read
-                    const { value, done } = await this.READER.read();
+                    let { value, done } = await this.READER.read();
                     if (done) {
                         // Allow the serial port to be closed later.
                         this.READER.releaseLock();
@@ -251,6 +252,13 @@ class ReplJS{
                     if (value) {
                         // Reading from serial is done in chunks of a inconsistent/non-guaranteed size,
                         if(this.DEBUG_CONSOLE_ON) console.log(this.TEXT_DECODER.decode(value));
+
+                        console.log("value before: ", value);
+
+                        // Extract telemetry data from the incoming stream
+                        //value = this.telemetryExtractor.extract(value);
+
+                        console.log("value after: ", value);
 
                         // Collect lines when read until active, otherwise, output to terminal
                         if(this.READ_UNTIL_STRING == ""){
@@ -1401,4 +1409,49 @@ class ReplJS{
             this.onDisconnect();
         }
     }
+}
+
+/**
+ * Given a stream of characters, extracts sandwiched data between a specified character at the start and end.
+ */
+class StreamExtractor {
+
+    constructor(char, onData) {
+        this.char = char
+        this.data = "";
+        this.extracting = false;
+        this.onData = onData;
+
+        console.log(`StreamExtractor created with char: ${char}`);
+    }
+
+    /**
+     * Extracts data from a stream of characters and calls a callback function with the extracted data.
+     * @param {Uint8Array} charStream - A stream of characters.
+     * @returns {Uint8Array} - The remaining characters after the extracted data.
+     */
+    extract(charStream) {
+        remaining = new Uint8Array();
+        for (let i = 0; i < charStream.length; i++) {
+            if (charStream[i] == this.char) {
+                if (this.extracting) {
+                    console.log("Detected end of data");
+                    this.extracting = false;
+                    this.onData(this.data);
+                    this.data = "";
+                } else {
+                    console.log("Detected start of data");
+                    this.extracting = true;
+                }
+            } else {
+                if (this.extracting) {
+                    this.data += String.fromCharCode(charStream[i]);
+                } else {
+                    remaining.push(charStream[i]);
+                }
+            }
+        }
+        return remaining;
+    }
+
 }
