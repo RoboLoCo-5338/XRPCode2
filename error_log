@@ -1,0 +1,52 @@
+[Wed Aug 21 21:09:20.352447 2024] [mpm_prefork:notice] [pid 63029] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Wed Aug 21 21:09:20.352512 2024] [core:notice] [pid 63029] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Wed Aug 21 21:14:34.008157 2024] [mpm_prefork:notice] [pid 63029] AH00169: caught SIGTERM, shutting down
+[Wed Aug 21 21:14:54.160530 2024] [mpm_prefork:notice] [pid 63462] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Wed Aug 21 21:14:54.160602 2024] [core:notice] [pid 63462] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Wed Aug 21 21:15:28.143634 2024] [proxy:warn] [pid 63464] [client ::1:62533] AH01144: No protocol handler was valid for the URL /js/monaco/src/main.ts (scheme 'http'). If you are using a DSO version of mod_proxy, make sure the proxy submodules are included in the configuration using LoadModule., referer: http://localhost/js/main.js?version=1.0.3
+[Wed Aug 21 21:24:15.947580 2024] [mpm_prefork:notice] [pid 63462] AH00169: caught SIGTERM, shutting down
+[Wed Aug 21 21:24:38.922254 2024] [mpm_prefork:notice] [pid 64177] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Wed Aug 21 21:24:38.922297 2024] [core:notice] [pid 64177] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Wed Aug 21 21:29:04.930401 2024] [mpm_prefork:notice] [pid 64177] AH00169: caught SIGTERM, shutting down
+[Wed Aug 21 21:29:11.718643 2024] [mpm_prefork:notice] [pid 64522] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Wed Aug 21 21:29:11.719031 2024] [core:notice] [pid 64522] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Wed Aug 21 21:29:19.826606 2024] [proxy:error] [pid 64525] (61)Connection refused: AH00957: http: attempt to connect to 127.0.0.1:5173 (localhost:5173) failed
+[Wed Aug 21 21:29:19.827597 2024] [proxy_http:error] [pid 64525] [client ::1:49570] AH01114: HTTP: failed to make connection to backend: localhost, referer: http://localhost/js/main.js?version=1.0.3
+[Wed Aug 21 21:29:33.960256 2024] [proxy:error] [pid 64540] (61)Connection refused: AH00957: http: attempt to connect to 127.0.0.1:5173 (localhost:5173) failed
+[Wed Aug 21 21:29:33.960984 2024] [proxy_http:error] [pid 64540] [client ::1:49641] AH01114: HTTP: failed to make connection to backend: localhost, referer: http://localhost/js/main.js?version=1.0.3
+[Wed Aug 21 21:29:44.924206 2024] [mpm_prefork:notice] [pid 64522] AH00169: caught SIGTERM, shutting down
+[Wed Aug 21 21:29:52.643117 2024] [mpm_prefork:notice] [pid 64589] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Wed Aug 21 21:29:52.643189 2024] [core:notice] [pid 64589] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Wed Aug 21 21:30:03.757366 2024] [proxy:error] [pid 64590] (61)Connection refused: AH00957: http: attempt to connect to 127.0.0.1:5173 (localhost:5173) failed
+[Wed Aug 21 21:30:03.758151 2024] [proxy_http:error] [pid 64590] [client ::1:49768] AH01114: HTTP: failed to make connection to backend: localhost, referer: http://localhost/js/main.js?version=1.0.3
+[Wed Aug 21 21:30:10.192903 2024] [proxy:error] [pid 64612] (61)Connection refused: AH00957: http: attempt to connect to 127.0.0.1:5173 (localhost:5173) failed
+[Wed Aug 21 21:30:10.193690 2024] [proxy_http:error] [pid 64612] [client ::1:49807] AH01114: HTTP: failed to make connection to backend: localhost, referer: http://localhost/js/main.js?version=1.0.3
+[Wed Aug 21 21:30:30.993043 2024] [mpm_prefork:notice] [pid 64589] AH00169: caught SIGTERM, shutting down
+[Wed Aug 21 21:30:38.639579 2024] [mpm_prefork:notice] [pid 64664] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Wed Aug 21 21:30:38.639935 2024] [core:notice] [pid 64664] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Sat Aug 24 14:30:15.293718 2024] [mpm_prefork:notice] [pid 64664] AH00169: caught SIGTERM, shutting down
+[Sat Aug 24 14:33:03.369744 2024] [mpm_prefork:notice] [pid 25389] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Sat Aug 24 14:33:03.370014 2024] [core:notice] [pid 25389] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Sat Aug 24 14:55:40.908551 2024] [mpm_prefork:notice] [pid 25389] AH00169: caught SIGTERM, shutting down
+[Sat Aug 24 14:56:04.048674 2024] [mpm_prefork:notice] [pid 27136] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Sat Aug 24 14:56:04.049009 2024] [core:notice] [pid 27136] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Sat Aug 24 14:57:09.091295 2024] [proxy:error] [pid 27137] (61)Connection refused: AH00957: http: attempt to connect to 127.0.0.1:5173 (localhost:5173) failed
+[Sat Aug 24 14:57:09.092395 2024] [proxy_http:error] [pid 27137] [client ::1:54939] AH01114: HTTP: failed to make connection to backend: localhost, referer: http://localhost/staging/js/main.js?version=1.0.3
+[Sat Aug 24 14:58:51.059829 2024] [mpm_prefork:notice] [pid 27136] AH00169: caught SIGTERM, shutting down
+[Sat Aug 24 14:59:38.911418 2024] [mpm_prefork:notice] [pid 27445] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Sat Aug 24 14:59:38.911731 2024] [core:notice] [pid 27445] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Sat Aug 24 15:05:02.992241 2024] [mpm_prefork:notice] [pid 27445] AH00169: caught SIGTERM, shutting down
+[Sat Aug 24 15:05:06.840500 2024] [mpm_prefork:notice] [pid 27913] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Sat Aug 24 15:05:06.840782 2024] [core:notice] [pid 27913] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Sat Aug 24 15:07:58.545725 2024] [mpm_prefork:notice] [pid 27913] AH00169: caught SIGTERM, shutting down
+[Sat Aug 24 15:08:14.711760 2024] [mpm_prefork:notice] [pid 28167] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Sat Aug 24 15:08:14.712137 2024] [core:notice] [pid 28167] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Sat Aug 24 15:12:04.234944 2024] [mpm_prefork:notice] [pid 28167] AH00169: caught SIGTERM, shutting down
+[Sat Aug 24 15:12:07.692732 2024] [mpm_prefork:notice] [pid 28436] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Sat Aug 24 15:12:07.693115 2024] [core:notice] [pid 28436] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Sat Aug 24 15:33:24.449334 2024] [mpm_prefork:notice] [pid 28436] AH00169: caught SIGTERM, shutting down
+[Sat Aug 24 15:33:29.232715 2024] [mpm_prefork:notice] [pid 29909] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Sat Aug 24 15:33:29.233075 2024] [core:notice] [pid 29909] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
+[Sat Aug 24 22:15:39.906322 2024] [mpm_prefork:notice] [pid 29909] AH00169: caught SIGTERM, shutting down
+[Sat Aug 24 22:15:44.651027 2024] [mpm_prefork:notice] [pid 33952] AH00163: Apache/2.4.62 (Unix) configured -- resuming normal operations
+[Sat Aug 24 22:15:44.651338 2024] [core:notice] [pid 33952] AH00094: Command line: '/usr/local/opt/httpd/bin/httpd -f /Users/frankgrossman/dev/github/XRPCode/httpd.conf'
