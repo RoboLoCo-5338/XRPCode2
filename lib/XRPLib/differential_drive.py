@@ -240,12 +240,16 @@ class DifferentialDrive:
 
         if main_controller is None:
             main_controller = PID(
-                kp = 0.02,
-                ki = 0.001,
-                kd = 0.00165,
-                min_output = 0.35,
+                # kp = 0.2,
+                # ki = 0.004,
+                # kd = 0.0036,
+                kd = 0.0036 + 0.0034 * (max(max_effort, 0.5) - 0.5) * 2,
+                kp = 0.2,
+                ki = 0.004,
+                #kd = 0.007,
+                min_output = 0.1,
                 max_output = max_effort,
-                max_integral = 75,
+                max_integral = 30,
                 tolerance = 1,
                 tolerance_count = 3
             )
@@ -253,7 +257,7 @@ class DifferentialDrive:
         # Secondary controller to keep encoder values in sync
         if secondary_controller is None:
             secondary_controller = PID(
-                kp = 0.8,
+                kp = 0.25,
             )
  
         if use_imu and (self.imu is not None):
@@ -275,7 +279,7 @@ class DifferentialDrive:
 
             # Pass the turn error to the main controller to get a turn speed
             turn_speed = main_controller.update(turn_error)
-            
+
             # exit if timeout or tolerance reached
             if main_controller.is_done() or time_out.is_done():
                 break
