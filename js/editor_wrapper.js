@@ -8,6 +8,7 @@ class EditorWrapper{
 
         this.EDITORS = EDITORS;
         this._container = _container;
+        this.setupBlockly2 = this.setupBlockly2.bind(this);
 
         // New editor, find a unique ID for it. At this point, a new editor can only
         // spawn on first page creation or button click, all or no editors should exist
@@ -233,10 +234,24 @@ class EditorWrapper{
     makeBlocklyPythonHeaderOptions() {
          // Make the editor area
          if (!this.BLOCKLY_DIV) {
+
+            this.BLOCKLY_PARENT = document.createElement("div");
+            this.BLOCKLY_PARENT.id = "parentArea"
+            this.BLOCKLY_PARENT.classList = "parent_area horizontal_area fill_area no_min_height" 
+
+            this.BLOCKLY_AREA = document.createElement("div");
+            this.BLOCKLY_AREA.id = "blocklyArea";
+            this.BLOCKLY_AREA.classList = "fill_area"
+            this.BLOCKLY_PARENT.appendChild(this.BLOCKLY_AREA);
+
             this.BLOCKLY_DIV = document.createElement("div");
+            this.BLOCKLY_DIV.id = "blocklyDiv"
             this.BLOCKLY_DIV.style.position = "absolute";
+            //this.BLOCKLY_PARENT.appendChild(this.BLOCKLY_DIV);
         }
+        this.EDITOR_DIV.appendChild(this.BLOCKLY_PARENT);
         this.EDITOR_DIV.appendChild(this.BLOCKLY_DIV);
+
     }
 
     turnIntoBlocklyViewer(data) {
@@ -264,9 +279,11 @@ class EditorWrapper{
     }
 
     setupBlockly(data) {
-
+        this.BLOCKLY_DATA = data;
         if (!this.BLOCKLY_WORKSPACE) {
 
+            this.BLOCKLY_WORKSPACE = initializeFtcBlocks(this.BLOCKLY_DIV, this.BLOCKLY_PARENT, this.BLOCKLY_AREA, this.setupBlockly2)
+/*
             this.BLOCKLY_WORKSPACE = Blockly.inject(this.BLOCKLY_DIV,{
                 toolbox: blocklyToolbox,
                 move:{
@@ -278,8 +295,14 @@ class EditorWrapper{
                 pinch: false},
                 trashcan: true
             });
+*/ 
 
             // Saving of editor state
+        }
+    }
+    setupBlockly2(workspace){
+            var data = this.BLOCKLY_DATA;
+            this.BLOCKLY_WORKSPACE = workspace;
             this.BLOCKLY_WORKSPACE.addChangeListener((e)=>{
                 if(e.type == Blockly.Events.FINISHED_LOADING){
                     this.LOADING_BLOCKLY = false;
@@ -330,7 +353,7 @@ class EditorWrapper{
 
             }
             // Ensure all Blockly editors have a path set. Let's keep it simple for the <3n00bs<3
-        }
+        
         this.resize();
         this.BLOCKLY_WORKSPACE.zoomToFit();
         this.BLOCKLY_WORKSPACE.scrollCenter();
