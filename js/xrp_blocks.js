@@ -272,6 +272,21 @@ Blockly.Blocks['xrp_servo_deg'] = {
   }
 };
 
+Blockly.Blocks['xrp_get_servo_deg'] = {
+  init: function () {
+    this.appendDummyInput()
+    this.appendDummyInput()
+          .appendField('Get Servo:')
+          .appendField(new Blockly.FieldDropdown([["1", "1"], ["2", "2"]]), "SERVO")
+          .appendField('Degrees');
+    this.setOutput(true, null);
+    this.setInputsInline(true);
+    this.setColour(300); // light purple
+    this.setTooltip("");
+    this.setHelpUrl("");
+  }
+};
+
 // Sensors - Sonar
 Blockly.Blocks['xrp_getsonardist'] = {
   init: function () {
@@ -579,7 +594,274 @@ Blockly.Blocks['xrp_sleep'] = {
     this.setHelpUrl("");
   }
 };
+Blockly.Blocks['python_code'] = {
+  init: function() {
+    this.appendValueInput("CODE")
+        .setCheck("String")
+        .appendField("Add Python Code");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(200);
+ this.setTooltip("Adds a line of Python code to the generated program.");
+ this.setHelpUrl("");
+  }
+};
+//Pesto Link Controller: Credit Kavin Muralikrishnan FRC Team 5338 Roboloco
+Blockly.Blocks['run_function_periodically'] = {
+  init: function() {
+    this.appendValueInput('AFTER')
+    .appendField('Every')
+    .setCheck('Number');
+    this.appendDummyInput()
+    .appendField('seconds,');
+    this.appendStatementInput('DO')
+    .appendField('Do');
+    this.setInputsInline(true)
+    this.setTooltip('');
+    this.setHelpUrl('');
+    this.setColour(120);
+  }
+};
 
+
+Blockly.Blocks['pestolink_get_controller_left_x']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Get Horizontal Value of Left Joystick");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_get_controller_left_y']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Get Vertical Value of Left Joystick");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_get_controller_right_x']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Get Horizontal Value of Right Joystick");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_get_controller_right_y']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Get Vertical Value of Right Joystick");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_is_a_pressed']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("A Pressed");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_is_b_pressed']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("B Pressed");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_is_x_pressed']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("X Pressed");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_is_y_pressed']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Y Pressed");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_is_right_bumper_pressed']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Right Bumper Pressed");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_is_left_bumper_pressed']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Left Bumper Pressed");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_is_right_trigger_pressed']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Right Trigger Pressed");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_is_left_trigger_pressed']={
+  init: function () {
+    this.appendDummyInput()
+      .appendField("Left Trigger Pressed");
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("");
+    this.setHelpUrl("");
+    this.setInputsInline(true)
+  }
+};
+
+Blockly.Blocks['pestolink_get_axis'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField("Get Pesto Link Axis");
+    this.appendValueInput("axis")
+      .setCheck("Number")
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setInputsInline(true);
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("Get a specific axis from Pesto Link");
+    this.setHelpUrl("");
+  }
+}
+
+Blockly.Blocks['pestolink_get_button'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField("Is Pesto Link Button Pressed");
+    this.appendValueInput("num")
+      .setCheck("Number")
+    this.appendDummyInput()
+      .appendField("On Controller");
+    this.appendValueInput("controller_num")
+      .setCheck("Number");
+    this.setInputsInline(true);
+    this.setOutput(true, null);
+    this.setColour(60);
+    this.setTooltip("Get the pressed state of a specific button from Pesto Link");
+    this.setHelpUrl("");
+  }
+}
+
+// Blockly.Blocks['text_to_num']={
+//   init: function() {
+//     this.appendValueInput("TEXT")
+//       .setCheck("String")
+//       .appendField("Text to Number");
+//     this.setOutput(true, null);
+//     this.setColour(160);
+//     this.setTooltip("Convert text to a number");
+//   }
+// }
 // OTHER BLOCK COLORS - These colors can be found in the xrp_blockly_toolbox1.js file
 // BLOCK TYPE --> COLOR
 // Loops --> grass green
@@ -588,3 +870,4 @@ Blockly.Blocks['xrp_sleep'] = {
 // Lists --> eggplant purple
 // Variables --> grey
 // Functions --> medium purple
+// Controller --> Some random shade of yellow idk

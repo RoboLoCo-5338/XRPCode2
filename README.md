@@ -1,6 +1,6 @@
 # XRPCode
 
-A web code editor for the XRP using Blockly and micropython
+A web code editor for the XRP robot using Google's Blockly and micropython
 
 Features:
 * Code editor with Python syntax highlighting
@@ -14,3 +14,5 @@ Features:
     * Automatically connects XRP if it has connected to the page before
 
 Only Google Chrome and Microsoft Edge are officially supported by the WebSerial JavaScript API
+
+Modified by FRC Team 5338 Roboloco

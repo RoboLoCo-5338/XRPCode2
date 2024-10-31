@@ -116,6 +116,10 @@ var blocklyToolbox = {
                         "degrees": {"shadow": {"type": "math_number", "fields": {"NUM": "90"}}}
                     }
                 },
+                {
+                    "kind": "BLOCK",
+                    "type": "xrp_get_servo_deg"
+                }
             ]
         },
         {
@@ -183,6 +187,127 @@ var blocklyToolbox = {
                         "type": "xrp_acc_z"
                     }
                 ]},
+            ]
+        },
+        {
+            "kind": "CATEGORY",
+            "name": "Controller",
+            "colour": "#a5a55b",
+            "contents": [
+                {
+                    "kind": "CATEGORY",
+                    "name": "JoyStick",
+                    "colour": "#a5a55b",
+                    "contents": [
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_get_controller_left_x",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_get_controller_left_y",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_get_controller_right_x",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_get_controller_right_y",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_get_axis",
+                            "inputs": {
+                                "axis": {"shadow": {"type": "math_number", "fields": {"axis": "0"}}}, 
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                    ]
+                },
+                {
+                    "kind": "CATEGORY",
+                    "name": "Buttons",
+                    "colour": "#a5a55b",
+                    "contents": [
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_is_a_pressed",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_is_b_pressed",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_is_x_pressed",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_is_y_pressed",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_is_right_trigger_pressed",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_is_left_trigger_pressed",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_is_right_bumper_pressed",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_is_left_bumper_pressed",
+                            "inputs":{
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        },
+                        {
+                            "kind": "BLOCK",
+                            "type": "pestolink_get_button",
+                            "inputs":{
+                                "num": {"shadow": {"type": "math_number", "fields": {"num": "0"}}}, 
+                                "controller_num": {"shadow": {"type": "math_number", "fields": {"controller_num": "0"}}}
+                            }
+                        }
+                    ]
+                }
             ]
         },
         {
@@ -296,6 +421,10 @@ var blocklyToolbox = {
                 {
                     "kind": "BLOCK",
                     "type": "logic_ternary"
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "python_code"
                 }
             ],
             "name": "Logic",
@@ -328,7 +457,11 @@ var blocklyToolbox = {
                     "kind": "BLOCK",
                     "blockxml": "<block type=\"controls_flow_statements\">\n                <field name=\"FLOW\">BREAK</field>\n              </block>",
                     "type": "controls_flow_statements"
-                }
+                },
+                {
+                    "kind": "BLOCK",
+                    "type": "run_function_periodically"
+                },
             ],
             "name": "Loops",
             "colour": "#5ba55b" // grass green
@@ -461,7 +594,12 @@ var blocklyToolbox = {
                     "kind": "BLOCK",
                     "blockxml": "<block type=\"text_prompt_ext\">\n                <mutation type=\"TEXT\"></mutation>\n                <field name=\"TYPE\">TEXT</field>\n                <value name=\"TEXT\">\n                  <shadow type=\"text\">\n                    <field name=\"TEXT\">abc</field>\n                  </shadow>\n                </value>\n              </block>",
                     "type": "text_prompt_ext"
-                }
+                },
+                // {
+                //     "kind": "BLOCK",
+                //     "type": "text_to_num",
+                //     "blockxml": "<block type=\"text_to_num\">\n                <mutation type=\"TEXT\"></mutation>\n                <field name=\"TYPE\">TEXT</field>\n                <value name=\"TEXT\">\n                  <shadow type=\"text\">\n                    <field name=\"TEXT\">0</field>\n                  </shadow>\n                </value>\n              </block>"
+                // }
             ],
             "name": "Text",
             "colour": "#5ba58c" // seafoam green

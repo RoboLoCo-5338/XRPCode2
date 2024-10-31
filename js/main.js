@@ -5,9 +5,18 @@ import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-l
          VERSION NUMBERS
 */
 
-const showChangelogVersion = "1.0.2";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
-window.latestMicroPythonVersion = [1, 20, 0];
+const showChangelogVersion = "1.0.2.L";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
+window.latestMicroPythonVersion = [1, 22, 2];
 window.xprID = "";
+
+var hiddenrick = true;
+for (var i = 1; i <= 13; i++){
+    document.getElementById("rick"+i).setAttribute("hidden", "true");
+}
+
+
+
+
 
 
 const layoutSaveKey = "layout";
@@ -53,7 +62,7 @@ var onExportToEditor = (bytes) => {
 // Show pop-up containing IDE changelog every time showChangelogVersion changes
 // Update version string in index.html and play.html as well to match
 
-let response = await fetch("/lib/package.json");
+let response = await fetch("lib/package.json");
 response = await response.text();
 let jresp = JSON.parse(response);
 let v = jresp.version
@@ -196,9 +205,11 @@ document.getElementById("IDStopBTN").onclick = async (event) =>{
 var FILE_BUTTON = document.getElementById("IDFileBTN");
 var VIEW_BUTTON = document.getElementById("IDViewBTN");
 var HELP_BUTTON = document.getElementById("IDHelpBTN");
+var nonsenseButton = document.getElementById("Nonsense");
 var FILE_DROPDOWN = document.getElementById("IDFile");
 var VIEW_DROPDOWN = document.getElementById("IDView");
 var HELP_DROPDOWN = document.getElementById("IDHelpDrop");
+var nonsenseDrop= document.getElementById("NonsenseDrop");
 
 
 
@@ -219,6 +230,23 @@ HELP_BUTTON.addEventListener("mouseenter", () => {
     if(menus_down){
         UIkit.dropdown(HELP_DROPDOWN).show();
     }
+});
+nonsenseButton.style.position='relative';
+var randomPosition=Math.floor(Math.random()*500).toString()+"px";
+nonsenseButton.style.left=randomPosition;
+nonsenseButton.addEventListener("mouseenter", () => {
+    if(menus_down){
+        UIkit.dropdown(nonsenseDrop).show();
+    }
+});
+nonsenseDrop.addEventListener("show", () => {
+    menus_down = true;
+});
+
+nonsenseDrop.addEventListener("hide", () => {
+    var randomPosition=Math.floor(Math.random()*500).toString()+"px";
+    nonsenseButton.style.left=randomPosition;
+    menus_down = false;
 });
 
 FILE_DROPDOWN.addEventListener("show", () => {
@@ -251,6 +279,15 @@ FILE_BUTTON.onclick = (event) =>{
 FILE_DROPDOWN.addEventListener("mouseleave", () => {
     UIkit.dropdown(FILE_DROPDOWN).hide();
 });
+nonsenseDrop.addEventListener("mouseleave", () => {
+    UIkit.dropdown(nonsenseDrop).hide();
+});
+
+document.getElementById("IDFileUpload").onclick = (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    let id = localStorage.getItem("activeTabId");
+    EDITORS[id].onUploadFiles();
+}
 
 document.getElementById("IDFileAdd").onclick = (event) =>{
     UIkit.dropdown(FILE_DROPDOWN).hide();
@@ -258,11 +295,7 @@ document.getElementById("IDFileAdd").onclick = (event) =>{
     EDITORS[id].addNewEditor();
 }
 
-document.getElementById("IDFileUpload").onclick = (event) =>{
-    UIkit.dropdown(FILE_DROPDOWN).hide();
-    let id = localStorage.getItem("activeTabId");
-    EDITORS[id].onUploadFiles();
-}
+
 
 document.getElementById("IDFileExport").onclick = (event) =>{
     UIkit.dropdown(FILE_DROPDOWN).hide();
@@ -359,6 +392,14 @@ document.getElementById("IDAPI").onclick = (event) =>{
     UIkit.dropdown(HELP_DROPDOWN).hide();
     window.open("https://open-stem.github.io/XRP_MicroPython/", "_blank")
 }
+document.getElementById("MailHelp").onclick = (event) =>{
+    if(Math.floor(Math.random()*2)==0){
+        window.open("mailto:921563@lcps.org");
+    }
+    else{
+        window.open("mailto:919507@lcps.org");
+    }
+}
 
 disableMenuItems(); 
 
@@ -369,6 +410,39 @@ document.getElementById("IDRunBTN").onclick = async (event) =>{
     document.getElementById("IDRunBTN").disabled = false;
 
 };
+
+
+nonsenseButton.onclick = (event) =>{
+    //get active file id
+    getActiveId();
+}
+FILE_DROPDOWN.addEventListener("mouseleave", () => {
+    UIkit.dropdown(nonsenseDrop).hide();
+});
+
+
+document.getElementById("Nuke").onclick = (event) =>{
+    window.open("https://www.irs.gov");
+}
+
+document.getElementById("Rick").onclick = (event) =>{
+    if (hiddenrick){
+        for (var i = 1; i <= 13; i++){
+            document.getElementById("rick"+i).removeAttribute("hidden");
+        }
+        hiddenrick = false;
+    }
+    else{
+        for (var i = 1; i <= 13; i++){
+            document.getElementById("rick"+i).setAttribute("hidden", "true");
+        }
+        hiddenrick = true;
+    }
+    
+}
+document.getElementById("DLC").onclick = (event) =>{
+    window.open("https://www.nintendo.com/us/store/products/the-legend-of-zelda-tears-of-the-kingdom-switch/");
+}
 
 /*
 // Add editor panel to layout

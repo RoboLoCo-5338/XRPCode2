@@ -1058,7 +1058,7 @@ class ReplJS{
         UIkit.modal(document.getElementById("IDProgressBarParent")).show();
         document.getElementById("IdProgress_TitleText").innerText = 'Update in Progress...';
 
-        let response = await fetch("/lib/package.json");
+        let response = await fetch("lib/package.json");
         response = await response.text();
         let jresp = JSON.parse(response);
         var urls = jresp.urls;
@@ -1080,6 +1080,7 @@ class ReplJS{
 
         //create a version.py file that has the version in it for future checks
         await this.uploadFile("lib/XRPLib/version.py", "__version__ = '" + window.latestLibraryVersion[0] + "." + window.latestLibraryVersion[1] + "." + window.latestLibraryVersion[2] + "'\n" );
+        // await this.uploadFile("lib/pestolink.py", window.downloadFile("lib/XRPLib/pestolink.py"));
         cur_percent += percent_per;
 
 
@@ -1095,6 +1096,7 @@ class ReplJS{
         window.resetPercentDelay();
         await this.getOnBoardFSTree();
         UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
+        location.reload();
     }
 
     async updateMicroPython() {

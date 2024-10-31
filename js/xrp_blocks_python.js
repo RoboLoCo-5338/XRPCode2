@@ -137,19 +137,34 @@ Blockly.Python['xrp_getrightencoder'] = function (block) {
 };
 
 //Servo
+var servo_1_deg=0; //TODO: Change this to servo degrees on initialization
+var servo_2_deg=0; //TODO: Change this to servo degrees on initialization
 Blockly.Python['xrp_servo_deg'] = function (block) {
+  var value_degrees = Blockly.Python.valueToCode(block, 'degrees', Blockly.Python.ORDER_ATOMIC);
   PY.definitions_['import_servo'] = 'from XRPLib.servo import Servo';
   var index = block.getFieldValue("SERVO");
   if(index == 1){
     PY.definitions_[`servo_setup`] = `servo1 = Servo.get_default_servo(1)`;
+    servo_1_deg=value_degrees;
   }
   else {
     PY.definitions_[`servo2_setup`] = `servo2 = Servo.get_default_servo(2)`;
+    servo_2_deg=value_degrees;
   }
-  var value_degrees = Blockly.Python.valueToCode(block, 'degrees', Blockly.Python.ORDER_ATOMIC);
   var code = `servo${index}.set_angle(${value_degrees})\n`;
   return code;
 };
+
+Blockly.Python['xrp_get_servo_deg'] = function(block){
+  PY.definitions_['import_servo'] = 'from XRPLib.servo import Servo';
+  var index=block.getFieldValue("SERVO");
+  if(index==1){
+    return [servo_1_deg.toString(), Blockly.Python.ORDER_NONE];
+  }
+  else{
+    return [servo_2_deg.toString(), Blockly.Python.ORDER_NONE];
+  }
+}
 
 //Distance
 Blockly.Python['xrp_getsonardist'] = function (block) {
@@ -251,6 +266,7 @@ Blockly.Python['xrp_wait_for_button_press'] = function (block) {
 var nextFunc = 0;
 function getFuncName(){
   nextFunc++;
+  console.log(nextFunc);
   return "func" + nextFunc;
 }
 
@@ -352,4 +368,158 @@ Blockly.Python['xrp_sleep'] = function (block) {
   return code;
 };
 
+Blockly.Python['python_code'] = function(block) {
+  var value_name = Blockly.Python.valueToCode(block, 'CODE', python.Order.ATOMIC);
+  // TODO: Assemble python into code variable.
+  return value_name.substring(1, value_name.length-1);
+};
 
+Blockly.Python['run_function_periodically'] = function(block) {
+  // TODO: change Order.ATOMIC to the correct operator precedence strength
+  PY.definitions_['import_timer'] = 'from machine import Timer \n\ntimers=[]';
+  const value_after = Blockly.Python.valueToCode(block, 'AFTER', Blockly.Python.ORDER_ATOMIC);
+  const statement_do = Blockly.Python.statementToCode(block, 'DO');
+  var funcName = getFuncName();
+  var code = `\ndef ${funcName}():\n${statement_do}\ntimers.append(Timer(-1)); timers[-1].init(period=${value_after*1000}, mode=Timer.PERIODIC, callback=${funcName})`
+
+  return code;
+}
+
+//Pesto Link Controller: Credit Kavin Muralikrishnan FRC Team 5338 Roboloco
+Blockly.Python['pestolink_get_controller_left_x'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_axis(0, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['pestolink_get_controller_left_y'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `-pestolink.get_axis(1, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['pestolink_get_controller_right_x'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_axis(2, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['pestolink_get_controller_right_y'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `-pestolink.get_axis(3, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['pestolink_is_a_pressed'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_button(0, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['pestolink_is_b_pressed'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_button(1, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['pestolink_is_y_pressed'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_button(3, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['pestolink_is_x_pressed'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_button(2, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['pestolink_is_left_bumper_pressed'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_button(4, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['pestolink_is_right_bumper_pressed'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_button(5, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['pestolink_is_left_trigger_pressed'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_button(6, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['pestolink_is_right_trigger_pressed'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_button(7, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+
+Blockly.Python['pestolink_get_axis'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var axis = Blockly.Python.valueToCode(block, 'axis', Blockly.Python.ORDER_ATOMIC);
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_axis(${axis}, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+
+Blockly.Python['pestolink_get_button'] = function (block) {
+  PY.definitions_['import_random']='import random\n ';
+  PY.definitions_['import_pestolink']='\nfrom machine import Pin\nimport bluetooth\nfrom pestolink import PestoLinkAgent\n\nletters_passcode="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"\nrobot_name = ("".join(random.choice(letters_passcode) for i in range(5)))\npestolink = PestoLinkAgent(robot_name)\nprint("The name of your robot is " + robot_name)'
+  var button = Blockly.Python.valueToCode(block, 'num', Blockly.Python.ORDER_ATOMIC);
+  var controller = Blockly.Python.valueToCode(block, 'controller_num', Blockly.Python.ORDER_ATOMIC);
+  var code = `pestolink.get_button(${button}, ${controller})`;
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+
+// Blockly.Python['text_to_num'] = function (block) {
+//   var text=block.getFieldValue("text");
+//   var code = `float(${text})`;
+//   // TODO: Change ORDER_NONE to the correct strength.
+//   return [code, Blockly.Python.ORDER_NONE];
+// }
