@@ -62,16 +62,6 @@
   border-radius: 5px;
   z-index: 1000;
 }
-.xrp-name {
-  color: wheat;
-  position:absolute;
-  top: 38px;  
-  right: 20px;
-  height: 30px;
-  width: 120px;
-  border-radius: 5px;
-  z-index: 1000;
-}
 .run-button {
   background-color: green;
   /* top: 50px; */

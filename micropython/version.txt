@@ -1,1 +1,1 @@
-Current version of firmware.uf2 is RPI_PICO_W-20240105-v1.22.1.uf2
+Current version of firmware.uf2 is rp2-pico-w-20230426-v1.22.0.uf2

@@ -6,7 +6,7 @@ import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-l
 */
 
 const showChangelogVersion = "1.0.3.L";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
-window.latestMicroPythonVersion = [1, 22, 1];
+window.latestMicroPythonVersion = [1, 22, 2];
 window.xprID = "";
 
 var hiddenrick = true;
@@ -62,15 +62,17 @@ var onExportToEditor = (bytes) => {
 // Show pop-up containing IDE changelog every time showChangelogVersion changes
 // Update version string in index.html and play.html as well to match
 
-let response = await fetch("lib/package.json" + "?version=" + showChangelogVersion);
+let response = await fetch("lib/package.json");
 response = await response.text();
 let jresp = JSON.parse(response);
 let v = jresp.version
 // This should match what is in /lib/XRPLib/version.py as '__version__'
 window.latestLibraryVersion = v.split(".");
 
+
+
+
 window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
-window.bleList = ["__init__.py","blerepl.py", "ble_uart_peripheral.py", "isrunning"]
 
 window.SHOWMAIN = false;
 
@@ -87,6 +89,7 @@ if(localStorage.getItem("version") == null || localStorage.getItem("version") !=
     localStorage.setItem("version", showChangelogVersion);       // Set this show not shown on next page load
    // }
 }
+
 
 // Want the dropdown to disappear if mouse leaves it (doesn't disappear if mouse leaves button that starts it though)
 //document.getElementById("IDUtilitesDropdown").addEventListener("mouseleave", () => {
@@ -179,8 +182,7 @@ var defaultConfig = {
                         id: "aShell"
                     }],
                     height: 20
-                }
-            ]
+                }]
             }],
         }],
     }],
@@ -585,7 +587,7 @@ function registerFilesystem(_container, state){
     //     }
     // }
     FS.onRefresh = async () => {
-        if(REPL.DISCONNECT == false){
+        if(REPL.PORT != undefined){
             window.setPercent(1, "Refreshing filesystem panel");
             await REPL.getOnBoardFSTree();
             window.setPercent(99.8);
@@ -668,15 +670,6 @@ async function downloadFileFromPath(fullFilePaths) {
     }
 }
 
-// init Joystick class when window initializes
-var JOY = undefined;
-function registerJoy(_container, state){
-    JOY = new Joystick(_container, state);
-    JOY.writeToDevice = (data) => REPL.writeToDevice(data);
-    REPL.startJoyPackets = () => JOY.startJoyPackets();
-    REPL.stopJoyPackets = () => JOY.stopJoyPackets();
-}
-
 // Terminal module
 var ATERM = undefined;
 function registerShell(_container, state){
@@ -685,7 +678,7 @@ function registerShell(_container, state){
     ATERM.onType = (data) => {
         // When the RP2040 is busy with any utility operations where BUSY is set, only allow interrupt key through
         // Allow certain characters through so thumby can pick them up
-        if(REPL.BUSY == true && REPL.RUN_BUSY == false){
+        if(REPL.BUSY == true){
            return;
         }
         REPL.writeToDevice(data);
@@ -693,42 +686,25 @@ function registerShell(_container, state){
 
     REPL.onData = (data) => ATERM.write(data);
     REPL.onDisconnect = () => {
-        ATERM.writeln("Waiting for connection... (click 'Connect XRP')");
+        ATERM.writeln("Waiting for connection... (plug in the XRP and click 'Connect XRP')");
         FS.clearToWaiting();
         window.disableMenuItems();
+        
+        //FS.removeUpdate();
 
+        //FS.disableButtons();
         // when XRP is disconnected, show the CONNECT XRP button and hide the RUN button
         document.getElementById('IDRunBTN').style.display = "none";
-        const connect = document.getElementById('IDConnectBTN');
-        connect.style.display = "block";
-        if(REPL.BLE_DEVICE == undefined){
-            document.getElementById('IDConnectBTN_text').innerText = "Connect XRP";
-        }else{
-            document.getElementById('IDConnectBTN_text').innerText = "Re-Connect XRP";
-            connect.disabled = true;
-        }
-
-        // handle the XRP Name and ID
-        document.getElementById('IDXRPName').style.display = "none";
-        window.xrpID = "";
+        document.getElementById('IDConnectThumbyBTN').style.display = "block";
     }
     REPL.onConnect = () => {
         window.enableMenuItems();
         // when XRP is connected, show the RUN button and hide the CONNECT XRP button
         document.getElementById("IDRunBTN").disabled = false;
         document.getElementById('IDRunBTN').style.display = "block";
-        document.getElementById('IDConnectBTN').style.display = "none";
-       
+        document.getElementById('IDConnectThumbyBTN').style.display = "none";
+        //ID this would be a good spot to send window.xrpID to the database
         //FS.enableButtons();
-    }
-
-    REPL.IDSet = () => {
-         //ID this would be a good spot to send window.xrpID to the database
-         if(window.xrpID != ""){
-            document.getElementById('IDXRPName').innerHTML = "XRP-" + window.xrpID.slice(-5);
-            document.getElementById('IDXRPName').style.display = "block";
-         }
-
     }
     REPL.onFSData = (jsonStrData, fsSizeData) => {
         FS.updateTree(jsonStrData);
@@ -750,14 +726,8 @@ function registerShell(_container, state){
                 return;
             }
         }
-        var message = "The MicroPython on your XRP needs to be updated. The new version is " + window.latestMicroPythonVersion[0] + "." + window.latestMicroPythonVersion[1] + "." + window.latestMicroPythonVersion[2];
-        if(REPL.BLE_DEVICE != undefined){
-            message += "<br>You will need to connect your XRP with a USB cable in order to update MicroPython";
-            await alertMessage(message);
-            return;
-        }
-        message += "<br>Would you like to update now? If so, click OK to proceed with the update."
-        let answer = await confirmMessage(message);
+
+        let answer = await confirmMessage("The MicroPython on your XRP needs to be updated. The new version is " + window.latestMicroPythonVersion[0] + "." + window.latestMicroPythonVersion[1] + "." + window.latestMicroPythonVersion[2] +"<br>Would you like to update now? If so, click OK to proceed with the update.");
         if(answer){
             await alertMessage("When the <b>Select Folder</b> window comes up, select the <b>RPI-RP2</b> drive when it appears.<br>Next, click on 'Edit Files' and wait for the XRP to connect.<br> This process may take a few seconds.");
             REPL.updateMicroPython();
@@ -775,7 +745,7 @@ function registerEditor(_container, state) {
     editor.onFocus = () => { LAST_ACTIVE_EDITOR = editor };
 
     editor.onUploadFiles = async () => {
-        if(REPL.DISCONNECT == false){
+        if(REPL.PORT != undefined){
             console.log("Pick files to upload");
             const fileHandles = await window.showOpenFilePicker({multiple: true});
             if(fileHandles && fileHandles.length > 0){
@@ -1043,8 +1013,7 @@ function registerEditor(_container, state) {
 myLayout.registerComponentConstructor("Filesystem", registerFilesystem);
 myLayout.registerComponentConstructor("Editor", registerEditor);
 myLayout.registerComponentConstructor("Shell", registerShell);
-//myLayout.registerComponentConstructor("Joy", registerJoy);
-registerJoy();
+
 
 // Restore from previous layout if it exists, otherwise default
 var savedLayout = localStorage.getItem(layoutSaveKey);
