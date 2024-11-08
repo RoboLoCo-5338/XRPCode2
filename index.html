@@ -79,7 +79,8 @@
                 <span
                     id="IDXRPName"
                     style="display: none"
-                    class = "uk-align-right uk-text-small xrp-name"></span>
+                    class = "uk-align-right uk-text-small xrp-name">
+                </span>
 
                 <div class="header_button_space uk-margin-medium-left uk-height-1-1 uk-width-1-3">
 
@@ -254,6 +255,29 @@
             </div>
         </div>
 
+        <!-- This is the modal for connection type -->
+        <div id="connect-modal" uk-modal="esc-close:false; bg-close:false">
+            <div class="uk-modal-dialog uk-modal-body">
+                <h2 class="uk-modal-title"></h2>
+                <div>
+                    <button 
+                        id="IDConnectBLE"
+                        class="uk-button uk-button-default uk-button-large
+                                uk-text-nowrap">
+                        <img height="10%" width="10%" src="images/Bluetooth_FM_Black.png"/></img>
+                        <span id="IDConnectBTN_text">Connect via Bluetooth</span>
+                    </button>
+                    <button 
+                        id="IDConnectUSB"
+                        class="uk-button uk-button-default uk-button-large
+                                uk-text-nowrap">
+                        <img height="10%" width="10%" src="images/USB_icon.svg.png"/></img>
+                        <span id="IDConnectBTN_text">Connect via USB</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div id="view-python-code" uk-modal>
           <div class="uk-modal-dialog uk-modal-body python-code">
               <button id="view-python-button" title="Close dialog" class="uk-modal-close-default" type="button" uk-close></button>
@@ -266,7 +290,7 @@
 
         <script src="uikit-3.16.22/js/uikit.min.js"></script>
         <script src="uikit-3.16.22/js/uikit-icons.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.3/dist/js/uikit-icons.min.js"></script>
+       <!-- <script src="https://cdn.jsdelivr.net/npm/uikit@3.7.3/dist/js/uikit-icons.min.js"></script>-->
 
         <script src="js/blockly-10.0.0/blockly.min.js"></script>
         <script src="js/blockly-10.0.0/python_compressed.js"></script>

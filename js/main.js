@@ -747,16 +747,18 @@ function registerEditor(_container, state) {
             UIkit.modal(document.getElementById("IDProgressBarParent")).show();
             document.getElementById("IdProgress_TitleText").innerText = "Saving...";
 
+            var fileData = null;
             if(editor.isBlockly){
-                var blockData = editor.getValue() + '\n\n\n## ' + getTimestamp() + '\n##XRPBLOCKS ' + editor.getBlockData();
-                var busy = await REPL.uploadFile(
-                    editor.EDITOR_PATH, blockData, true, false);
-                if(busy != true){
-                    await REPL.getOnBoardFSTree();
-                }
+                fileData = editor.getValue() + '\n\n\n## ' + getTimestamp() + '\n##XRPBLOCKS ' + editor.getBlockData(); 
             }else{
-                var busy = await REPL.uploadFile(editor.EDITOR_PATH, editor.getValue(), true, false);
-                if(busy != true){
+                fileData = editor.getValue();
+            }
+
+            var busy = await REPL.uploadFile(editor.EDITOR_PATH, fileData, true, false);
+            if(busy != true){
+                //if the file is already in the FSTree then don't get the directory again
+                var node = FS.findNodeByName(editor.EDITOR_PATH);
+                if(node == null){
                     await REPL.getOnBoardFSTree();
                 }
             }
@@ -845,11 +847,28 @@ function registerEditor(_container, state) {
             return;
         }
 
-        //check if power switch is on.
-        if(! await REPL.isPowerSwitchOn()) {
-            if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
-                "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")) {
-                return;
+        //if Cable attached check to see that the power switch is on.
+        // if BLE make sure the voltage is high enough
+        const voltage = await REPL.batteryVoltage();
+        if(REPL.BLE_DEVICE == undefined){
+            if(voltage < 0.4) {
+                if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
+                    "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")) {
+                    return;
+                }
+            }
+        }else{
+            if(voltage < 0.4) { //the device must be connected to a USB power with the power switch turned off.
+                    if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
+                        "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")) {
+                        return;
+                    }
+                
+            }else if(voltage < 5.0) {
+                if(await window.confirmMessage("<h1 style='text-align:center'>Low Battery Power! - Please Replace the Batteries</h1>" +
+                    "<br><div  style='text-align:center'> <img src='/images/sad-battery.png' width=200></div>")) {
+                    return;
+                }
             }
         }
 
@@ -869,14 +888,15 @@ function registerEditor(_container, state) {
                 await editor.onSaveToThumby();
             }
         }
-
-        UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+        var progressParent = document.getElementById("IDProgressBarParent");
+        await UIkit.modal(progressParent).show();
         document.getElementById("IdProgress_TitleText").innerText = "Running Program...";
 
         // update the main file so if they unplug the robot and turn it on it will execute this program.
         lines = await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
+
         ATERM.TERM.scrollToBottom();
-        UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
+        await UIkit.modal(progressParent).hide();
         await REPL.executeLines(lines);
         // document.getElementById('IDRunBTN').disabled = false;
 
