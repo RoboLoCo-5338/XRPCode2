@@ -593,11 +593,11 @@ class ReplJS{
         var getFilesystemCmd =
         "import os\n" +
         //"import ujson\n" +
-        //"import gc\n" +
+        "import gc\n" +
         "outstr = ''\n" +
+        "gc.collect()\n" +  //this is needed for the ble it seems like we run out of memory otherwise
         "def walk(top, structure, dir):\n" +
         "    global outstr\n" +
-        //"    gc.collect()\n" +  //this is needed for the ble it seems like we run out of memory otherwise
         "    extend = \"\";\n" +
         "    if top != \"\":\n" +
         "        extend = extend + \"/\"\n" +
