@@ -889,14 +889,14 @@ function registerEditor(_container, state) {
             }
         }
         var progressParent = document.getElementById("IDProgressBarParent");
-        await UIkit.modal(progressParent).show();
+        //await UIkit.modal(progressParent).show();
         document.getElementById("IdProgress_TitleText").innerText = "Running Program...";
 
         // update the main file so if they unplug the robot and turn it on it will execute this program.
         lines = await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
 
         ATERM.TERM.scrollToBottom();
-        await UIkit.modal(progressParent).hide();
+        //await UIkit.modal(progressParent).hide();
         await REPL.executeLines(lines);
         // document.getElementById('IDRunBTN').disabled = false;
 
