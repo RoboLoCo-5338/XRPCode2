@@ -358,6 +358,25 @@ document.getElementById("IDAPI").onclick = (event) =>{
     window.open("https://open-stem.github.io/XRP_MicroPython/", "_blank")
 }
 
+document.getElementById("IDCURR").onclick = (event) =>{
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+    window.open("https://introtoroboticsv2.readthedocs.io/en/latest/", "_blank")
+}
+
+document.getElementById("IDFORUM").onclick = (event) =>{
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+    window.open("https://xrp.discourse.group/", "_blank")
+}
+
+document.getElementById("IDCHANGE").onclick = (event) =>{
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+    fetch("CHANGELOG.txt?version=" + Math.floor(Math.random() * (100 - 1) + 1)).then(async (response) => {
+        await response.text().then(async (text) => {
+            await dialogMessage(marked.parse(text));
+        });
+    });
+}
+
 disableMenuItems(); 
 
 document.getElementById("IDRunBTN").onclick = async (event) =>{
