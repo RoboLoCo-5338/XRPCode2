@@ -61,7 +61,7 @@ let v = jresp.version
 window.latestLibraryVersion = v.split(".");
 
 window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
-window.bleList = ["__init__.py","blerepl.py", "ble_uart_peripheral.py", "isrunning"]
+window.bleList = ["__init__.py","blerepl.py", "ble_uart_peripheral.py", "isrunning"]  //bugbug: ble_uart_peripheral looks for ##XRPSTOP## so we can't update via bluetooth. Could be fixed with a hash operation
 
 window.SHOWMAIN = false;
 

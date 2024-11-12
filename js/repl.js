@@ -413,6 +413,7 @@ class ReplJS{
 
     bleDisconnect(){
         if(REPL.DEBUG_CONSOLE_ON) console.log("BLE Disconnected");
+        REPL.BLE_DISCONNECT_TIME = Date.now();
         REPL.WRITEBLE = undefined;
         REPL.READBLE = undefined;
         REPL.DISCONNECT = true; // Will stop certain events and break any EOT waiting functions
@@ -1739,6 +1740,12 @@ class ReplJS{
         if(this.DEBUG_CONSOLE_ON) console.log("Trying manual connectBLE..");
 
         this.BLE_DEVICE = undefined; //just in case we were connected before.
+
+        var elapseTime = (Date.now() - this.BLE_DISCONNECT_TIME) / 1000;
+        if (elapseTime > 60){
+            await window.alertMessage("Error while detecting bluetooth devices. \nPlease refresh the browser and try again.")
+            return;
+        }
 
         // Function to connect to the device
         await navigator.bluetooth.requestDevice({
