@@ -5,8 +5,8 @@ import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-l
          VERSION NUMBERS
 */
 
-const showChangelogVersion = "1.0.3";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
-window.latestMicroPythonVersion = [1, 22, 1];
+const showChangelogVersion = "1.1.0";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
+window.latestMicroPythonVersion = [1, 23, 0];
 window.xrpID = "";
 
 
