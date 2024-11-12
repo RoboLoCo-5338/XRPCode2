@@ -580,6 +580,21 @@ class ReplJS{
         return value / (1024*64/14) //the voltage ADC is 64k (RP2040 ADC is 0-4095 but micropython adjusts it to 0 - 64K) And while the voltage is a max of 11V, the divider comes out close to 14V
     }
 
+    async resetIsRunning(){
+        if(this.BUSY == true){
+            return 0;
+        }
+        this.BUSY = true;
+
+        var cmd =   "with open('/lib/ble/isrunning', 'r+b') as file:\n" +
+                    "      file.write(b'\\x00')\n";
+
+        var hiddenLines = await this.writeUtilityCmdRaw(cmd, true, 1);
+
+        await this.getToNormal(3);
+        this.BUSY = false;
+    }
+
     async getOnBoardFSTree(){
         if(this.BUSY == true){
             return;
@@ -1139,7 +1154,6 @@ class ReplJS{
     }
 
     async updateMainFile(fileToEx){
-       //BUGBUG - Need to write the isrunning file to 0 since we know we are running from the IDE
 
         var fileToEx2 = fileToEx;
         if (fileToEx.startsWith('/')) {
@@ -1604,9 +1618,6 @@ class ReplJS{
 
     async finishConnect(){
         this.DISCONNECT  = false;
-        if(this.PORT != undefined){ //if we connected via USB then we can release the BLE terminal
-            this.resetTerminal();
-        }
         this.readLoop(); 
         if(await this.checkIfMP()){
             if(this.HAS_MICROPYTHON == false){    //something went wrong, just get out of here
@@ -1620,9 +1631,12 @@ class ReplJS{
         
         this.LAST_RUN = undefined;
         this.BUSY = false;
+        if(this.PORT != undefined){ //if we connected via USB then we can release the BLE terminal
+            await this.resetTerminal();
+        }
+        await this.resetIsRunning();
         await this.checkIfNeedUpdate();
         this.IDSet();
-            
     }
     async tryAutoConnect(){
         if(this.BUSY == true){
