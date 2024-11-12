@@ -1162,7 +1162,7 @@ class ReplJS{
         
         var value = "import os\n" +
                     "import sys\n" +
-                    "from machine import Pin\n" +
+                    //"from machine import Pin\n" +
                     "import time\n" +
                     "FILE_PATH = '/lib/ble/isrunning'\n" +
                     "x = os.dupterm(None, 0)\n" +
@@ -1170,10 +1170,10 @@ class ReplJS{
                     "   import ble.blerepl\n" +
                     "else:\n" +
                     "   os.dupterm(x,0)\n" +
-                    "button = Pin(22, Pin.IN, Pin.PULL_UP)\n" +
-                    "time.sleep(0.1)\n" +
-                    "if(button.value() == 0):\n" +
-                    "   sys.exit()\n" +
+                    //"button = Pin(22, Pin.IN, Pin.PULL_UP)\n" +
+                    //"time.sleep(0.1)\n" +
+                    //"if(button.value() == 0):\n" +
+                    //"   sys.exit()\n" +
                     "try:\n" +
                     "   with open(FILE_PATH, 'r+b') as file:\n" +
                     "      byte = file.read(1)\n" +
@@ -1366,10 +1366,19 @@ class ReplJS{
         if(curVer == "ERROR EX"){
             curVer = "None";
         }
-        let answer = await window.confirmMessage("The library files on the XRP are out of date.<br>" +
-                "The current version is " + curVer +
-                " and the new version is version " + window.latestLibraryVersion[0] + "." + window.latestLibraryVersion[1] + "." + window.latestLibraryVersion[2] +"<br>" +
-                "Click OK to update the XRP to the latest version.");
+
+        var message = "The library files on the XRP are out of date.<br>" +
+                            "The current version is " + curVer +
+                            " and the new version is version " + window.latestLibraryVersion[0] + "." + window.latestLibraryVersion[1] + "." + window.latestLibraryVersion[2] +"<br>";
+
+        if(REPL.BLE_DEVICE != undefined){
+
+            message += "<br>You will need to connect your XRP with a USB cable in order to update XRPLib";
+            await alertMessage(message);
+            return;
+        }
+        message += "Click OK to update the XRP to the latest version.";
+        let answer = await window.confirmMessage(message);
         if (!answer) {
             return; //they pressed CANCEL
         }
