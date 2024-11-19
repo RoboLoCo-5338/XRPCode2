@@ -656,6 +656,25 @@ function registerShell(_container, state){
     REPL.IDSet = () => {
          //ID this would be a good spot to send window.xrpID to the database
          if(window.xrpID != ""){
+            const isBLE = REPL.BLE_DEVICE != undefined;
+            const data = {
+                XRPID: window.xrpID,
+                platform: 'XRPCode',
+                BLE: isBLE
+            };
+            try{
+                const response = fetch('https://xrpid-464879733234.us-central1.run.app/data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+            }
+            catch{
+                
+            }
+
             document.getElementById('IDXRPName').innerHTML = "XRP-" + window.xrpID.slice(-5);
             document.getElementById('IDXRPName').style.display = "block";
          }
