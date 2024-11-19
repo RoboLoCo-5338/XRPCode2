@@ -84,36 +84,34 @@ class ReplJS{
         // Check if browser can use WebSerial
         if ("serial" in navigator) {
             if(this.DEBUG_CONSOLE_ON) console.log("Serial supported in this browser!");
+            // Attempt auto-connect when page validated device plugged in, do not start manual selection menu
+            navigator.serial.addEventListener('connect', (e) => {
+                if(this.MANNUALLY_CONNECTING  == false){
+                    this.tryAutoConnect();
+                }
+            });
+
+
+            // Probably set flags/states when page validated device removed
+            navigator.serial.addEventListener('disconnect', (e) => {
+                var disconnectedPort = e.target;
+
+                // Only display disconnect message if there is a matching port on auto detect or not already disconnected
+                if(this.checkPortMatching(disconnectedPort) && this.DISCONNECT == false){
+                    if(this.DEBUG_CONSOLE_ON) console.log("%cDisconnected MicroPython!", "color: yellow");
+                    this.WRITER = undefined;
+                    this.READER = undefined;
+                    this.PORT = undefined;
+                    this.DISCONNECT = true; // Will stop certain events and break any EOT waiting functions
+                    this.onDisconnect();
+                    this.BUSY = false;      // If not set false here, if disconnected at just the right time, can't connect until refresh
+                }
+            });
         } else {
             alert("Serial NOT supported in your browser! Use Microsoft Edge or Google Chrome");
-            return;
+            //return;
         }
-
-
-        // Attempt auto-connect when page validated device plugged in, do not start manual selection menu
-        navigator.serial.addEventListener('connect', (e) => {
-            if(this.MANNUALLY_CONNECTING  == false){
-                this.tryAutoConnect();
-            }
-        });
-
-
-        // Probably set flags/states when page validated device removed
-        navigator.serial.addEventListener('disconnect', (e) => {
-            var disconnectedPort = e.target;
-
-            // Only display disconnect message if there is a matching port on auto detect or not already disconnected
-            if(this.checkPortMatching(disconnectedPort) && this.DISCONNECT == false){
-                if(this.DEBUG_CONSOLE_ON) console.log("%cDisconnected MicroPython!", "color: yellow");
-                this.WRITER = undefined;
-                this.READER = undefined;
-                this.PORT = undefined;
-                this.DISCONNECT = true; // Will stop certain events and break any EOT waiting functions
-                this.onDisconnect();
-                this.BUSY = false;      // If not set false here, if disconnected at just the right time, can't connect until refresh
-            }
-        });
-
+        
         document.getElementById("IDConnectBTN").addEventListener("click", async (event) => {
             if (REPL.DISCONNECT == false) {
                 await this.disconnect();
