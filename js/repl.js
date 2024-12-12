@@ -1056,7 +1056,7 @@ class ReplJS{
         }
 
         UIkit.modal(document.getElementById("IDProgressBarParent")).show();
-        document.getElementById("IdProgress_TitleText").innerText = 'Update in Progress...';
+        document.getElementById("IdProgress_TitleText").innerText = 'Update in Progress...(RELOAD SITE WHEN IT HANGS)';
 
         let response = await fetch("lib/package.json");
         response = await response.text();
