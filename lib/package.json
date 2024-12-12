@@ -2,7 +2,7 @@
     "urls": [
       ["XRPLib/board.py", "github:Open-STEM/XRP_Micropython/XRPLib/board.py"],
       ["XRPLib/controller.py", "github:Open-STEM/XRP_Micropython/XRPLib/controller.py"],
-      ["XRPLib/defaults.py", "github:Open-STEM/XRP_Micropython/XRPLib/defaults.py"],
+      ["XRPLib/defaults.py", "github:RoboLoCo-5338/XRPCode/lib/XRPLib/defaults.py"],
       ["XRPLib/differential_drive.py", "github:Open-STEM/XRP_Micropython/XRPLib/differential_drive.py"],
       ["XRPLib/encoded_motor.py", "github:Open-STEM/XRP_Micropython/XRPLib/encoded_motor.py"],
       ["XRPLib/encoder.py", "github:Open-STEM/XRP_Micropython/XRPLib/encoder.py"],
