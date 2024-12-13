@@ -39,6 +39,7 @@ class Servo:
         self._servo.freq(50)
         self.MICROSEC_PER_DEGREE: int = 10000
         self.LOW_ANGLE_OFFSET: int = 500000
+        self._servo_degrees:float = 0
 
     def set_angle(self, degrees: float):
         """
@@ -46,6 +47,7 @@ class Servo:
         :param degrees: The angle to set the servo to [0,200]
         :ptype degrees: float
         """
+        self._servo_degrees=max(0, min(degrees, 200))
         self._servo.duty_ns(int(degrees * self.MICROSEC_PER_DEGREE + self.LOW_ANGLE_OFFSET))
 
     def free(self):
@@ -53,3 +55,10 @@ class Servo:
         Allows the servo to spin freely without holding position
         """
         self._servo.duty_ns(0)
+
+    def get_angle(self):
+        """
+        Returns the angle of the servo
+        """
+        return self._servo_degrees
+
