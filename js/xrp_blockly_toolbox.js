@@ -462,6 +462,10 @@ var blocklyToolbox = {
                     "kind": "BLOCK",
                     "type": "run_function_periodically"
                 },
+                {
+                    "kind": "BLOCK",
+                    "type": "run_auto_code"
+                },
             ],
             "name": "Loops",
             "colour": "#5ba55b" // grass green

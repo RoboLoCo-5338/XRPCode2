@@ -852,6 +852,25 @@ Blockly.Blocks['pestolink_get_button'] = {
   }
 }
 
+Blockly.Blocks['run_auto_code'] = {
+  init: function() {
+    this.appendValueInput('AFTER')
+    .appendField('Run code as auto code for')
+    .setCheck('Number');
+    this.appendDummyInput()
+    .appendField('seconds');
+    this.appendStatementInput('DO')
+    .appendField('Do');
+    this.setInputsInline(true)
+    this.setTooltip('');
+    this.setHelpUrl('');
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour(120);
+  }
+};
+
+
 // Blockly.Blocks['text_to_num']={
 //   init: function() {
 //     this.appendValueInput("TEXT")

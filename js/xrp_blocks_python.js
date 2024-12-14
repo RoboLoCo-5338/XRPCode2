@@ -377,7 +377,18 @@ Blockly.Python['run_function_periodically'] = function(block) {
   const value_after = Blockly.Python.valueToCode(block, 'AFTER', Blockly.Python.ORDER_ATOMIC);
   const statement_do = Blockly.Python.statementToCode(block, 'DO');
   var funcName = getFuncName();
-  var code = `\ndef ${funcName}():\n${statement_do}\ntimers.append(Timer(-1)); timers[-1].init(period=${value_after*1000}, mode=Timer.PERIODIC, callback=${funcName})`
+  var code = `\ndef ${funcName}():\n${statement_do}\ntimers.append(Timer(-1)); timers[-1].init(period=${value_after*1000}, mode=Timer.ONE_SHOT, callback=${funcName})`
+
+  return code;
+}
+Blockly.Python['run_auto_code'] = function(block) {
+  // TODO: change Order.ATOMIC to the correct operator precedence strength
+  PY.definitions_['import_timer'] = 'from machine import Timer \n\ntimers=[]';
+  PY.definitions_['import_machine'] = 'import machine';
+  const value_after = Blockly.Python.valueToCode(block, 'AFTER', Blockly.Python.ORDER_ATOMIC);
+  const statement_do = Blockly.Python.statementToCode(block, 'DO');
+  var funcName = getFuncName();
+  var code = `\ntimers.append(Timer(-1)); timers[-1].init(period=${value_after*1000}, mode=Timer.PERIODIC, callback=lambda timer: machine.soft_reset())\n${statement_do}`;
 
   return code;
 }
