@@ -160,7 +160,7 @@ Blockly.Python['xrp_get_servo_deg'] = function(block){
   else{
     PY.definitions_[`servo2_setup`] = `servo2 = Servo.get_default_servo(2)`;
   }
-  return [`servo${index}.get_angle(${value_degrees})`, Blockly.Python.ORDER_NONE];
+  return [`servo${index}.get_angle()`, Blockly.Python.ORDER_NONE];
 }
 
 //Distance
