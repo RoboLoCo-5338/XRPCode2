@@ -98,7 +98,7 @@ class ReplJS{
 
                 // Only display disconnect message if there is a matching port on auto detect or not already disconnected
                 if(this.checkPortMatching(disconnectedPort) && this.DISCONNECT == false){
-                    if(this.DEBUG_CONSOLE_ON) console.log("%cDisconnected MicroPython!", "color: yellow");
+                    if(this.DEBUG_CONSOLE_ON) console.log("%cDisconnected MicroPython!");
                     this.WRITER = undefined;
                     this.READER = undefined;
                     this.PORT = undefined;
@@ -367,11 +367,12 @@ class ReplJS{
             } catch (err) {
                 // TODO: Handle non-fatal read error.
                 if(err.name == "NetworkError"){
-                    if(this.DEBUG_CONSOLE_ON) console.log("%cDevice most likely unplugged, handled", "color: yellow");
+                    if(this.DEBUG_CONSOLE_ON) console.log("%cDevice most likely unplugged, handled");
+                    this.disconnect();
                 }
             }
         }
-        if(this.DEBUG_CONSOLE_ON) console.log("%cCurrent read loop ended!", "color: yellow");
+        if(this.DEBUG_CONSOLE_ON) console.log("%cCurrent read loop ended!");
         this.BUSY = false;
     }
 
@@ -1164,6 +1165,7 @@ class ReplJS{
                     //"from machine import Pin\n" +
                     "import time\n" +
                     "FILE_PATH = '/lib/ble/isrunning'\n" +
+                    "doNothing = False\n" +
                     "x = os.dupterm(None, 0)\n" +
                     "if(x == None):\n" +
                     "   import ble.blerepl\n" +
@@ -1179,16 +1181,17 @@ class ReplJS{
                     "      if byte == b'\\x01':\n" +
                     "         file.seek(0)\n" +
                     "         file.write(b'\\x00')\n" +
-                    "         sys.exit()\n" +
+                    "         doNothing = True\n" +
                     "      else:\n" +
                     "         file.seek(0)\n" +
                     "         file.write(b'\\x01')\n" +
-                    "   with open('"+fileToEx+"', mode='r') as exfile:\n" +
-                    "       code = exfile.read()\n"+
-                    "   execCode = compile(code, '" +fileToEx2+"', 'exec')\n" +
-                    "   exec(execCode)\n" +
-                    "   with open(FILE_PATH, 'r+b') as file:\n" +
-                    "      file.write(b'\\x00')\n" +
+                    "   if(not doNothing):\n" +
+                    "       with open('"+fileToEx+"', mode='r') as exfile:\n" +
+                    "           code = exfile.read()\n"+
+                    "       execCode = compile(code, '" +fileToEx2+"', 'exec')\n" +
+                    "       exec(execCode)\n" +
+                    "       with open(FILE_PATH, 'r+b') as file:\n" +
+                    "           file.write(b'\\x00')\n" +
                     "except Exception as e:\n" +
                     "   import sys\n" +
                     "   sys.print_exception(e)\n"+
@@ -1655,7 +1658,7 @@ class ReplJS{
     
         //window.ATERM.writeln("Connecting to XRP..."); //let the user know that we are trying to connect.
 
-        if(this.DEBUG_CONSOLE_ON) console.log("%cTrying auto connect...", "color: yellow");
+        if(this.DEBUG_CONSOLE_ON) console.log("%cTrying auto connect...");
         var ports = await navigator.serial.getPorts();
         if(Array.isArray(ports)){
             for(var ip=0; ip<ports.length; ports++){
@@ -1683,7 +1686,7 @@ class ReplJS{
             }
         }
         if (this.DEBUG_CONSOLE_ON)
-            console.log("%cNot Auto connected...", "color: yellow");
+            console.log("%cNot Auto connected...");
             document.getElementById('IDConnectBTN').style.display = "block";
             this.BUSY = false;
 
@@ -1711,7 +1714,7 @@ class ReplJS{
 
             await navigator.serial.requestPort({filters: [{ usbVendorId, usbProductId }, { usbVendorId, usbProductMacId }]}).then(async (port) => {
                 this.PORT = port;
-                if(this.DEBUG_CONSOLE_ON) console.log("%cManually connected!", "color: lime");
+                if(this.DEBUG_CONSOLE_ON) console.log("%cManually connected!");
                 if(await this.openPort()){
                     this.finishConnect();
                 }
