@@ -851,7 +851,8 @@ function registerEditor(_container, state) {
 
         //handel any special hidden settings
         if(lines.startsWith("#XRPSETTING")){
-            var setting = lines.split("#XRPSETTING")[1];
+            var setting = lines.split("\n");
+            setting = setting[0].split("#XRPSETTING")[1];
             setting = setting.trimEnd();
             switch(setting){
                 case "-localstorage":
@@ -948,7 +949,7 @@ function registerEditor(_container, state) {
 
 
         if(REPL.RUN_ERROR && REPL.RUN_ERROR.includes("[Errno 2] ENOENT", 0)){
-            window.alertMessage("The program that you were trying to RUN has not been saved to this XRP.<br>To RUN this program save the file to XRP and click RUN again.");
+            await window.alertMessage("The program that you were trying to RUN has not been saved to this XRP.<br>To RUN this program save the file to XRP and click RUN again.");
         }
 
     }
