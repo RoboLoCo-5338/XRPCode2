@@ -1089,7 +1089,7 @@ class ReplJS{
             window.setPercent(cur_percent, "Updating XRPLib...");
             //console.log("percent = " + cur_percent);
             //added a version number to ensure that the browser does not cache it.
-            await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + window.phewList[i] + "?version=" + window.latestLibraryVersion[2]));
+            await this.uploadFile("lib/phew/" + window.phewList[i], await window.downloadFile("lib/phew/" + ((window.phewList[i]=="__init__.py")? "dinit.py": window.phewList[i]) + "?version=" + window.latestLibraryVersion[2]));
             cur_percent += percent_per;
         }
 
