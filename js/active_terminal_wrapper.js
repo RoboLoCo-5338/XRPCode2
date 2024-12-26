@@ -1,7 +1,6 @@
 // ##### ACTIVE_TERMINAL_WRAPPER.js #####
 // Wraps the Xterm.js class into a class that handles making
-// the terminal look active. Only implements functions of
-// Xterm.js that are relevant to the Thumby Manager project
+// the terminal look active. 
 
 class ActiveTerminal{
 
@@ -66,7 +65,7 @@ class ActiveTerminal{
         this.onType = undefined;
 
         this.writeln("XRPCode Development Environment");
-        this.writeln("Waiting for connection... (plug in the XRP and click 'Connect XRP')");
+        this.writeln("Waiting for connection...");
 
         this.AUTO_RESIZING = true;
     }

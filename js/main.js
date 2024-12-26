@@ -5,9 +5,9 @@ import { GoldenLayout, LayoutConfig } from "../golden-layout/bundle/esm/golden-l
          VERSION NUMBERS
 */
 
-const showChangelogVersion = "1.0.2";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
-window.latestMicroPythonVersion = [1, 20, 0];
-window.xprID = "";
+const showChangelogVersion = "1.1.0";  //update all instances of ?version= in the index file to match the version. This is needed for local cache busting
+window.latestMicroPythonVersion = [1, 23, 0];
+window.xrpID = "";
 
 
 const layoutSaveKey = "layout";
@@ -53,17 +53,15 @@ var onExportToEditor = (bytes) => {
 // Show pop-up containing IDE changelog every time showChangelogVersion changes
 // Update version string in index.html and play.html as well to match
 
-let response = await fetch("/lib/package.json");
+let response = await fetch("lib/package.json" + "?version=" + showChangelogVersion);
 response = await response.text();
 let jresp = JSON.parse(response);
 let v = jresp.version
 // This should match what is in /lib/XRPLib/version.py as '__version__'
 window.latestLibraryVersion = v.split(".");
 
-
-
-
 window.phewList = ["__init__.py","dns.py","logging.py","server.py","template.py"];
+window.bleList = ["__init__.py","blerepl.py", "ble_uart_peripheral.py", "isrunning"]  //bugbug: ble_uart_peripheral looks for ##XRPSTOP## so we can't update via bluetooth. Could be fixed with a hash operation
 
 window.SHOWMAIN = false;
 
@@ -80,7 +78,6 @@ if(localStorage.getItem("version") == null || localStorage.getItem("version") !=
     localStorage.setItem("version", showChangelogVersion);       // Set this show not shown on next page load
    // }
 }
-
 
 // Want the dropdown to disappear if mouse leaves it (doesn't disappear if mouse leaves button that starts it though)
 //document.getElementById("IDUtilitesDropdown").addEventListener("mouseleave", () => {
@@ -173,7 +170,8 @@ var defaultConfig = {
                         id: "aShell"
                     }],
                     height: 20
-                }]
+                }
+            ]
             }],
         }],
     }],
@@ -360,6 +358,25 @@ document.getElementById("IDAPI").onclick = (event) =>{
     window.open("https://open-stem.github.io/XRP_MicroPython/", "_blank")
 }
 
+document.getElementById("IDCURR").onclick = (event) =>{
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+    window.open("https://introtoroboticsv2.readthedocs.io/en/latest/", "_blank")
+}
+
+document.getElementById("IDFORUM").onclick = (event) =>{
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+    window.open("https://xrp.discourse.group/", "_blank")
+}
+
+document.getElementById("IDCHANGE").onclick = (event) =>{
+    UIkit.dropdown(HELP_DROPDOWN).hide();
+    fetch("CHANGELOG.txt?version=" + Math.floor(Math.random() * (100 - 1) + 1)).then(async (response) => {
+        await response.text().then(async (text) => {
+            await dialogMessage(marked.parse(text));
+        });
+    });
+}
+
 disableMenuItems(); 
 
 document.getElementById("IDRunBTN").onclick = async (event) =>{
@@ -369,20 +386,6 @@ document.getElementById("IDRunBTN").onclick = async (event) =>{
     document.getElementById("IDRunBTN").disabled = false;
 
 };
-
-/*
-// Add editor panel to layout
-document.getElementById("IDAddEditorBTN").onclick = (event) =>{
-    var id1;
-    for (const [id] of Object.entries(EDITORS)) {
-        id1 = id;
-        break;
-    }
-
-    EDITORS[id1]._container.focus();   //make sure the focus is on the editor section.
-    myLayout.addComponent('Editor', {"value":undefined, choose:true}, 'Editor');
-}
-*/
 
 // Return true if a panel with this title exists, false otherwise
 function recursiveFindTitle(content, title){
@@ -513,7 +516,7 @@ function registerFilesystem(_container, state){
     //     }
     // }
     FS.onRefresh = async () => {
-        if(REPL.PORT != undefined){
+        if(REPL.DISCONNECT == false){
             window.setPercent(1, "Refreshing filesystem panel");
             await REPL.getOnBoardFSTree();
             window.setPercent(99.8);
@@ -596,6 +599,15 @@ async function downloadFileFromPath(fullFilePaths) {
     }
 }
 
+// init Joystick class when window initializes
+var JOY = undefined;
+function registerJoy(_container, state){
+    JOY = new Joystick(_container, state);
+    JOY.writeToDevice = (data) => REPL.writeToDevice(data);
+    REPL.startJoyPackets = () => JOY.startJoyPackets();
+    REPL.stopJoyPackets = () => JOY.stopJoyPackets();
+}
+
 // Terminal module
 var ATERM = undefined;
 function registerShell(_container, state){
@@ -604,7 +616,7 @@ function registerShell(_container, state){
     ATERM.onType = (data) => {
         // When the RP2040 is busy with any utility operations where BUSY is set, only allow interrupt key through
         // Allow certain characters through so thumby can pick them up
-        if(REPL.BUSY == true){
+        if(REPL.BUSY == true && REPL.RUN_BUSY == false){
            return;
         }
         REPL.writeToDevice(data);
@@ -612,25 +624,61 @@ function registerShell(_container, state){
 
     REPL.onData = (data) => ATERM.write(data);
     REPL.onDisconnect = () => {
-        ATERM.writeln("Waiting for connection... (plug in the XRP and click 'Connect XRP')");
+        ATERM.writeln("Waiting for connection... (click 'Connect XRP')");
         FS.clearToWaiting();
         window.disableMenuItems();
-        
-        //FS.removeUpdate();
 
-        //FS.disableButtons();
         // when XRP is disconnected, show the CONNECT XRP button and hide the RUN button
         document.getElementById('IDRunBTN').style.display = "none";
-        document.getElementById('IDConnectThumbyBTN').style.display = "block";
+        const connect = document.getElementById('IDConnectBTN');
+        connect.style.display = "block";
+        if(REPL.BLE_DEVICE == undefined){
+            document.getElementById('IDConnectBTN_text').innerText = "Connect XRP";
+        }else{
+            document.getElementById('IDConnectBTN_text').innerText = "Re-Connect XRP";
+            connect.disabled = true;
+        }
+
+        // handle the XRP Name and ID
+        document.getElementById('IDXRPName').style.display = "none";
+        window.xrpID = "";
     }
     REPL.onConnect = () => {
         window.enableMenuItems();
         // when XRP is connected, show the RUN button and hide the CONNECT XRP button
         document.getElementById("IDRunBTN").disabled = false;
         document.getElementById('IDRunBTN').style.display = "block";
-        document.getElementById('IDConnectThumbyBTN').style.display = "none";
-        //ID this would be a good spot to send window.xrpID to the database
+        document.getElementById('IDConnectBTN').style.display = "none";
+       
         //FS.enableButtons();
+    }
+
+    REPL.IDSet = () => {
+         //ID this would be a good spot to send window.xrpID to the database
+         if(window.xrpID != ""){
+            const isBLE = REPL.BLE_DEVICE != undefined;
+            const data = {
+                XRPID: window.xrpID,
+                platform: 'XRPCode',
+                BLE: isBLE
+            };
+            try{
+                const response = fetch('https://xrpid-464879733234.us-central1.run.app/data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+            }
+            catch{
+                
+            }
+
+            document.getElementById('IDXRPName').innerHTML = "XRP-" + window.xrpID.slice(-5);
+            document.getElementById('IDXRPName').style.display = "block";
+         }
+
     }
     REPL.onFSData = (jsonStrData, fsSizeData) => {
         FS.updateTree(jsonStrData);
@@ -652,8 +700,14 @@ function registerShell(_container, state){
                 return;
             }
         }
-
-        let answer = await confirmMessage("The MicroPython on your XRP needs to be updated. The new version is " + window.latestMicroPythonVersion[0] + "." + window.latestMicroPythonVersion[1] + "." + window.latestMicroPythonVersion[2] +"<br>Would you like to update now? If so, click OK to proceed with the update.");
+        var message = "The MicroPython on your XRP needs to be updated. The new version is " + window.latestMicroPythonVersion[0] + "." + window.latestMicroPythonVersion[1] + "." + window.latestMicroPythonVersion[2];
+        if(REPL.BLE_DEVICE != undefined){
+            message += "<br>You will need to connect your XRP with a USB cable in order to update MicroPython";
+            await alertMessage(message);
+            return;
+        }
+        message += "<br>Would you like to update now? If so, click OK to proceed with the update."
+        let answer = await confirmMessage(message);
         if(answer){
             await alertMessage("When the <b>Select Folder</b> window comes up, select the <b>RPI-RP2</b> drive when it appears.<br>Next, click on 'Edit Files' and wait for the XRP to connect.<br> This process may take a few seconds.");
             REPL.updateMicroPython();
@@ -671,7 +725,7 @@ function registerEditor(_container, state) {
     editor.onFocus = () => { LAST_ACTIVE_EDITOR = editor };
 
     editor.onUploadFiles = async () => {
-        if(REPL.PORT != undefined){
+        if(REPL.DISCONNECT == false){
             console.log("Pick files to upload");
             const fileHandles = await window.showOpenFilePicker({multiple: true});
             if(fileHandles && fileHandles.length > 0){
@@ -731,16 +785,18 @@ function registerEditor(_container, state) {
             UIkit.modal(document.getElementById("IDProgressBarParent")).show();
             document.getElementById("IdProgress_TitleText").innerText = "Saving...";
 
+            var fileData = null;
             if(editor.isBlockly){
-                var blockData = editor.getValue() + '\n\n\n## ' + getTimestamp() + '\n##XRPBLOCKS ' + editor.getBlockData();
-                var busy = await REPL.uploadFile(
-                    editor.EDITOR_PATH, blockData, true, false);
-                if(busy != true){
-                    await REPL.getOnBoardFSTree();
-                }
+                fileData = editor.getValue() + '\n\n\n## ' + getTimestamp() + '\n##XRPBLOCKS ' + editor.getBlockData(); 
             }else{
-                var busy = await REPL.uploadFile(editor.EDITOR_PATH, editor.getValue(), true, false);
-                if(busy != true){
+                fileData = editor.getValue();
+            }
+
+            var busy = await REPL.uploadFile(editor.EDITOR_PATH, fileData, true, false);
+            if(busy != true){
+                //if the file is already in the FSTree then don't get the directory again
+                var node = FS.findNodeByName(editor.EDITOR_PATH);
+                if(node == null){
                     await REPL.getOnBoardFSTree();
                 }
             }
@@ -795,7 +851,8 @@ function registerEditor(_container, state) {
 
         //handel any special hidden settings
         if(lines.startsWith("#XRPSETTING")){
-            var setting = lines.split("#XRPSETTING")[1];
+            var setting = lines.split("\n");
+            setting = setting[0].split("#XRPSETTING")[1];
             setting = setting.trimEnd();
             switch(setting){
                 case "-localstorage":
@@ -829,11 +886,28 @@ function registerEditor(_container, state) {
             return;
         }
 
-        //check if power switch is on.
-        if(! await REPL.isPowerSwitchOn()) {
-            if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
-                "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")) {
-                return;
+        //if Cable attached check to see that the power switch is on.
+        // if BLE make sure the voltage is high enough
+        const voltage = await REPL.batteryVoltage();
+        if(REPL.BLE_DEVICE == undefined){
+            if(voltage < 0.4) {
+                if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
+                    "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")) {
+                    return;
+                }
+            }
+        }else{
+            if(voltage < 0.4) { //the device must be connected to a USB power with the power switch turned off.
+                    if(! await window.confirmMessage("The power switch on the XRP is not on. Motors and Servos will not work.<br>Turn on the switch before continuing." +
+                        "<br><img src='/images/XRP_Controller-Power.jpg' width=300>")) {
+                        return;
+                    }
+                
+            }else if(voltage < 5.0) {
+                if(await window.confirmMessage("<h1 style='text-align:center'>Low Battery Power! - Please Replace the Batteries</h1>" +
+                    "<br><div  style='text-align:center'> <img src='/images/sad-battery.png' width=200></div>")) {
+                    return;
+                }
             }
         }
 
@@ -853,14 +927,15 @@ function registerEditor(_container, state) {
                 await editor.onSaveToThumby();
             }
         }
-
-        UIkit.modal(document.getElementById("IDProgressBarParent")).show();
+        var progressParent = document.getElementById("IDProgressBarParent");
+        //await UIkit.modal(progressParent).show();
         document.getElementById("IdProgress_TitleText").innerText = "Running Program...";
 
         // update the main file so if they unplug the robot and turn it on it will execute this program.
         lines = await REPL.updateMainFile(editor.EDITOR_PATH); //replaces the lines with the main file.
+
         ATERM.TERM.scrollToBottom();
-        UIkit.modal(document.getElementById("IDProgressBarParent")).hide();
+        //await UIkit.modal(progressParent).hide();
         await REPL.executeLines(lines);
         // document.getElementById('IDRunBTN').disabled = false;
 
@@ -874,7 +949,7 @@ function registerEditor(_container, state) {
 
 
         if(REPL.RUN_ERROR && REPL.RUN_ERROR.includes("[Errno 2] ENOENT", 0)){
-            window.alertMessage("The program that you were trying to RUN has not been saved to this XRP.<br>To RUN this program save the file to XRP and click RUN again.");
+            await window.alertMessage("The program that you were trying to RUN has not been saved to this XRP.<br>To RUN this program save the file to XRP and click RUN again.");
         }
 
     }
@@ -939,7 +1014,8 @@ function registerEditor(_container, state) {
 myLayout.registerComponentConstructor("Filesystem", registerFilesystem);
 myLayout.registerComponentConstructor("Editor", registerEditor);
 myLayout.registerComponentConstructor("Shell", registerShell);
-
+//myLayout.registerComponentConstructor("Joy", registerJoy);
+registerJoy();
 
 // Restore from previous layout if it exists, otherwise default
 var savedLayout = localStorage.getItem(layoutSaveKey);
