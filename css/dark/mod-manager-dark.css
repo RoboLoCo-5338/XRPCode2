@@ -9,7 +9,7 @@
     width: 450px;
     height: 75%;
     z-index: 1000;
-    color: white;
+    color: rgb(0, 0, 0);
     display: none;
     font-family: Roboto;
     font-size: 13px;

@@ -15,6 +15,7 @@ const layoutSaveKey = "layout";
 var myLayout = new GoldenLayout(document.getElementById("IDLayoutContainer"));
 var DIR = new DIRCHOOSER();
 var SAVEAS_ELEMENT = document.getElementById("IDSaveAs");  //element to use with the SaveAs dialog box.
+var MOD_MANAGER = new MODMANAGER(SAVEAS_ELEMENT);
 
 var onExportToEditor = (bytes) => {
     var editorSpriteID = 0;
