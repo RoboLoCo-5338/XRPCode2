@@ -7,7 +7,7 @@
     background-color: black;
     border: 1px solid gray;
     width: 450px;
-    height: 75%;
+    height: 50%;
     z-index: 1000;
     color: rgb(0, 0, 0);
     display: none;
@@ -36,4 +36,9 @@
     flex: 1.0;
     display: flex;
     flex-flow: row;
+}
+
+.name_label{
+    color: white;
+    font-size: x-large;
 }
