@@ -8,7 +8,7 @@ class MODMANAGER{
 
         //Header Div
         this.MOD_MANAGER_HEADER_DIV = document.createElement("div");
-        this.MOD_MANAGER_HEADER_DIV.classList = "dir_chooser_header uk-label uk-label-danger";
+        this.MOD_MANAGER_HEADER_DIV.classList = "mod_manager_header uk-label uk-label-danger";
         this.MOD_MANAGER_HEADER_DIV.innerText = "Install or Uninstall Mods";
         this.MOD_MANAGER_DIV.appendChild(this.MOD_MANAGER_HEADER_DIV);
 
@@ -26,16 +26,37 @@ class MODMANAGER{
         this.UNINSTALL_SELECT_DIV = document.createElement("div");
         this.MOD_MANAGER_DIV.appendChild(this.UNINSTALL_SELECT_DIV);
         
-        //Creates Treeselect for 
+        //Creates Treeselect for available mods
         this.INSTALL_SELECT = new Treeselect({
             parentHtmlContainer: this.INSTALL_SELECT_DIV,
             options: JSON.parse(localStorage.getItem("availableMods"))
         });
+        //Creates Treeselect for installed mods
         this.UNINSTALL_SELECT = new Treeselect({
             parentHtmlContainer: this.UNINSTALL_SELECT_DIV,
             options: JSON.parse(localStorage.getItem("installedMods"))
         });
 
+        //Footer Div
+        this.MOD_MANAGER_FOOTER_DIV = document.createElement("div");
+        this.MOD_MANAGER_FOOTER_DIV.classList.add("mod_manager_footer");
+        this.MOD_MANAGER_DIV.appendChild(this.MOD_MANAGER_FOOTER_DIV);
+
+        this.MOD_MANAGER_FOOTER_BTNS = document.createElement("div");
+        this.MOD_MANAGER_FOOTER_BTNS.classList.add("mod_manager_footer_buttons");
+        this.MOD_MANAGER_FOOTER_DIV.appendChild(this.MOD_MANAGER_FOOTER_BTNS);
+
+        this.MOD_MANAGER_FOOTER_OK_BTN = document.createElement("button");
+        this.MOD_MANAGER_FOOTER_OK_BTN.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.MOD_MANAGER_FOOTER_OK_BTN.textContent = "SAVE";
+        this.MOD_MANAGER_FOOTER_OK_BTN.onclick = () => (this.WAITING_FOR_USER = 0);
+        this.MOD_MANAGER_FOOTER_BTNS.appendChild(this.MOD_MANAGER_FOOTER_OK_BTN);
+
+        this.MOD_MANAGER_FOOTER_CANCEL_BTN = document.createElement("button");
+        this.MOD_MANAGER_FOOTER_CANCEL_BTN.classList = "uk-button uk-button-primary uk-width-1-1 uk-height-1-1 uk-text-nowrap";
+        this.MOD_MANAGER_FOOTER_CANCEL_BTN.textContent = "CANCEL";
+        this.MOD_MANAGER_FOOTER_CANCEL_BTN.onclick = () => (this.WAITING_FOR_USER = -1);
+        this.MOD_MANAGER_FOOTER_BTNS.appendChild(this.MOD_MANAGER_FOOTER_CANCEL_BTN);
 
 
         //Testing Code
