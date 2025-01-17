@@ -1,5 +1,5 @@
 //Created using https://www.cssscript.com/multi-select-tree/
-
+console.log("runs");
 class MODMANAGER{
     constructor(){
         //Creates container div
@@ -9,31 +9,33 @@ class MODMANAGER{
         //#region Header Div
         this.MOD_MANAGER_HEADER_DIV = document.createElement("div");
         this.MOD_MANAGER_HEADER_DIV.classList = "mod_manager_header uk-label uk-label-danger";
-        this.MOD_MANAGER_HEADER_DIV.innerText = "Install or Uninstall Mods";
+        this.MOD_MANAGER_HEADER_DIV.innerText = "Select Installed Mods";
         this.MOD_MANAGER_DIV.appendChild(this.MOD_MANAGER_HEADER_DIV);
         //#endregion
 
         //If the page is opened for the first time, the available mods are saved to local storage
-        if(localStorage.getItem("availableMods") === null || localStorage.getItem("installedMods") === null){
-            localStorage.setItem("availableMods", JSON.stringify(mods));
+        console.log(localStorage.getItem("installedMods"));
+        if(localStorage.getItem("installedMods") === null){
             localStorage.setItem("installedMods", JSON.stringify([]));
         }
 
         //#region Selection Divs
         //Creates container div for selecting mods to install
-        this.INSTALL_SELECT_LABEL = document.createElement("label");
-        this.INSTALL_SELECT_LABEL.innerHTML = "Install Mods";
-        this.INSTALL_SELECT_LABEL.className = "name_label";
-        this.MOD_MANAGER_DIV.appendChild(this.INSTALL_SELECT_LABEL);
+        // this.INSTALL_SELECT_LABEL = document.createElement("label");
+        // this.INSTALL_SELECT_LABEL.innerHTML = "Install Mods";
+        // this.INSTALL_SELECT_LABEL.className = "name_label";
+        // this.MOD_MANAGER_DIV.appendChild(this.INSTALL_SELECT_LABEL);
 
         this.INSTALL_SELECT_DIV = document.createElement("div");
-        this.INSTALL_SELECT_DIV.style.marginBottom="80%";
+        this.INSTALL_SELECT_DIV.style.marginBottom="38%";
         this.MOD_MANAGER_DIV.appendChild(this.INSTALL_SELECT_DIV);
 
         //Creates Treeselect for available mods
         this.INSTALL_SELECT = new Treeselect({
             parentHtmlContainer: this.INSTALL_SELECT_DIV,
-            options: JSON.parse(localStorage.getItem("availableMods"))
+            options: mods,
+            alwaysOpen: true,
+            value: JSON.parse(localStorage.getItem("installedMods"))
         });
         //#endregion
 
@@ -62,7 +64,7 @@ class MODMANAGER{
 
     }
     show(editorDiv){
-        this.INSTALL_SELECT.options=JSON.parse(localStorage.getItem("availableMods"));
+        this.INSTALL_SELECT.updateValue(JSON.parse(localStorage.getItem("installedMods")));
         editorDiv.appendChild(this.MOD_MANAGER_DIV);
         this.MOD_MANAGER_DIV.style.display="flex";
     }
@@ -73,7 +75,7 @@ class MODMANAGER{
         }
         this.MOD_MANAGER_DIV.style.display="none";
         if(this.WAITING_FOR_USER==0){
-            console.log(this.INSTALL_SELECT.value);
+            localStorage.setItem("installedMods", JSON.stringify(this.INSTALL_SELECT.value));
         }
     }
 }

@@ -16,8 +16,6 @@ var myLayout = new GoldenLayout(document.getElementById("IDLayoutContainer"));
 var DIR = new DIRCHOOSER();
 var SAVEAS_ELEMENT = document.getElementById("IDSaveAs");  //element to use with the SaveAs dialog box.
 var MOD_MANAGER = new MODMANAGER();
-MOD_MANAGER.show(SAVEAS_ELEMENT);
-await MOD_MANAGER.userExit();
 
 var onExportToEditor = (bytes) => {
     var editorSpriteID = 0;
@@ -283,6 +281,12 @@ document.getElementById("IDFileSaveAs").onclick = (event) =>{
     EDITORS[id].onSaveAsToThumby();
 }
 
+document.getElementById("IDModInstall").onclick = async (event) =>{
+    UIkit.dropdown(FILE_DROPDOWN).hide();
+    MOD_MANAGER.show(document.getElementById("IDModManager"));
+    let mods = await MOD_MANAGER.userExit();
+}
+
 // View Menu Support
 VIEW_BUTTON.onclick = (event) =>{
     //get active file id
@@ -390,6 +394,16 @@ document.getElementById("IDRunBTN").onclick = async (event) =>{
 
 };
 
+function combineToolboxes(mainToolbox, modToolbox){ //Main toolbox is an array, mod toolbox is an array
+    for(category in modToolbox){
+        if(mainToolbox.some((element) => element["name"]===category["name"])){
+            combineToolboxes(mainToolbox.find((element) => element["name"]===category["name"])["contents"], category["contents"])
+        }
+        else{
+            mainToolbox.push(category);
+        }
+    }
+}
 // Return true if a panel with this title exists, false otherwise
 function recursiveFindTitle(content, title){
     for(var i=0; i < content.length; i++){

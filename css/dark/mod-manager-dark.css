@@ -6,10 +6,10 @@
     transform: translate(-50%, -50%);
     background-color: black;
     border: 1px solid gray;
-    width: 450px;
+    width: 850px;
     height: 50%;
     z-index: 1000;
-    color: rgb(0, 0, 0);
+    color: white;
     display: none;
     font-family: Roboto;
     font-size: 13px;
